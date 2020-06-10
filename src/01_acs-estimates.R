@@ -41,7 +41,8 @@ vars <-c(
   "B08135_001", "B08135_007", "B08135_008", "B08135_009", "B08135_010",
   
   # mean travel time
-  "B08135_001",
+  "B08135_001", "B08135_002", "B08135_003", "B08135_004", "B08135_005", "B08135_006", "B08135_007", "B08135_008", 
+  "B08135_009", "B08135_010",
   
   # no vehicle
   "B08141_001", "B08141_002",
@@ -81,7 +82,7 @@ View(Fairfax)
 #Percent population in labor force that is unemployed
 #Percent population in labor force without a Bahelor's degree
 #Workers traveling 30 minutes or more to work
-#Mean travle time to work
+#Mean travle time to work (Used the lower limits of the time intervals because the last interval is open ended)
 # Percent worker with no vehicle available
 
 # Percent workers by means of transportation to work #
@@ -133,8 +134,8 @@ ACS_data <- Fairfax %>% transmute(
   geometry=geometry,
   pct_unempl= (B23025_005E/B23025_002E)*100,
   pct_without_bachelors=(1-(B23006_024E/B23006_001E))*100,
-  travel_30min = (B08135_007E + B08135_008E+ B08135_009E + B08135_010E)/B08135_001E*100,
-  mean_travel_time= mean(B08135_001E),
+  travel_30min = (B08135_007E + B08135_008E + B08135_009E + B08135_010E)/B08135_001E*100,
+  mean_travel_time= (0*B08135_002E + 10*B08135_003E + 15*B08135_004E + 20*B08135_005E + 25*B08135_006E + 30*B08135_007E + 35*B08135_008E + 45*B08135_009E + 60*B08135_010E)/B08135_001E,
   pct_no_vehicle= (B08141_002E/B08141_001E)*100,
   pct_drove_alone= (B08301_003E/B08301_001E)*100,
   pct_carpooled= (B08301_004E/B08301_001E)*100,
