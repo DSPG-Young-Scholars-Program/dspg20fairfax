@@ -133,7 +133,7 @@ ACS_data <- Fairfax %>% transmute(
   geometry=geometry,
   pct_unempl= (B23025_005E/B23025_002E)*100,
   pct_without_bachelors=(1-(B23006_024E/B23006_001E))*100,
-  travel_30min = (B08135_007E + B08135_008E+ B08135_009E + B08135_010E)/B08135_001E,
+  travel_30min = (B08135_007E + B08135_008E+ B08135_009E + B08135_010E)/B08135_001E*100,
   mean_travel_time= mean(B08135_001E),
   pct_no_vehicle= (B08141_002E/B08141_001E)*100,
   pct_drove_alone= (B08301_003E/B08301_001E)*100,
