@@ -1,0 +1,122 @@
+---
+title: "LODES WAC Summary"
+author: "Sarah McDonald"
+date: "6/11/2020"
+output: html_document
+---
+Set Up Data
+Fairfax County Code is: 51059
+```{r, warning= F, message = F}
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+
+wac <- read.csv("data/original/va_wac_S000_JT00_2017.csv",
+                colClasses = c("w_geocode" = "factor"))
+
+va_xwalk <- read.csv("data/original/va_xwalk.csv", 
+                 colClasses = c("tabblk2010" = "factor"))
+
+fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
+
+# assign readable column names
+
+readable_col <- read.csv("src/lodes_cols.csv")
+
+colnames(fairfax_wac)[!(colnames(fairfax_wac) %in% readable_col$Variable)]
+
+colnames(fairfax_wac) <- c(
+  readable_col$Explanation, 
+  colnames(fairfax_wac)[!(colnames(fairfax_wac) %in% readable_col$Variable)])
+
+# function to transform pie chart labels
+
+pie_lab_transform <- function(data){
+  
+  data <- data %>% 
+  arrange(desc(data)) %>%
+  mutate(prop = value / sum(value) *100) %>%
+  mutate(ypos = cumsum(prop)- 0.5*prop )
+  
+}
+
+```
+
+
+
+```{r}
+age <- data.frame(age=names(colSums(fairfax_wac[, 3:5])), value=colSums(fairfax_wac[, 3:5]), row.names=NULL)
+
+age <- pie_lab_transform(age)
+
+ggplot(age, aes(x="", y=prop, fill=age)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(age, "\n", paste(round(prop, 2), "%"))), color = "white", size=3) +
+  labs(title = "Fairfax County Jobs by Age", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+```{r}
+earnings <- data.frame(earnings=names(colSums(fairfax_wac[, 6:8])), value=colSums(fairfax_wac[, 6:8]), row.names=NULL)
+
+earnings$earnings <- gsub("earnings", "", earnings$earnings)
+
+earnings <- pie_lab_transform(earnings)
+
+ggplot(earnings, aes(x="", y=prop, fill=earnings)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(earnings, "\n", paste(round(prop, 2), "%"))), color = "white", size=3) +
+  labs(title = "Fairfax County Jobs by Earnings", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+
+```{r}
+race <- data.frame(race=names(colSums(fairfax_wac[, 29:34])), value=colSums(fairfax_wac[,29:34]), row.names=NULL)
+
+race <- pie_lab_transform(race)
+
+for(i in  c("Race:", ",Alone", "Alone", "10")){
+  race$race <- gsub(i, "", race$race)
+}
+
+ggplot(race, aes(x = prop, y = reorder(race, prop), fill = race)) +
+  geom_bar(stat= "identity")+
+  theme_minimal() +
+  labs(title = "Fairfax County Jobs by Race", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+  theme(legend.position="none") 
+
+```
+
+
+```{r}
+ethnicity <- data.frame(ethnicity=names(colSums(fairfax_wac[,35:36])), value=colSums(fairfax_wac[, 35:36]), row.names=NULL)
+
+ethnicity <- pie_lab_transform(ethnicity)
+
+
+for(i in  c("Ethnicity:", "10")){
+  ethnicity$ethnicity <- gsub(i, "", ethnicity$ethnicity)
+}
+
+ggplot(ethnicity, aes(x="", y=prop, fill=ethnicity)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(ethnicity, "\n", paste(round(prop, 2), "%"))), color = "white", size=3) +
+  labs(title = "Fairfax County Jobs by Ethnicity", subtitle = "LODES Workforce Characteristics, 2017")
+
+```
+
+
+
+
+
+
+
+
