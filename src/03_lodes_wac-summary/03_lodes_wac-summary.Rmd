@@ -5,6 +5,7 @@ date: "6/11/2020"
 output: md_document
 always_allow_html: true
 ---
+This file aggregates Fairfax County LODES 2017 Workplace Area Characteristic data (jobs totaled by Census Block) to county level and summarizes the information.
 
 ```{r, warning= F, message = F, echo = F}
 library(dplyr)
@@ -167,4 +168,18 @@ ggplot(naic, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
   labs(title = "Fairfax County Jobs by NAIC", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
   theme(legend.position="none") 
 
+
+#weekly <- naic[order(-naic$prop), ]
+#weekly <- weekly[1:5, ]
+#weekly
+
+#ggplot(weekly, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
+ # geom_bar(stat= "identity") +
+#  theme_minimal() +
+ # labs(title = "Fairfax County Jobs by Top Five NAIC Sector", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+#  theme(legend.position="none", 
+ #       axis.text.y = element_text(size = 14), 
+  #      axis.text.x = element_text(size = 14), 
+   ##     plot.title = element_text(size = 20), 
+     #   plot.subtitle = element_text(size = 14)) 
 ```
