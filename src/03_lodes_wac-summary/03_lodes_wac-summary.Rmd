@@ -23,7 +23,7 @@ fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", 
 
 # assign readable column names
 
-readable_col <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/lodes_cols.csv")
+readable_col <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/03_lodes_wac-summary/lodes_cols.csv")
 
 colnames(fairfax_wac) <- c(
   readable_col$Explanation, 
