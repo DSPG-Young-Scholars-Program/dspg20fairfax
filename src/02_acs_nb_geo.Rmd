@@ -92,7 +92,15 @@ vars <- c("B08604_001",
 )
 ```
 
+```{r}
+Fairfax<-get_acs(geography = "tract", variables=vars,state="51",county="059", 
+                year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
+                 geometry=TRUE, keep_geo_vars = TRUE)
+```
 
+```{r}
+View(Fairfax)
+```
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
 
