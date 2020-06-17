@@ -1,0 +1,100 @@
+---
+title: "Caculating Variables"
+output: html_notebook
+---
+
+Here I am calculating variables based on geographical data
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(viridis)
+library(sf)
+library(ggthemes)
+library(RColorBrewer)
+library(ggplot2)
+```
+
+Obtain the API key and set install=TRUE during the first time use, to use the same key automatically you run the program 
+```{r}
+census_api_key("bf083ecaf2c15d0b10906c4948c5759589df1817", install=TRUE)
+```
+
+```{r}
+var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
+View(var_ACS5)
+```
+
+```{r}
+vars <- c("B08604_001", 
+          "B08101_001",
+          "B08101_002",
+          "B08101_003",
+          "B08101_004",
+          "B08101_005",
+          "B08101_006",
+          "B08101_007",
+          "B08101_008",
+          "B08603_001",
+          "B08603_002",
+          "B08603_003",
+          "B08603_004",
+          "B08603_005",
+          "B08603_006",
+          "B08603_007",
+          "B08603_008",
+          "B08603_009",
+          "B08603_010",
+          "B08603_011",
+          "B08603_012",
+          "B08603_013",
+          "B08541_001",
+          "B08541_002",
+          "B08601_001",
+          "B08601_003",
+          "B08601_004",
+          "B08601_010",
+          "B08301_016",
+          "B08301_017",
+          "B08301_018",
+          "B08301_020",
+          "B08301_021",
+          "B08301_019",
+          "B08528_001",
+          "B08528_002",
+          "B08528_009",
+          "B08528_005",
+          "B08528_006",
+          "B08528_007",
+          "B08528_008",
+          "B08528_069",
+          "B08526_001",
+          "B08526_002",
+          "B08526_003",
+          "B08526_004",
+          "B08526_005",
+          "B08526_006",
+          "B08526_007",
+          "B08526_008",
+          "B08526_009",
+          "B08526_010",
+          "B08526_011",
+          "B08526_012",
+          "B08526_013",
+          "B08526_014",
+          "B08524_001",
+          "B08524_002",
+          "B08524_003",
+          "B08524_004",
+          "B08524_005",
+          "B08524_006",
+          "B08524_007"
+)
+```
+
+
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
