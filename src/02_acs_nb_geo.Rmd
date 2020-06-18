@@ -50,16 +50,18 @@ vars <- c("B08604_001",
           "B08603_013",
           "B08541_001",
           "B08541_002",
+          
           "B08601_001",
           "B08601_003",
           "B08601_004",
           "B08601_010",
-          "B08301_016",
-          "B08301_017",
-          "B08301_018",
-          "B08301_020",
-          "B08301_021",
-          "B08301_019",
+          "B08601_016",
+          "B08601_017",
+          "B08601_018",
+          "B08601_020",
+          "B08601_021",
+          "B08601_019",
+          
           "B08528_001",
           "B08528_002",
           "B08528_009",
@@ -101,6 +103,73 @@ Fairfax<-get_acs(geography = "tract", variables=vars,state="51",county="059",
 ```{r}
 View(Fairfax)
 ```
+
+Making Variables Now
+```{r}
+ACS_data <- Fairfax %>% transmute(
+  STATEFP= STATEFP,
+  COUNTYFP= COUNTYFP,
+  TRACTCE= TRACTCE,
+  AFFGEOID= AFFGEOID,
+  GEOID= GEOID,
+  NAME.x= NAME.x,
+  LSAD= LSAD,
+  ALAND= ALAND,
+  AWATER= AWATER,
+  NAME.y= NAME.y,
+  geometry=geometry,
+  
+  pct_16_19 = (B08101_002E / B08101_001E) * 100,
+  pct_20_24 = (B08101_003E / B08101_001E) * 100,
+  pct_25_44 = (B08101_004E / B08101_001E) * 100,
+  pct_45_54 = (B08101_005E / B08101_001E) * 100,
+  pct_55_59 = (B08101_006E / B08101_001E) * 100,
+  pct_60_64 = (B08101_007E / B08101_001E) * 100,
+  pct_65_up = (B08101_008E / B08101_001E) * 100,
+  
+  mean_travel_time = (0*B08603_002E + 5*B08603_003E + 10*B08603_004E + 15*B08603_005E + 20*B08603_006E + 25*B08603_007E + 30*B08603_008E + 35*B08603_009E + 40*B08603_010E + 45*B08603_011E + 60*B08603_012E + 90*B08603_013E) / B08603_001E,
+  travel_30min = ((B08603_008E + B08603_009E + B08603_010E + B08603_011E + B08603_012E + B08603_013E) / B08603_001E) *100,
+  
+  pct_no_vehicle = B08541_002E / B08541_001E,
+  
+  pct_drove_alone = (B08601_003E/B08601_001E)*100,
+  pct_carpooled = (B08601_004E/B08601_001E)*100,
+  pct_public_transport = (B08601_010E/B08601_001E)*100,
+  pct_taxi_other = (B08601_016E/B08601_001E)*100,
+  pct_worked_home = (B08601_021E/B08601_001E)*100,
+  pct_walked = (B08601_019E/B08601_001E)*100,
+  
+  pct_private = (B08528_005E / B08528_001E) * 100,
+  pct_own_business = (B08528_006E / B08528_001E) * 100,
+  pct_not_for_profit = (B08528_007E / B08528_001E) * 100,
+  pct_govt = (B08528_008E / B08528_001E) * 100,
+  pct_selfEmp_unpaid = (B08528_069E / B08528_001E) * 100,
+  
+  pct_ag = (B08526_002E / B08526_001E) * 100,
+  pct_constr = (B08526_003E / B08526_001E) * 100,
+  pct_manuf = (B08526_004E / B08526_001E) * 100,
+  pct_wholesale = (B08526_005E / B08526_001E) * 100,
+  pct_retail = (B08526_006E / B08526_001E) * 100,
+  pct_transport = (B08526_007E / B08526_001E) * 100,
+  pct_info = (B08526_008E / B08526_001E) * 100,
+  pct_fin = (B08526_009E / B08526_001E) * 100,
+  pct_prof = (B08526_010E / B08526_001E) * 100,
+  pct_edu = (B08526_011E / B08526_001E) * 100,
+  pct_arts = (B08526_012E / B08526_001E) * 100,
+  pct_other = (B08526_013E / B08526_001E) * 100,
+  pct_pub_admin = (B08526_014E / B08526_001E) * 100,
+  
+  pct_manag = (B08524_002E / B08524_001E) * 100,
+  pct_serv = (B08524_003E / B08524_001E) * 100,
+  pct_sales = (B08524_004E / B08524_001E) * 100,
+  pct_natural = (B08524_005E / B08524_001E) * 100,
+  pct_prod = (B08524_006E / B08524_001E) * 100,
+  pct_milt = (B08524_007E / B08524_001E) * 100)
+```
+```{r}
+view(ACS_data)
+```
+
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
 
