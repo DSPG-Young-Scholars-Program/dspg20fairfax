@@ -2,8 +2,7 @@
 title: "Fortune 500 Map"
 author: "Sarah McDonald"
 date: "6/16/2020"
-output: md_document
-always_allow_html: true
+output: html_document
 ---
 Data:
 ```{r}
@@ -43,6 +42,12 @@ data_fairfax_final <- st_transform(data_fairfax_final, 4326)
 
 ```
 
+
+```{r}
+fortune_geo <- read_sf("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp")
+```
+
+
 ```{r}
 
 pal <- colorBin(
@@ -53,6 +58,7 @@ pal <- colorBin(
 leaflet(data = data_fairfax_final)%>%
   addTiles() %>%
   addPolygons(fillColor = ~pal(perTotalJobs),fillOpacity = .8, stroke = FALSE) %>%
+  addMarkers(data = fortune_geo) %>%
     addLegend("bottomright", pal = pal, values = ~perTotalJobs,
     title = "TEest",
     opacity = 1
