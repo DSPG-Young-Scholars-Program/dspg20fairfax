@@ -1,12 +1,19 @@
-#install.packages("tidycensus")
-#install.packages("tidyverse")
-#install.packages("viridis")
-#install.packages("sf")
-#install.packages("ggthemes")
-#install.packages("RColorBrewer")
-#install.packages("ggplot2")
-#install.packages("tigris")
+---
+title: "ACS_res_geography"
+output: html_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r data}
 library(tidycensus)
 library(tidyverse)
 library(viridis)
@@ -15,19 +22,12 @@ library(ggthemes)
 library(RColorBrewer)
 library(ggplot2)
 library(tigris)
+
+
 # Obtain the API key and set install=TRUE during the first time use, to use the same key automatically you run the program #
 #census_api_key("bf083ecaf2c15d0b10906c4948c5759589df1817", install=TRUE)
 
-# To see the variables in the survey #
-
 var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
-
-View(var_ACS5)
-
-###############################################################
-# Creating a vector with the variable we nedd from the survey #
-###############################################################
-
 vars <-c(
   # labor force
   "B23025_002",
@@ -80,63 +80,7 @@ vars <-c(
 Fairfax_T<-get_acs(geography = "tract", variables=vars,state="51",county="059", 
                 year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
                  geometry=TRUE, keep_geo_vars = TRUE)
-
-View(Fairfax_T)
-
-
-va_county= tigris::places (state="51")
-counties(state = "51", cb = FALSE, resolution = "500k", year = 2018)
-# AGGREGATE DATA AT COUNTY LEVEL #
-#Fairfax_C<-get_acs(geography = "county",variables=vars,state="51",county="059", 
-#                 year=2018,survey = "acs5", tigris_type="059", cache_table = TRUE, output = "wide",
-#                geometry=TRUE, tigris_use_cache = TRUE, keep_geo_vars = TRUE)
-
-Fairfax_C<-get_acs(geography = "county",variables=vars,state="51",county="059", 
-                  geometry=TRUE, year=2018,survey = "acs5", cache_table = TRUE, output = "wide", keep_geo_vars = TRUE)
-
-View(Fairfax_C)
-################################################
-# Description of the variable to be calculated #
-################################################
-
-#Percent population in labor force that is unemployed
-#Percent population in labor force without a Bahelor's degree
-#Workers traveling 30 minutes or more to work
-#Mean travle time to work (Used the lower limits of the time intervals because the last interval is open ended)
-# Percent worker with no vehicle available
-
-# Percent workers by means of transportation to work #
-#Drove alone
-#Carpool
-#Public transport
-#Walked
-#Taxicab and other (Motorcycle, bicycle, other means)
-#Worked from home
-
-#Percent workers by class of worker #
-# Private company
-# Self-employed in own incorporated business
-# Private not-for-profit wage and salary workers
-# Local+state+federal government
-# Self-employed in own not incorporated business and unpaid family worker
-
-# Percent workers by industry #
-#Agriculture, forestry,fishing, hunting and mining
-#Construction
-#Manufacturing
-#Wholesale trade
-#Retail trade
-# Transportation, warehousing and utilities
-# Information
-# Finance, insurance, real estate, rental and lease
-# Professional, scietific, management, administrative
-# Educational services, health care
-# Arts, entertainment and recreation
-# Other services
-# Public administration
-
-#Percent workers by means of transportation to work by occiupation #
-
+#head(Fairfax_T)
 
 #############################
 # Calculating the variables #
@@ -145,7 +89,7 @@ View(Fairfax_C)
 # Tract level #
 ###############
 
-ACS_data_T <- Fairfax_T %>% transmute(
+res_ACS_tract <- Fairfax_T %>% transmute(
   STATEFP= STATEFP,
   COUNTYFP= COUNTYFP,
   TRACTCE= TRACTCE,
@@ -245,113 +189,105 @@ ACS_data_T <- Fairfax_T %>% transmute(
   res_pct_military_worked_home= (B08124_049E/B08124_007E)*100
 )
 
+```
 
-View(ACS_data_T)
+## Creating Plots for the Variables at Tract Level
 
+```{r ACS_Tract, echo=FALSE}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_unempl)) + 
+  facet_wrap(~"(B23025_005E/B23025_002E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+```
 
-################
-# County level #
-################
-ACS_data_C <- Fairfax_C %>% transmute(
-  STATEFP= STATEFP,
-  COUNTYFP= COUNTYFP,
-  COUNTYNS=COUNTYNS,
-  AFFGEOID= AFFGEOID,
-  GEOID= GEOID,
-  NAME.x= NAME.x,
-  LSAD= LSAD,
-  ALAND= ALAND,
-  AWATER= AWATER,
-  NAME.y= NAME.y,
-  geometry=geometry,
-  
-  c_pct_unempl= (B23025_005E/B23025_002E)*100,
-  
-  c_pct_without_bachelors=(1-(B23006_024E/B23006_001E))*100,
-  
-  c_travel_30min = (B08135_007E + B08135_008E + B08135_009E + B08135_010E)/B08135_001E*100,
-  
-  c_mean_travel_time= (0*B08135_002E + 10*B08135_003E + 15*B08135_004E + 20*B08135_005E + 25*B08135_006E + 30*B08135_007E + 35*B08135_008E + 45*B08135_009E + 60*B08135_010E)/B08135_001E,
-  
-  c_pct_no_vehicle= (B08141_002E/B08141_001E)*100,
-  
-  c_pct_drove= (B08301_003E/B08301_001E)*100,
-  c_pct_carpooled= (B08301_004E/B08301_001E)*100,
-  c_pct_transport= (B08301_010E/B08301_001E)*100,
-  c_pct_walked= (B08301_019E/B08301_001E)*100,
-  c_pct_taxi_other= ((B08301_016E + B08301_017E + B08301_018E + B08301_020E)/B08301_001E)*100,
-  c_pct_worked_home= (B08301_021E/B08301_001E)*100,
-  
-  c_pct_private= (C24060_007E/C24060_001E)*100,
-  c_pct_own_business= (C24060_013E/C24060_001E)*100,
-  c_pct_not_for_profit= (C24060_019E/C24060_001E)*100,
-  c_pct_govt= (C24060_025E/C24060_001E)*100,
-  c_pct_selfEmp_unpaid= (C24060_031E/C24060_001E)*100,
-  
-  c_pct_ag= (C24070_002E/C24070_001E)*100,
-  c_pct_constr= (C24070_003E/C24070_001E)*100,
-  c_pct_manuf= (C24070_004E/C24070_001E)*100,
-  c_pct_wholesale= (C24070_005E/C24070_001E)*100,
-  c_pct_retail= (C24070_006E/C24070_001E)*100,
-  c_pct_transport= (C24070_007E/C24070_001E)*100,
-  c_pct_info= (C24070_008E/C24070_001E)*100,
-  c_pct_fin= (C24070_009E/C24070_001E)*100,
-  c_pct_prof= (C24070_010E/C24070_001E)*100,
-  c_pct_edu= (C24070_011E/C24070_001E)*100,
-  c_pct_arts= (C24070_012E/C24070_001E)*100,
-  c_pct_other= (C24070_013E/C24070_001E)*100,
-  c_pct_pub_admin= (C24070_014E/C24070_001E)*100,
-  
-  c_pct_manage_drove= (B08124_009E/B08124_002E)*100,
-  c_pct_manage_carpooled= (B08124_016E/B08124_002E)*100,
-  c_pct_manage_transport= (B08124_023E/B08124_002E)*100,
-  c_pct_manage_walked= (B08124_030E/B08124_002E)*100,
-  c_pct_manage_taxi= (B08124_037E/B08124_002E)*100,
-  c_pct_manage_worked_home= (B08124_044E/B08124_002E)*100,
-  
-  c_pct_service_drove= (B08124_010E/B08124_003E)*100,
-  c_pct_service_carpooled= (B08124_017E/B08124_003E)*100,
-  c_pct_service_transport= (B08124_024E/B08124_003E)*100,
-  c_pct_service_walked= (B08124_031E/B08124_003E)*100,
-  c_pct_service_taxi= (B08124_038E/B08124_003E)*100,
-  c_pct_service_worked_home= (B08124_045E/B08124_003E)*100,
-  
-  c_pct_service_drove= (B08124_010E/B08124_003E)*100,
-  c_pct_service_carpooled= (B08124_017E/B08124_003E)*100,
-  c_pct_service_transport= (B08124_024E/B08124_003E)*100,
-  c_pct_service_walked= (B08124_031E/B08124_003E)*100,
-  c_pct_service_taxi= (B08124_038E/B08124_003E)*100,
-  c_pct_service_worked_home= (B08124_045E/B08124_003E)*100,
-  
-  c_pct_sales_drove= (B08124_011E/B08124_004E)*100,
-  c_pct_sales_carpooled= (B08124_018E/B08124_004E)*100,
-  c_pct_sales_transport= (B08124_025E/B08124_004E)*100,
-  c_pct_sales_walked= (B08124_032E/B08124_004E)*100,
-  c_pct_sales_taxi= (B08124_039E/B08124_004E)*100,
-  c_pct_sales_worked_home= (B08124_046E/B08124_004E)*100,
-  
-  c_pct_natural_drove= (B08124_012E/B08124_005E)*100,
-  c_pct_natural_carpooled= (B08124_019E/B08124_005E)*100,
-  c_pct_natural_transport= (B08124_026E/B08124_005E)*100,
-  c_pct_natural_walked= (B08124_033E/B08124_005E)*100,
-  c_pct_natural_taxi= (B08124_040E/B08124_005E)*100,
-  c_pct_natural_worked_home= (B08124_047E/B08124_005E)*100,
-  
-  c_pct_prod_drove= (B08124_013E/B08124_006E)*100,
-  c_pct_prod_carpooled= (B08124_020E/B08124_006E)*100,
-  c_pct_prod_transport= (B08124_027E/B08124_006E)*100,
-  c_pct_prod_walked= (B08124_034E/B08124_006E)*100,
-  c_pct_prod_taxi= (B08124_041E/B08124_006E)*100,
-  c_pct_prod_worked_home= (B08124_048E/B08124_006E)*100,
-  
-  c_pct_military_drove= (B08124_014E/B08124_007E)*100,
-  c_pct_military_carpooled= (B08124_021E/B08124_007E)*100,
-  c_pct_military_transport= (B08124_028E/B08124_007E)*100,
-  c_pct_military_walked= (B08124_035E/B08124_007E)*100,
-  c_pct_military_taxi= (B08124_042E/B08124_007E)*100,
-  c_pct_military_worked_home= (B08124_049E/B08124_007E)*100
-)
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_without_bachelors)) + 
+  facet_wrap(~"(1-(B23006_024E/B23006_001E))*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_travel_30min)) + 
+  facet_wrap(~"(B08135_007E + B08135_008E + B08135_009E + B08135_010E)/B08135_001E*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+```
 
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_mean_travel_time)) + 
+  facet_wrap(~"(0*B08135_002E + 10*B08135_003E + 15*B08135_004E + 20*B08135_005E + 25*B08135_006E + 30*B08135_007E + 35*B08135_008E + 45*B08135_009E +                 60*B08135_010E)/B08135_001E")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_no_vehicle)) + 
+  facet_wrap(~"(B08141_002E/B08141_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
 
-View(ACS_data_C)
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_drove)) + 
+  facet_wrap(~"(B08301_003E/B08301_001E)*100)")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
 
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_carpooled)) + 
+  facet_wrap(~"(B08301_004E/B08301_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_transport)) + 
+  facet_wrap(~"(B08301_010E/B08301_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_walked)) + 
+  facet_wrap(~"(B08301_019E/B08301_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_taxi_other)) + 
+  facet_wrap(~"((B08301_016E + B08301_017E + B08301_018E + B08301_020E)/B08301_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+
+```
+```{r}
+res_ACS_tract %>%
+  ggplot(aes(fill=res_pct_worked_home)) + 
+  facet_wrap(~"(B08301_021E/B08301_001E)*100")+
+  geom_sf(color=NA)+
+  coord_sf(crs=4269)+
+  scale_fill_viridis_c()
+
+```
