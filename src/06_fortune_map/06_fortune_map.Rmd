@@ -1,0 +1,68 @@
+---
+title: "Fortune 500 Map"
+author: "Sarah McDonald"
+date: "6/16/2020"
+output: html_document
+---
+Data:
+```{r}
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+
+wac <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
+
+va_xwalk <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor", "trct" = "factor"))
+
+fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
+
+readable_col <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/03_lodes_wac-summary/lodes_cols.csv")
+
+colnames(fairfax_wac) <- c(
+  readable_col$Explanation, 
+  colnames(fairfax_wac)[!(colnames(fairfax_wac) %in% readable_col$Variable)])
+
+fairfax_trct <- fairfax_wac %>% select(Totalnumberofjobs, trct) %>% group_by(trct) %>% summarize(totaljobs = sum(Totalnumberofjobs),perTotalJobs = totaljobs/sum(fairfax_wac$Totalnumberofjobs))
+
+```
+
+
+Get ACS shapefiles
+```{r, warning = F, message = F, results = 'hide'}
+data_fairfax <-   get_acs(geography = "tract",
+          variables = "B00001_001",
+          state = "VA",
+          county = 059, 
+          geometry = TRUE)
+
+data_fairfax_final <- merge(data_fairfax, fairfax_trct, by.x= "GEOID", by.y = "trct", all = TRUE)
+
+data_fairfax_final <- st_transform(data_fairfax_final, 4326)
+
+```
+
+
+```{r}
+fortune_geo <- read_sf("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp")
+```
+
+
+```{r}
+
+pal <- colorBin(
+  palette = "Blues",
+  domain = data_fairfax_final$perTotalJobs, bins = 7,pretty = FALSE)
+
+
+leaflet(data = data_fairfax_final)%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(perTotalJobs),fillOpacity = .8, stroke = FALSE) %>%
+  addMarkers(data = fortune_geo) %>%
+    addLegend("bottomright", pal = pal, values = ~perTotalJobs,
+    title = "TEest",
+    opacity = 1
+  )
+```
+
+
