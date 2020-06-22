@@ -2,7 +2,8 @@
 title: "Fortune 500 Map"
 author: "Sarah McDonald"
 date: "6/16/2020"
-output: html_document
+output: md_document
+always_allow_html: true
 ---
 Data:
 ```{r}
@@ -55,14 +56,20 @@ pal <- colorBin(
   domain = data_fairfax_final$perTotalJobs, bins = 7,pretty = FALSE)
 
 
-leaflet(data = data_fairfax_final)%>%
+leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
   addTiles() %>%
   addPolygons(fillColor = ~pal(perTotalJobs),fillOpacity = .8, stroke = FALSE) %>%
-  addMarkers(data = fortune_geo) %>%
-    addLegend("bottomright", pal = pal, values = ~perTotalJobs,
-    title = "TEest",
-    opacity = 1
+  addMarkers(data = fortune_geo, popup = fortune_geo$Name) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~perTotalJobs,
+              title = "% Fairfax County Jobs",
+              opacity = 1
   )
+
+
+boxplot(data_fairfax_final$perTotalJobs)
+
 ```
 
 
