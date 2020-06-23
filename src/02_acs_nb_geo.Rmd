@@ -1,5 +1,5 @@
 ---
-title: "Caculating Variables"
+title: "Caculating Variables - Owen"
 output: html_notebook
 ---
 
@@ -26,8 +26,7 @@ View(var_ACS5)
 ```
 
 ```{r}
-vars <- c("B08604_001", 
-          "B08101_001",
+vars <- c("B08101_001",
           "B08101_002",
           "B08101_003",
           "B08101_004",
@@ -35,62 +34,12 @@ vars <- c("B08604_001",
           "B08101_006",
           "B08101_007",
           "B08101_008",
-          "B08603_001",
-          "B08603_002",
-          "B08603_003",
-          "B08603_004",
-          "B08603_005",
-          "B08603_006",
-          "B08603_007",
-          "B08603_008",
-          "B08603_009",
-          "B08603_010",
-          "B08603_011",
-          "B08603_012",
-          "B08603_013",
-          "B08541_001",
-          "B08541_002",
-          
-          "B08601_001",
-          "B08601_003",
-          "B08601_004",
-          "B08601_010",
-          "B08601_016",
-          "B08601_017",
-          "B08601_018",
-          "B08601_020",
-          "B08601_021",
-          "B08601_019",
-          
-          "B08528_001",
-          "B08528_002",
-          "B08528_009",
-          "B08528_005",
-          "B08528_006",
-          "B08528_007",
-          "B08528_008",
-          "B08528_069",
-          "B08526_001",
-          "B08526_002",
-          "B08526_003",
-          "B08526_004",
-          "B08526_005",
-          "B08526_006",
-          "B08526_007",
-          "B08526_008",
-          "B08526_009",
-          "B08526_010",
-          "B08526_011",
-          "B08526_012",
-          "B08526_013",
-          "B08526_014",
-          "B08524_001",
-          "B08524_002",
-          "B08524_003",
-          "B08524_004",
-          "B08524_005",
-          "B08524_006",
-          "B08524_007"
+          "B08101_009", #driving alone
+          "B08101_017", #carpooling
+          "B08101_025", #public transit, no taxi
+          "B08101_033", #walked
+          "B08101_041", #taxicab, motorcycle, bicycle, or other means
+          "B08101_049" #worked at home
 )
 ```
 
@@ -127,45 +76,15 @@ wrk_ACS_data <- Fairfax %>% transmute(
   wrk_pct_60_64 = (B08101_007E / B08101_001E) * 100,
   wrk_pct_65_up = (B08101_008E / B08101_001E) * 100,
   
-  wrk_mean_travel_time = (0*B08603_002E + 5*B08603_003E + 10*B08603_004E + 15*B08603_005E + 20*B08603_006E + 25*B08603_007E + 30*B08603_008E + 35*B08603_009E + 40*B08603_010E + 45*B08603_011E + 60*B08603_012E + 90*B08603_013E) / B08603_001E,
-  wrk_travel_30min = ((B08603_008E + B08603_009E + B08603_010E + B08603_011E + B08603_012E + B08603_013E) / B08603_001E) *100,
-  
-  wrk_pct_no_vehicle = B08541_002E / B08541_001E,
-  
-  wrk_pct_drove_alone = (B08601_003E/B08601_001E)*100,
-  wrk_pct_carpooled = (B08601_004E/B08601_001E)*100,
-  wrk_pct_public_transport = (B08601_010E/B08601_001E)*100,
-  wrk_pct_taxi_other = (B08601_016E/B08601_001E)*100,
-  wrk_pct_worked_home = (B08601_021E/B08601_001E)*100,
-  wrk_pct_walked = (B08601_019E/B08601_001E)*100,
-  
-  wrk_pct_private = (B08528_005E / B08528_001E) * 100,
-  wrk_pct_own_business = (B08528_006E / B08528_001E) * 100,
-  wrk_pct_not_for_profit = (B08528_007E / B08528_001E) * 100,
-  wrk_pct_govt = (B08528_008E / B08528_001E) * 100,
-  wrk_pct_selfEmp_unpaid = (B08528_069E / B08528_001E) * 100,
-  
-  wrk_pct_ag = (B08526_002E / B08526_001E) * 100,
-  wrk_pct_constr = (B08526_003E / B08526_001E) * 100,
-  wrk_pct_manuf = (B08526_004E / B08526_001E) * 100,
-  wrk_pct_wholesale = (B08526_005E / B08526_001E) * 100,
-  wrk_pct_retail = (B08526_006E / B08526_001E) * 100,
-  wrk_pct_transport = (B08526_007E / B08526_001E) * 100,
-  wrk_pct_info = (B08526_008E / B08526_001E) * 100,
-  wrk_pct_fin = (B08526_009E / B08526_001E) * 100,
-  wrk_pct_prof = (B08526_010E / B08526_001E) * 100,
-  wrk_pct_edu = (B08526_011E / B08526_001E) * 100,
-  wrk_pct_arts = (B08526_012E / B08526_001E) * 100,
-  wrk_pct_other = (B08526_013E / B08526_001E) * 100,
-  wrk_pct_pub_admin = (B08526_014E / B08526_001E) * 100,
-  
-  wrk_pct_manag = (B08524_002E / B08524_001E) * 100,
-  wrk_pct_serv = (B08524_003E / B08524_001E) * 100,
-  wrk_pct_sales = (B08524_004E / B08524_001E) * 100,
-  wrk_pct_natural = (B08524_005E / B08524_001E) * 100,
-  wrk_pct_prod = (B08524_006E / B08524_001E) * 100,
-  wrk_pct_milt = (B08524_007E / B08524_001E) * 100)
+  wrk_pct_drive = (B08101_009E / B08101_001E) * 100,
+  wrk_pct_carpool = (B08101_017E / B08101_001E) * 100,
+  wrk_pct_pub_trans = (B08101_025E / B08101_001E) * 100,
+  wrk_pct_walk = (B08101_033E / B08101_001E) * 100,
+  wrk_pct_other = (B08101_041E / B08101_001E) * 100,
+  wrk_pct_none = (B08101_049E / B08101_001E) * 100
+)
 ```
+
 ```{r}
 view(wrk_ACS_data)
 ```
@@ -191,7 +110,6 @@ plt_wrk_16_19 <- ggplot() +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_16_19.png")
 
-
 plt_wrk_20_24 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_20_24)) +
   labs(title = "Percentage of workers 20-24 \nby Census tract, 2014/18",
@@ -203,7 +121,6 @@ plt_wrk_20_24 <- ggplot() +
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_20_24.png")
-
 
 plt_wrk_25_44 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_25_44)) +
@@ -217,7 +134,6 @@ plt_wrk_25_44 <- ggplot() +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_25_44.png")
 
-
 plt_wrk_45_54 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_45_54)) +
   labs(title = "Percentage of workers 45-54 \nby Census tract, 2014/18",
@@ -229,7 +145,6 @@ plt_wrk_45_54 <- ggplot() +
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_45_54.png")
-
 
 plt_wrk_55_59 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_55_59)) +
@@ -243,7 +158,6 @@ plt_wrk_55_59 <- ggplot() +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_55_59.png")
 
-
 plt_wrk_60_64 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_60_64)) +
   labs(title = "Percentage of workers 60-64 \nby Census tract, 2014/18",
@@ -255,7 +169,6 @@ plt_wrk_60_64 <- ggplot() +
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_60_64.png")
-
 
 plt_wrk_65_up <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_65_up)) +
@@ -269,4 +182,75 @@ plt_wrk_65_up <- ggplot() +
   scale_fill_viridis(name = "Percent")
 ggsave(path = "../output/acs", "plt_wrk_65_up.png")
 
+plt_wrk_drive <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_drive)) +
+  labs(title = "Percentage of workers that drive to work \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_drive.png")
+
+plt_wrk_carpool <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_carpool)) +
+  labs(title = "Percentage of workers that carpool to work \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_carpool.png")
+
+plt_wrk_pub_trans <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_pub_trans)) +
+  labs(title = "Percentage of workers that take public transportation to work \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_pub_trans.png")
+
+plt_wrk_walk <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_walk)) +
+  labs(title = "Percentage of workers that walk to work \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_walk.png")
+
+plt_wrk_other <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_other)) +
+  labs(title = "Percentage of workers that take taxicab, \nmotorcycle, bicycle, or other means to work \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_other.png")
+
+plt_wrk_none <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_none)) +
+  labs(title = "Percentage of workers that work from home \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_none.png")
 ```
