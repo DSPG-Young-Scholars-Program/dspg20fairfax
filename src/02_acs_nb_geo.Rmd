@@ -100,7 +100,7 @@ library(viridis)
 
 plt_wrk_16_19 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_16_19)) +
-  labs(title = "Percentage of workers 16-19 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 16-19 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -112,7 +112,7 @@ ggsave(path = "../output/acs", "plt_wrk_16_19.png")
 
 plt_wrk_20_24 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_20_24)) +
-  labs(title = "Percentage of workers 20-24 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 20-24 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -124,7 +124,7 @@ ggsave(path = "../output/acs", "plt_wrk_20_24.png")
 
 plt_wrk_25_44 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_25_44)) +
-  labs(title = "Percentage of workers 25-44 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 25-44 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -136,7 +136,7 @@ ggsave(path = "../output/acs", "plt_wrk_25_44.png")
 
 plt_wrk_45_54 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_45_54)) +
-  labs(title = "Percentage of workers 45-54 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 45-54 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -148,7 +148,7 @@ ggsave(path = "../output/acs", "plt_wrk_45_54.png")
 
 plt_wrk_55_59 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_55_59)) +
-  labs(title = "Percentage of workers 55-59 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 55-59 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -160,7 +160,7 @@ ggsave(path = "../output/acs", "plt_wrk_55_59.png")
 
 plt_wrk_60_64 <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_60_64)) +
-  labs(title = "Percentage of workers 60-64 \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 60-64 \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -172,7 +172,7 @@ ggsave(path = "../output/acs", "plt_wrk_60_64.png")
 
 plt_wrk_65_up <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_65_up)) +
-  labs(title = "Percentage of workers 65 and older \nby Census tract, 2014/18",
+  labs(title = "Percent of workers 65 and older \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -184,7 +184,7 @@ ggsave(path = "../output/acs", "plt_wrk_65_up.png")
 
 plt_wrk_drive <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_drive)) +
-  labs(title = "Percentage of workers that drive to work \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that drive to work \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -196,7 +196,7 @@ ggsave(path = "../output/acs", "plt_wrk_drive.png")
 
 plt_wrk_carpool <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_carpool)) +
-  labs(title = "Percentage of workers that carpool to work \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that carpool to work \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -208,7 +208,7 @@ ggsave(path = "../output/acs", "plt_wrk_carpool.png")
 
 plt_wrk_pub_trans <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_pub_trans)) +
-  labs(title = "Percentage of workers that take public transportation to work \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that take public transportation to work \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -220,7 +220,7 @@ ggsave(path = "../output/acs", "plt_wrk_pub_trans.png")
 
 plt_wrk_walk <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_walk)) +
-  labs(title = "Percentage of workers that walk to work \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that walk to work \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -232,7 +232,7 @@ ggsave(path = "../output/acs", "plt_wrk_walk.png")
 
 plt_wrk_other <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_other)) +
-  labs(title = "Percentage of workers that take taxicab, \nmotorcycle, bicycle, or other means to work \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that take taxicab, \nmotorcycle, bicycle, or other means to work \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -244,7 +244,7 @@ ggsave(path = "../output/acs", "plt_wrk_other.png")
 
 plt_wrk_none <- ggplot() +
   geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_none)) +
-  labs(title = "Percentage of workers that work from home \nby Census tract, 2014/18",
+  labs(title = "Percent of workers that work from home \nby Census workplace tract, 2014/18",
        caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
   theme_map() +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
