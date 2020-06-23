@@ -7,11 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r data}
 library(tidycensus)
@@ -139,12 +135,12 @@ res_ACS_tract <- Fairfax_T %>% transmute(
   res_pct_other= (C24070_013E/C24070_001E)*100,
   res_pct_pub_admin= (C24070_014E/C24070_001E)*100,
   
-  pct_manage_drove= (B08124_009E/B08124_002E)*100,
-  pct_manage_carpooled= (B08124_016E/B08124_002E)*100,
-  pct_manage_transport= (B08124_023E/B08124_002E)*100,
-  pct_manage_walked= (B08124_030E/B08124_002E)*100,
-  pct_manage_taxi= (B08124_037E/B08124_002E)*100,
-  pct_manage_worked_home= (B08124_044E/B08124_002E)*100,
+  res_pct_manage_drove= (B08124_009E/B08124_002E)*100,
+  res_pct_manage_carpooled= (B08124_016E/B08124_002E)*100,
+  res_pct_manage_transport= (B08124_023E/B08124_002E)*100,
+  res_pct_manage_walked= (B08124_030E/B08124_002E)*100,
+  res_pct_manage_taxi= (B08124_037E/B08124_002E)*100,
+  res_pct_manage_worked_home= (B08124_044E/B08124_002E)*100,
   
   res_pct_service_drove= (B08124_010E/B08124_003E)*100,
   res_pct_service_carpooled= (B08124_017E/B08124_003E)*100,
@@ -153,19 +149,19 @@ res_ACS_tract <- Fairfax_T %>% transmute(
   res_pct_service_taxi= (B08124_038E/B08124_003E)*100,
   res_pct_service_worked_home= (B08124_045E/B08124_003E)*100,
   
-  pct_service_drove= (B08124_010E/B08124_003E)*100,
-  pct_service_carpooled= (B08124_017E/B08124_003E)*100,
-  pct_service_transport= (B08124_024E/B08124_003E)*100,
-  pct_service_walked= (B08124_031E/B08124_003E)*100,
-  pct_service_taxi= (B08124_038E/B08124_003E)*100,
-  pct_service_worked_home= (B08124_045E/B08124_003E)*100,
+  res_pct_service_drove= (B08124_010E/B08124_003E)*100,
+  res_pct_service_carpooled= (B08124_017E/B08124_003E)*100,
+  res_pct_service_transport= (B08124_024E/B08124_003E)*100,
+  res_pct_service_walked= (B08124_031E/B08124_003E)*100,
+  res_pct_service_taxi= (B08124_038E/B08124_003E)*100,
+  res_pct_service_worked_home= (B08124_045E/B08124_003E)*100,
   
-  pct_sales_drove= (B08124_011E/B08124_004E)*100,
-  pct_sales_carpooled= (B08124_018E/B08124_004E)*100,
-  pct_sales_transport= (B08124_025E/B08124_004E)*100,
-  pct_sales_walked= (B08124_032E/B08124_004E)*100,
-  pct_sales_taxi= (B08124_039E/B08124_004E)*100,
-  pct_sales_worked_home= (B08124_046E/B08124_004E)*100,
+  res_pct_sales_drove= (B08124_011E/B08124_004E)*100,
+  res_pct_sales_carpooled= (B08124_018E/B08124_004E)*100,
+  res_pct_sales_transport= (B08124_025E/B08124_004E)*100,
+  res_pct_sales_walked= (B08124_032E/B08124_004E)*100,
+  res_pct_sales_taxi= (B08124_039E/B08124_004E)*100,
+  res_pct_sales_worked_home= (B08124_046E/B08124_004E)*100,
   
   res_pct_natural_drove= (B08124_012E/B08124_005E)*100,
   res_pct_natural_carpooled= (B08124_019E/B08124_005E)*100,
@@ -195,99 +191,162 @@ res_ACS_tract <- Fairfax_T %>% transmute(
 
 ```{r ACS_Tract, echo=FALSE}
 res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_unempl)) + 
-  facet_wrap(~"(B23025_005E/B23025_002E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_without_bachelors)) + 
-  facet_wrap(~"(1-(B23006_024E/B23006_001E))*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
-```
-```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_travel_30min)) + 
-  facet_wrap(~"(B08135_007E + B08135_008E + B08135_009E + B08135_010E)/B08135_001E*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+  ggplot() + 
+  geom_sf(data=res_ACS_tract, size=0.2, aes(fill=res_pct_unempl))+
+  labs(title = "Percent population in labor force\nover age 16 \nthat is unemployed\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent population in labor force over age 16 that is unemployed.png",plot=last_plot())
 ```
 
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_mean_travel_time)) + 
-  facet_wrap(~"(0*B08135_002E + 10*B08135_003E + 15*B08135_004E + 20*B08135_005E + 25*B08135_006E + 30*B08135_007E + 35*B08135_008E + 45*B08135_009E +                 60*B08135_010E)/B08135_001E")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_without_bachelors)) +
+  labs(title = "Percent population over age 25 without\na Bachelor's degree\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent population over age 25 without a Bachelor's degree.png",plot=last_plot())
 ```
+
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_no_vehicle)) + 
-  facet_wrap(~"(B08141_002E/B08141_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_travel_30min)) +
+  labs(title = "Workers over age 16 traveling \n who did not work from home \n30 minutes or more to work\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers traveling to work for 30min or more.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_mean_travel_time)) +
+  labs(title = "Mean travle time to work \nfor workers age over 16 \nand did not work from home \nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Minutes")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Mean travle time to work for workers age over 16 and did not work from home.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_no_vehicle)) +
+  labs(title = "Percent worker over age 16 \nwith no vehicle available\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent worker with no vehicle available.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_drove)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Drove alone\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Drove alone.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_carpooled)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Carpooled\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Carpooled.png",plot=last_plot())
+
 
 ```
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_drove)) + 
-  facet_wrap(~"(B08301_003E/B08301_001E)*100)")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_transport)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Public transport \n(excluding taxicab)\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Public transport.png",plot=last_plot())
 
 ```
+
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_carpooled)) + 
-  facet_wrap(~"(B08301_004E/B08301_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_walked)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Walked\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Walked.png",plot=last_plot())
 
 ```
+
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_transport)) + 
-  facet_wrap(~"(B08301_010E/B08301_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_taxi_other)) +
+  labs(title = "Percent workers over age 16 \nby means of transportation to work : \nTaxicab, Motorcycle, Bicycle, Other means\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Taxicab and other.png",plot=last_plot())
 
 ```
-```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_walked)) + 
-  facet_wrap(~"(B08301_019E/B08301_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
 
-```
 ```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_taxi_other)) + 
-  facet_wrap(~"((B08301_016E + B08301_017E + B08301_018E + B08301_020E)/B08301_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
-
-```
-```{r}
-res_ACS_tract %>%
-  ggplot(aes(fill=res_pct_worked_home)) + 
-  facet_wrap(~"(B08301_021E/B08301_001E)*100")+
-  geom_sf(color=NA)+
-  coord_sf(crs=4269)+
-  scale_fill_viridis_c()
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_worked_home)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Worked from home\nby Census tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Percent workers over age 16 by means of transportation to work : Worked from home.png",plot=last_plot())
 
 ```
