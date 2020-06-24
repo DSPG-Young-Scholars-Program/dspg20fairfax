@@ -1,0 +1,256 @@
+---
+title: "Caculating Variables - Owen"
+output: html_notebook
+---
+
+Here I am calculating variables based on geographical data
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(viridis)
+library(sf)
+library(ggthemes)
+library(RColorBrewer)
+library(ggplot2)
+```
+
+##Obtain the API key and set install=TRUE during the first time use, to use the same key automatically you run the program 
+##```{r}
+##census_api_key("bf083ecaf2c15d0b10906c4948c5759589df1817", install=TRUE)
+##```
+
+```{r}
+var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
+View(var_ACS5)
+```
+
+```{r}
+vars <- c("B08101_001",
+          "B08101_002",
+          "B08101_003",
+          "B08101_004",
+          "B08101_005",
+          "B08101_006",
+          "B08101_007",
+          "B08101_008",
+          "B08101_009", #driving alone
+          "B08101_017", #carpooling
+          "B08101_025", #public transit, no taxi
+          "B08101_033", #walked
+          "B08101_041", #taxicab, motorcycle, bicycle, or other means
+          "B08101_049" #worked at home
+)
+```
+
+```{r}
+Fairfax<-get_acs(geography = "tract", variables=vars,state="51",county="059", 
+                year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
+                 geometry=TRUE, keep_geo_vars = TRUE)
+```
+
+```{r}
+View(Fairfax)
+```
+
+Making Variables Now
+```{r}
+wrk_ACS_data <- Fairfax %>% transmute(
+  STATEFP= STATEFP,
+  COUNTYFP= COUNTYFP,
+  TRACTCE= TRACTCE,
+  AFFGEOID= AFFGEOID,
+  GEOID= GEOID,
+  NAME.x= NAME.x,
+  LSAD= LSAD,
+  ALAND= ALAND,
+  AWATER= AWATER,
+  NAME.y= NAME.y,
+  geometry=geometry,
+  
+  wrk_pct_16_19 = (B08101_002E / B08101_001E) * 100,
+  wrk_pct_20_24 = (B08101_003E / B08101_001E) * 100,
+  wrk_pct_25_44 = (B08101_004E / B08101_001E) * 100,
+  wrk_pct_45_54 = (B08101_005E / B08101_001E) * 100,
+  wrk_pct_55_59 = (B08101_006E / B08101_001E) * 100,
+  wrk_pct_60_64 = (B08101_007E / B08101_001E) * 100,
+  wrk_pct_65_up = (B08101_008E / B08101_001E) * 100,
+  
+  wrk_pct_drive = (B08101_009E / B08101_001E) * 100,
+  wrk_pct_carpool = (B08101_017E / B08101_001E) * 100,
+  wrk_pct_pub_trans = (B08101_025E / B08101_001E) * 100,
+  wrk_pct_walk = (B08101_033E / B08101_001E) * 100,
+  wrk_pct_other = (B08101_041E / B08101_001E) * 100,
+  wrk_pct_none = (B08101_049E / B08101_001E) * 100
+)
+```
+
+```{r}
+view(wrk_ACS_data)
+```
+
+
+
+Making plots
+```{r}
+library(maptools)
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+
+plt_wrk_16_19 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_16_19)) +
+  labs(title = "Percent of workers 16-19 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_16_19.png")
+
+plt_wrk_20_24 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_20_24)) +
+  labs(title = "Percent of workers 20-24 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_20_24.png")
+
+plt_wrk_25_44 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_25_44)) +
+  labs(title = "Percent of workers 25-44 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_25_44.png")
+
+plt_wrk_45_54 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_45_54)) +
+  labs(title = "Percent of workers 45-54 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_45_54.png")
+
+plt_wrk_55_59 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_55_59)) +
+  labs(title = "Percent of workers 55-59 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_55_59.png")
+
+plt_wrk_60_64 <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_60_64)) +
+  labs(title = "Percent of workers 60-64 \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_60_64.png")
+
+plt_wrk_65_up <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_65_up)) +
+  labs(title = "Percent of workers 65 and older \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_65_up.png")
+
+plt_wrk_drive <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_drive)) +
+  labs(title = "Percent of workers that drive to work \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_drive.png")
+
+plt_wrk_carpool <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_carpool)) +
+  labs(title = "Percent of workers that carpool to work \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_carpool.png")
+
+plt_wrk_pub_trans <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_pub_trans)) +
+  labs(title = "Percent of workers that take public transportation to work \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_pub_trans.png")
+
+plt_wrk_walk <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_walk)) +
+  labs(title = "Percent of workers that walk to work \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_walk.png")
+
+plt_wrk_other <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_other)) +
+  labs(title = "Percent of workers that take taxicab, \nmotorcycle, bicycle, or other means to work \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_other.png")
+
+plt_wrk_none <- ggplot() +
+  geom_sf(data = wrk_ACS_data, size = 0.2, aes(fill = wrk_pct_none)) +
+  labs(title = "Percent of workers that work from home \nby Census workplace tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path = "../output/acs", "plt_wrk_none.png")
+```
