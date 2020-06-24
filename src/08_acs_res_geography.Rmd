@@ -332,7 +332,7 @@ res_ACS_tract %>%
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent population in labor force over age 16 that is unemployed.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent population in labor force over age 16 that is unemployed.png",plot=last_plot())
 ```
 
 ```{r}
@@ -346,7 +346,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent population over age 25 without a Bachelor's degree.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent population over age 25 without a Bachelor's degree.png",plot=last_plot())
 ```
 
 ```{r}
@@ -360,7 +360,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers traveling to work for 30min or more.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers traveling to work for 30min or more.png",plot=last_plot())
 ```
 
 
@@ -375,7 +375,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent worker with no vehicle available.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent worker with no vehicle available.png",plot=last_plot())
 
 ```
 
@@ -390,7 +390,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Drove alone.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Drove alone.png",plot=last_plot())
 
 ```
 
@@ -405,10 +405,11 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Carpooled.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Carpooled.png",plot=last_plot())
 
 
 ```
+
 ```{r}
 ggplot() +
   geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_transport)) +
@@ -420,7 +421,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Public transport.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Public transport.png",plot=last_plot())
 
 ```
 
@@ -435,7 +436,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Walked.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Walked.png",plot=last_plot())
 
 ```
 
@@ -450,7 +451,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Taxicab and other.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Taxicab and other.png",plot=last_plot())
 
 ```
 
@@ -465,7 +466,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Worked from home.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Worked from home.png",plot=last_plot())
 
 ```
 
@@ -481,7 +482,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private company.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private company.png",plot=last_plot())
 
 ```
 
@@ -496,7 +497,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own incorporated business.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own incorporated business.png",plot=last_plot())
 ```
 
 ```{r}
@@ -510,7 +511,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private not-for-profit.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private not-for-profit.png",plot=last_plot())
 ```
 
 ```{r}
@@ -524,8 +525,9 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Local, state and federal government.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Local, state and federal government.png",plot=last_plot())
 ```
+
 ```{r}
 ggplot() +
   geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_selfEmp_unpaid)) +
@@ -537,7 +539,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own not incorporated business.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own not incorporated business.png",plot=last_plot())
 ```
 
 ```{r}
@@ -551,7 +553,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Agri, forestry, fishing, hunting, mining.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Agri, forestry, fishing, hunting, mining.png",plot=last_plot())
 ```
 
 ```{r}
@@ -565,7 +567,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Costruction.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Costruction.png",plot=last_plot())
 ```
 
 ```{r}
@@ -579,7 +581,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Manufacturing.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Manufacturing.png",plot=last_plot())
 ```
 
 ```{r}
@@ -593,7 +595,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Wholesale trade.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Wholesale trade.png",plot=last_plot())
 ```
 
 ```{r}
@@ -607,7 +609,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Retail trade.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Retail trade.png",plot=last_plot())
 ```
 
 ```{r}
@@ -621,8 +623,9 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Transportation, warehousing, utilities.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Transportation, warehousing, utilities.png",plot=last_plot())
 ```
+
 ```{r}
 ggplot() +
   geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_info)) +
@@ -634,7 +637,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Information.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Information.png",plot=last_plot())
 ```
 
 ```{r}
@@ -648,7 +651,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Finance, insurance, real estate. rental, leasing.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Finance, insurance, real estate. rental, leasing.png",plot=last_plot())
 ```
 
 ```{r}
@@ -662,7 +665,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Professional, scientific, management.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Professional, scientific, management.png",plot=last_plot())
 ```
 
 ```{r}
@@ -676,7 +679,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Educational services, health care, social assistance.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Educational services, health care, social assistance.png",plot=last_plot())
 ```
 
 ```{r}
@@ -690,7 +693,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Arts, entertainment, recreation, accomodation, food services.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Arts, entertainment, recreation, accomodation, food services.png",plot=last_plot())
 ```
 
 ```{r}
@@ -704,7 +707,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Other services, except public administration.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Other services, except public administration.png",plot=last_plot())
 ```
 
 ```{r}
@@ -718,7 +721,7 @@ ggplot() +
         legend.text = element_text(size = 11),
         legend.position = "right") +
   scale_fill_viridis(name = "Percent")
-ggsave(path="/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Public administration.png",plot=last_plot())
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Public administration.png",plot=last_plot())
 ```
 
 

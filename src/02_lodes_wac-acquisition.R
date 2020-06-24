@@ -2,74 +2,76 @@ library(data.table)
 library(R.utils)
 library(ggplot2)
 library(stringr)
-#https://lehd.ces.census.gov/data/lodes/LODES7/va/wac/
-#download.file(url = "https://lehd.ces.census.gov/data/lodes/LODES7/va/wac/va_wac_S000_JT00_2017.csv.gz",
-#destfile =  "/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv.gz")
+library(tabulizer)
+
+#------------------- download LODES WAC file -------------------------------- #
+
+download.file(url = "https://lehd.ces.census.gov/data/lodes/LODES7/va/wac/va_wac_S000_JT00_2017.csv.gz",
+  destfile =  "/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv.gz")
 
 #gunzip("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv.gz")
 
-#download.file(
- # url = "https://lehd.ces.census.gov/data/lodes/LODES7/va/va_xwalk.csv.gz", 
-  #destfile =  "/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv.gz")
+
+#--------------------- download va xwalk file --------------------------------#
+
+download.file( url = "https://lehd.ces.census.gov/data/lodes/LODES7/va/va_xwalk.csv.gz", 
+  destfile =  "/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv.gz")
 
 #gunzip("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv.gz")
 
-tbl <- read.csv("data/original/va_wac_S000_JT00_2017.csv",
+
+#--------------- test that tables read in correctly ------------------------------#
+
+wac <- read.csv("data/original/va_wac_S000_JT00_2017.csv",
                 colClasses = c("w_geocode" = "factor"))
 
-tbl2 <- read.csv("data/original/va_xwalk.csv", 
+xwalk <- read.csv("data/original/va_xwalk.csv", 
                  colClasses = c("tabblk2010" = "factor"))
 
-tbl3 <- merge(tbl, tbl2[tbl2$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
-
-library(tabulizer)
-
-readable_col <- read.csv("src/lodes_cols.csv")
-
-colnames(tbl3)[!(colnames(tbl3) %in% readable_col$Variable)]
-
-cols <- c(readable_col$Explanation, colnames(tbl3)[!(colnames(tbl3) %in% readable_col$Variable)])
+fairfax <- merge(wac, xwalk[xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
 
 
-colnames(tbl3) <- cols
+#--------------------- create readable names table ------------------------------#
+# I had to do this locally because tabulizer requires rJava which is not downloaded in Rivanna
 
-age <- colSums(tbl3[, 3:5])
-age
-pie(age)
+location <- "https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.0.pdf"
 
+out <- extract_tables(location)
 
-earnings <- colSums(tbl3[, 6:8])
-earnings
-pie(earnings)
+df_1 = data.frame(out[[4]],stringsAsFactors = FALSE)
+colnames(df_1) <- c("Pos", "Variable", "Type", "Explanation")
 
-naic <- colSums(tbl3[, 9:28])
-naic <- data.frame(NAIC=names(naic), value=naic, row.names=NULL)
-
-
-x <- str_extract_all(naic$NAIC,  "(?<=\\().+?(?=\\))")
-
-naic$NAIC <- unlist(x)
-
-ggplot(naic, aes(x = value, y = NAIC)) +
-  geom_bar(stat= "identity")
+df_2 <- as.data.frame(out[[5]],stringsAsFactors = FALSE)
+colnames(df_2) <- c("Pos", "Variable", "Type", "Explanation")
 
 
-race <- colSums(tbl3[, 29:34])
-pie(race)
+df_1[df_1$Explanation == "Number of jobs in NAICS sector 56 (Administrative and Support and Waste", "Explanation"] <- "Number of jobs in NAICS sector 56 (Administrative and Support and Waste Management and Remediation Services)"
 
-ethnicity <- colSums(tbl3[, 35:36])
-pie(ethnicity)
+df_1 <- df_1[-c(1:2, 25),  ]
 
-education <- colSums(tbl3[, 37:40])
-pie(education)
 
-sex <- colSums(tbl3[, 41:42])
-pie(sex)
+readable_names <- rbind(df_1, df_2)
 
-firm_age <- colSums(tbl3[, 43:47])
-# no data
-firm_age
+readable_names$Explanation <- str_replace_all(string=readable_names$Explanation, pattern=" ", repl="")
 
-firm_size <- colSums(tbl3[, 48:52])
-# no data
-firm_size
+
+readable_names$Explanation <- gsub("Numberofjobsforworkers", "", readable_names$Explanation)
+readable_names$Explanation <- gsub("Numberofjobswith", "", readable_names$Explanation)
+readable_names$Explanation <- gsub("Numberofjobsin", "", readable_names$Explanation)
+readable_names$Explanation <- gsub("atfirmswith", "", readable_names$Explanation)
+readable_names$Explanation <- gsub("with", "", readable_names$Explanation)
+
+readable_names <- readable_names[, c("Variable", "Explanation")]
+
+#write.csv(readable_names, "data/original/lodes_wac_cols.csv")
+
+#-------------- read in readable column names and apply them to table------------------------- #
+readable_col <- read.csv("data/original/lodes_wac_cols.csv")
+
+colnames(fairfax)[!(colnames(fairfax) %in% readable_col$Variable)]
+
+cols <- c(readable_col$Explanation, colnames(fairfax)[!(colnames(fairfax) %in% readable_col$Variable)])
+
+colnames(fairfax) <- cols
+
+
