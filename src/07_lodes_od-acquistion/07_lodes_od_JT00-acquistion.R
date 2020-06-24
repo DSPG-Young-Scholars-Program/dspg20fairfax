@@ -45,4 +45,30 @@ fairfax <- data %>%
 xwalk <- read.csv("data/original/va_xwalk.csv", 
                  colClasses = c("tabblk2010" = "factor"))
 
+51119951100
+
+
+fairfax$w_geocode_tract <- substr(fairfax$w_geocode, start = 1, stop = 11)
+
+fairfax$h_geocode_tract <- substr(fairfax$h_geocode, start = 1, stop = 11)
+
+
+
+jobsall <- fairfax %>% select(-w_geocode, - h_geocode) %>%
+  group_by(createdate, w_geocode_tract, h_geocode_tract) %>% 
+  summarise(S000 = sum(S000), 
+            SA01 = sum(SA01), 
+            SA02 = sum(SA02), 
+            SA03 = sum(SA03), 
+            SE01 = sum(SE01), 
+            SE02 = sum(SE02), 
+            SE03 = sum(SE03), 
+            SI01 = sum(SI01), 
+            SI02 = sum(SI02), 
+            SI03 = sum(SI03))
+
+
+#write.csv(jobsall, "data/od/jobsall.csv")
+
+jobsall <- read.csv("data/od/jobsall.csv")
 
