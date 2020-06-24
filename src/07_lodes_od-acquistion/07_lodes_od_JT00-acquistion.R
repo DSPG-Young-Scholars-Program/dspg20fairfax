@@ -25,10 +25,14 @@ download.file(
 gunzip("data/original/va_od_aux_JT00_2017.csv.gz")
 
 
-aux <- fread("data/original/va_od_aux_JT00_2017.csv")
+aux <- fread("data/original/va_od_aux_JT00_2017.csv", 
+             colClasses = c("w_geocode" = "character",
+                            "h_geocode" = "character"))
 head(aux)
 
-main <- fread("data/original/va_od_main_JT00_2017.csv")
+main <- fread("data/original/va_od_main_JT00_2017.csv", 
+              colClasses = c("w_geocode" = "character",
+                             "h_geocode" = "character"))
 head(main)
 
 # first, append your aux to main by job type
@@ -40,19 +44,14 @@ data <- rbind(main, aux)
 fairfax <- data %>% 
   filter(w_geocode %in% data$w_geocode[substr(data$w_geocode, 1, 5) == "51059"]|h_geocode %in% data$h_geocode[substr(data$h_geocode, 1, 5) == "51059"])
 
-# third
 
-xwalk <- read.csv("data/original/va_xwalk.csv", 
-                 colClasses = c("tabblk2010" = "factor"))
-
-51119951100
-
+# select tracts from geocode strings
 
 fairfax$w_geocode_tract <- substr(fairfax$w_geocode, start = 1, stop = 11)
 
 fairfax$h_geocode_tract <- substr(fairfax$h_geocode, start = 1, stop = 11)
 
-
+# aggregate by tract level
 
 jobsall <- fairfax %>% select(-w_geocode, - h_geocode) %>%
   group_by(createdate, w_geocode_tract, h_geocode_tract) %>% 
