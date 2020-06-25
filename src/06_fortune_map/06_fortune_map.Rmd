@@ -2,7 +2,8 @@
 title: "Fortune 500 Map"
 author: "Sarah McDonald"
 date: "6/16/2020"
-output: html_document
+output: md_document
+always_allow_html: true
 ---
 Data:
 ```{r}
