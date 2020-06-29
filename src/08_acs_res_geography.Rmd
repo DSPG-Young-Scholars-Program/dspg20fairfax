@@ -1,0 +1,727 @@
+---
+title: "ACS_res_geography"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r data}
+library(tidycensus)
+library(tidyverse)
+library(viridis)
+library(sf)
+library(ggthemes)
+library(RColorBrewer)
+library(ggplot2)
+library(tigris)
+
+
+# Obtain the API key and set install=TRUE during the first time use, to use the same key automatically you run the program #
+#census_api_key("bf083ecaf2c15d0b10906c4948c5759589df1817", install=TRUE)
+
+var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
+vars <-c(
+  # labor force
+  "B23025_002",
+  
+  # unemplyed
+  "B23025_005",
+  
+  # No Bachelor's degree
+  "B23006_001", "B23006_024",
+  
+  # atleast travle 30 min
+  "B08135_001", "B08135_007", "B08135_008", "B08135_009", "B08135_010",
+  
+  # mean travel time
+  "B08135_001", "B08135_002", "B08135_003", "B08135_004", "B08135_005", "B08135_006", "B08135_007", "B08135_008", 
+  "B08135_009", "B08135_010",
+  
+  # no vehicle
+  "B08141_001", "B08141_002",
+  
+  # means of transportation
+  "B08301_001","B08301_003", "B08301_004", "B08301_010", "B08301_016", "B08301_017",
+  "B08301_018", "B08301_019", "B08301_020", "B08301_021",
+  
+  # class of workers
+  "C24060_001", "C24060_007", "C24060_013", "C24060_019", "C24060_025", "C24060_031", 
+
+ # industry
+ "C24070_001", "C24070_002", "C24070_003", "C24070_004","C24070_005", "C24070_006", "C24070_007", "C24070_008", "C24070_009", "C24070_010",
+ "C24070_011", "C24070_012", "C24070_013", "C24070_014",
+
+ # Means of transportation to work by occupation
+ "B08124_002", "B08124_003", "B08124_004", "B08124_005", "B08124_006", "B08124_007", "B08124_009", "B08124_010", "B08124_011", "B08124_012", "B08124_013", "B08124_014",
+ "B08124_016", "B08124_017", "B08124_018", "B08124_019", "B08124_020", "B08124_021", "B08124_023", "B08124_024", "B08124_025", "B08124_026", "B08124_027", "B08124_028",
+ "B08124_030", "B08124_031", "B08124_032", "B08124_033", "B08124_034", "B08124_035", "B08124_037", "B08124_038", "B08124_039", "B08124_040", "B08124_041", "B08124_042",
+ "B08124_044", "B08124_045", "B08124_046", "B08124_047", "B08124_048", "B08124_049"
+ )
+
+#View(vars)
+####################################################
+# Use the get_acs function to pull the survey data #
+####################################################
+
+# DATA AT TRACT LEVEL #
+
+# If geography=tract, we need to define the state and county #
+# If you put the name of the state and county in the function, it will indicate the code for that state and/or county #
+# Virginia state code is 51 and Fairfax county code 059
+
+Fairfax_T<-get_acs(geography = "tract", variables=vars,state="51",county="059", 
+                year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
+                 geometry=TRUE, keep_geo_vars = TRUE)
+#head(Fairfax_T)
+
+#############################
+# Calculating the variables #
+#############################
+###############
+# Tract level #
+###############
+
+res_ACS_tract <- Fairfax_T %>% transmute(
+  STATEFP= STATEFP,
+  COUNTYFP= COUNTYFP,
+  TRACTCE= TRACTCE,
+  AFFGEOID= AFFGEOID,
+  GEOID= GEOID,
+  NAME.x= NAME.x,
+  LSAD= LSAD,
+  ALAND= ALAND,
+  AWATER= AWATER,
+  NAME.y= NAME.y,
+  geometry=geometry,
+  
+  res_pct_unempl= (B23025_005E/B23025_002E)*100,
+  
+  res_pct_without_bachelors=(1-(B23006_024E/B23006_001E))*100,
+  
+  res_travel_30min = (B08135_007E + B08135_008E + B08135_009E + B08135_010E)/B08135_001E*100,
+  
+  
+  res_pct_no_vehicle= (B08141_002E/B08141_001E)*100,
+  
+  res_pct_drove= (B08301_003E/B08301_001E)*100,
+  res_pct_carpooled= (B08301_004E/B08301_001E)*100,
+  res_pct_transport= (B08301_010E/B08301_001E)*100,
+  res_pct_walked= (B08301_019E/B08301_001E)*100,
+  res_pct_taxi_other= ((B08301_016E + B08301_017E + B08301_018E + B08301_020E)/B08301_001E)*100,
+  res_pct_worked_home= (B08301_021E/B08301_001E)*100,
+  
+  res_pct_private= (C24060_007E/C24060_001E)*100,
+  res_pct_own_business= (C24060_013E/C24060_001E)*100,
+  res_pct_not_for_profit= (C24060_019E/C24060_001E)*100,
+  res_pct_govt= (C24060_025E/C24060_001E)*100,
+  res_pct_selfEmp_unpaid= (C24060_031E/C24060_001E)*100,
+  
+  res_pct_ag= (C24070_002E/C24070_001E)*100,
+  res_pct_constr= (C24070_003E/C24070_001E)*100,
+  res_pct_manuf= (C24070_004E/C24070_001E)*100,
+  res_pct_wholesale= (C24070_005E/C24070_001E)*100,
+  res_pct_retail= (C24070_006E/C24070_001E)*100,
+  res_pct_transport= (C24070_007E/C24070_001E)*100,
+  res_pct_info= (C24070_008E/C24070_001E)*100,
+  res_pct_fin= (C24070_009E/C24070_001E)*100,
+  res_pct_prof= (C24070_010E/C24070_001E)*100,
+  res_pct_edu= (C24070_011E/C24070_001E)*100,
+  res_pct_arts= (C24070_012E/C24070_001E)*100,
+  res_pct_other= (C24070_013E/C24070_001E)*100,
+  res_pct_pub_admin= (C24070_014E/C24070_001E)*100,
+  
+  res_pct_manage_drove= (B08124_009E/B08124_002E)*100,
+  res_pct_manage_carpooled= (B08124_016E/B08124_002E)*100,
+  res_pct_manage_transport= (B08124_023E/B08124_002E)*100,
+  res_pct_manage_walked= (B08124_030E/B08124_002E)*100,
+  res_pct_manage_taxi= (B08124_037E/B08124_002E)*100,
+  res_pct_manage_worked_home= (B08124_044E/B08124_002E)*100,
+  
+  res_pct_service_drove= (B08124_010E/B08124_003E)*100,
+  res_pct_service_carpooled= (B08124_017E/B08124_003E)*100,
+  res_pct_service_transport= (B08124_024E/B08124_003E)*100,
+  res_pct_service_walked= (B08124_031E/B08124_003E)*100,
+  res_pct_service_taxi= (B08124_038E/B08124_003E)*100,
+  res_pct_service_worked_home= (B08124_045E/B08124_003E)*100,
+  
+  
+  res_pct_sales_drove= (B08124_011E/B08124_004E)*100,
+  res_pct_sales_carpooled= (B08124_018E/B08124_004E)*100,
+  res_pct_sales_transport= (B08124_025E/B08124_004E)*100,
+  res_pct_sales_walked= (B08124_032E/B08124_004E)*100,
+  res_pct_sales_taxi= (B08124_039E/B08124_004E)*100,
+  res_pct_sales_worked_home= (B08124_046E/B08124_004E)*100,
+  
+  res_pct_natural_drove= (B08124_012E/B08124_005E)*100,
+  res_pct_natural_carpooled= (B08124_019E/B08124_005E)*100,
+  res_pct_natural_transport= (B08124_026E/B08124_005E)*100,
+  res_pct_natural_walked= (B08124_033E/B08124_005E)*100,
+  res_pct_natural_taxi= (B08124_040E/B08124_005E)*100,
+  res_pct_natural_worked_home= (B08124_047E/B08124_005E)*100,
+  
+  res_pct_prod_drove= (B08124_013E/B08124_006E)*100,
+  res_pct_prod_carpooled= (B08124_020E/B08124_006E)*100,
+  res_pct_prod_transport= (B08124_027E/B08124_006E)*100,
+  res_pct_prod_walked= (B08124_034E/B08124_006E)*100,
+  res_pct_prod_taxi= (B08124_041E/B08124_006E)*100,
+  res_pct_prod_worked_home= (B08124_048E/B08124_006E)*100,
+  
+  res_pct_military_drove= (B08124_014E/B08124_007E)*100,
+  res_pct_military_carpooled= (B08124_021E/B08124_007E)*100,
+  res_pct_military_transport= (B08124_028E/B08124_007E)*100,
+  res_pct_military_walked= (B08124_035E/B08124_007E)*100,
+  res_pct_military_taxi= (B08124_042E/B08124_007E)*100,
+  res_pct_military_worked_home= (B08124_049E/B08124_007E)*100
+)
+
+res_ACS_tract$res_pct_unempl<- ifelse(is.nan(res_ACS_tract$res_pct_unempl), 0, res_ACS_tract$res_pct_unempl)
+
+res_ACS_tract$res_pct_without_bachelors <- ifelse(is.nan(res_ACS_tract$res_pct_without_bachelors), 0, res_ACS_tract$res_pct_without_bachelors)
+
+res_ACS_tract$res_travel_30min <- ifelse(is.nan(res_ACS_tract$res_travel_30min), 0, res_ACS_tract$res_travel_30min)
+
+res_ACS_tract$res_pct_no_vehicle <- ifelse(is.nan(res_ACS_tract$res_pct_no_vehicle), 0, res_ACS_tract$res_pct_no_vehicle) 
+  
+res_ACS_tract$res_pct_drove <- ifelse(is.nan(res_ACS_tract$res_pct_drove), 0, res_ACS_tract$res_pct_drove)
+
+res_ACS_tract$res_pct_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_carpooled), 0, res_ACS_tract$res_pct_carpooled)
+
+res_ACS_tract$res_pct_transport <- ifelse(is.nan(res_ACS_tract$res_pct_transport), 0, res_ACS_tract$res_pct_transport)
+
+res_ACS_tract$res_pct_walked <- ifelse(is.nan(res_ACS_tract$res_pct_walked), 0, res_ACS_tract$res_pct_walked)
+  
+res_ACS_tract$res_pct_taxi_other <- ifelse(is.nan(res_ACS_tract$res_pct_taxi_other), 0, res_ACS_tract$res_pct_taxi_other)
+  
+res_ACS_tract$res_pct_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_worked_home), 0, res_ACS_tract$res_pct_worked_home)
+
+
+res_ACS_tract$res_pct_private <- ifelse(is.nan(res_ACS_tract$res_pct_private), 0, res_ACS_tract$res_pct_private)
+
+res_ACS_tract$res_pct_own_business <- ifelse(is.nan(res_ACS_tract$res_pct_own_business), 0, res_ACS_tract$res_pct_own_business)
+  
+res_ACS_tract$res_res_pct_not_for_profit <- ifelse(is.nan(res_ACS_tract$res_pct_not_for_profit), 0, res_ACS_tract$res_pct_not_for_profit)
+  
+res_ACS_tract$res_pct_govt <- ifelse(is.nan(res_ACS_tract$res_pct_govt), 0, res_ACS_tract$res_pct_govt)
+  
+res_ACS_tract$res_pct_selfEmp_unpaid <- ifelse(is.nan(res_ACS_tract$res_pct_selfEmp_unpaid), 0, res_ACS_tract$res_pct_selfEmp_unpaid)
+
+res_ACS_tract$res_pct_ag <- ifelse(is.nan(res_ACS_tract$res_pct_ag), 0, res_ACS_tract$res_pct_ag)
+
+res_ACS_tract$res_pct_constr <- ifelse(is.nan(res_ACS_tract$res_pct_constr), 0, res_ACS_tract$res_pct_constr)
+  
+res_ACS_tract$res_pct_manuf <- ifelse(is.nan(res_ACS_tract$res_pct_manuf), 0, res_ACS_tract$res_pct_manuf)
+  
+res_ACS_tract$res_pct_wholesale <- ifelse(is.nan(res_ACS_tract$res_pct_wholesale), 0, res_ACS_tract$res_pct_wholesale)
+  
+res_ACS_tract$res_pct_retail <- ifelse(is.nan(res_ACS_tract$res_pct_retail), 0, res_ACS_tract$res_pct_retail)
+  
+res_ACS_tract$res_pct_transport <- ifelse(is.nan(res_ACS_tract$res_pct_transport), 0, res_ACS_tract$res_pct_transport)
+
+res_ACS_tract$res_pct_info <- ifelse(is.nan(res_ACS_tract$res_pct_info), 0, res_ACS_tract$res_pct_info)
+ 
+res_ACS_tract$res_pct_fin <- ifelse(is.nan(res_ACS_tract$res_pct_fin), 0, res_ACS_tract$res_pct_fin)
+
+res_ACS_tract$res_pct_prof <- ifelse(is.nan(res_ACS_tract$res_pct_prof), 0, res_ACS_tract$res_pct_prof)
+  
+res_ACS_tract$res_pct_edu <- ifelse(is.nan(res_ACS_tract$res_pct_edu), 0, res_ACS_tract$res_pct_edu)
+ 
+res_ACS_tract$res_pct_arts <- ifelse(is.nan(res_ACS_tract$res_pct_arts), 0, res_ACS_tract$res_pct_arts)
+ 
+res_ACS_tract$res_pct_other <- ifelse(is.nan(res_ACS_tract$res_pct_other), 0, res_ACS_tract$res_pct_other)
+  
+res_ACS_tract$res_pct_pub_admin <- ifelse(is.nan(res_ACS_tract$res_pct_pub_admin), 0, res_ACS_tract$res_pct_pub_admin)
+
+  
+res_ACS_tract$res_pct_manage_drove <- ifelse(is.nan(res_ACS_tract$res_pct_manage_drove), 0, res_ACS_tract$res_pct_manage_drove)
+
+res_ACS_tract$res_pct_manage_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_manage_carpooled), 0, res_ACS_tract$res_pct_manage_carpooled)
+ 
+res_ACS_tract$res_pct_manage_transport <- ifelse(is.nan(res_ACS_tract$res_pct_manage_transport), 0, res_ACS_tract$res_pct_manage_transport)
+  
+res_ACS_tract$res_pct_manage_walked <- ifelse(is.nan(res_ACS_tract$res_pct_manage_walked), 0, res_ACS_tract$res_pct_manage_walked)
+  
+res_ACS_tract$res_pct_manage_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_manage_taxi), 0, res_ACS_tract$res_pct_manage_taxi)
+  
+res_ACS_tract$res_pct_manage_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_manage_worked_home), 0, res_ACS_tract$res_pct_manage_worked_home)
+
+
+res_ACS_tract$res_pct_service_drove <- ifelse(is.nan(res_ACS_tract$res_pct_service_drove), 0, res_ACS_tract$res_pct_service_drove)
+
+res_ACS_tract$res_pct_service_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_service_carpooled), 0, res_ACS_tract$res_pct_service_carpooled)
+ 
+res_ACS_tract$res_pct_service_transport <- ifelse(is.nan(res_ACS_tract$res_pct_service_transport), 0, res_ACS_tract$res_pct_service_transport)
+  
+res_ACS_tract$res_pct_service_walked <- ifelse(is.nan(res_ACS_tract$res_pct_service_walked), 0, res_ACS_tract$res_pct_service_walked)
+  
+res_ACS_tract$res_pct_service_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_service_taxi), 0, res_ACS_tract$res_pct_service_taxi)
+  
+res_ACS_tract$res_pct_service_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_service_worked_home), 0, res_ACS_tract$res_pct_service_worked_home)
+
+
+res_ACS_tract$res_pct_sales_drove <- ifelse(is.nan(res_ACS_tract$res_pct_sales_drove), 0, res_ACS_tract$res_pct_sales_drove)
+
+res_ACS_tract$res_pct_sales_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_sales_carpooled), 0, res_ACS_tract$res_pct_sales_carpooled)
+ 
+res_ACS_tract$res_pct_sales_transport <- ifelse(is.nan(res_ACS_tract$res_pct_sales_transport), 0, res_ACS_tract$res_pct_sales_transport)
+  
+res_ACS_tract$res_pct_sales_walked <- ifelse(is.nan(res_ACS_tract$res_pct_sales_walked), 0, res_ACS_tract$res_pct_sales_walked)
+  
+res_ACS_tract$res_pct_sales_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_sales_taxi), 0, res_ACS_tract$res_pct_sales_taxi)
+  
+res_ACS_tract$res_pct_sales_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_sales_worked_home), 0, res_ACS_tract$res_pct_sales_worked_home)
+
+
+res_ACS_tract$res_pct_natural_drove <- ifelse(is.nan(res_ACS_tract$res_pct_natural_drove), 0, res_ACS_tract$res_pct_natural_drove)
+
+res_ACS_tract$res_pct_natural_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_natural_carpooled), 0, res_ACS_tract$res_pct_natural_carpooled)
+ 
+res_ACS_tract$res_pct_natural_transport <- ifelse(is.nan(res_ACS_tract$res_pct_natural_transport), 0, res_ACS_tract$res_pct_natural_transport)
+  
+res_ACS_tract$res_pct_natural_walked <- ifelse(is.nan(res_ACS_tract$res_pct_natural_walked), 0, res_ACS_tract$res_pct_natural_walked)
+  
+res_ACS_tract$res_pct_natural_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_natural_taxi), 0, res_ACS_tract$res_pct_natural_taxi)
+  
+res_ACS_tract$res_pct_natural_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_natural_worked_home), 0, res_ACS_tract$res_pct_natural_worked_home)
+
+
+res_ACS_tract$res_pct_prod_drove <- ifelse(is.nan(res_ACS_tract$res_pct_prod_drove), 0, res_ACS_tract$res_pct_prod_drove)
+
+res_ACS_tract$res_pct_prod_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_prod_carpooled), 0, res_ACS_tract$res_pct_prod_carpooled)
+ 
+res_ACS_tract$res_pct_prod_transport <- ifelse(is.nan(res_ACS_tract$res_pct_prod_transport), 0, res_ACS_tract$res_pct_prod_transport)
+  
+res_ACS_tract$res_pct_prod_walked <- ifelse(is.nan(res_ACS_tract$res_pct_prod_walked), 0, res_ACS_tract$res_pct_prod_walked)
+  
+res_ACS_tract$res_pct_prod_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_prod_taxi), 0, res_ACS_tract$res_pct_prod_taxi)
+  
+res_ACS_tract$res_pct_prod_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_prod_worked_home), 0, res_ACS_tract$res_pct_prod_worked_home)
+
+
+res_ACS_tract$res_pct_military_drove <- ifelse(is.nan(res_ACS_tract$res_pct_military_drove), 0, res_ACS_tract$res_pct_military_drove)
+
+res_ACS_tract$res_pct_military_carpooled <- ifelse(is.nan(res_ACS_tract$res_pct_military_carpooled), 0, res_ACS_tract$res_pct_military_carpooled)
+ 
+res_ACS_tract$res_pct_military_transport <- ifelse(is.nan(res_ACS_tract$res_pct_military_transport), 0, res_ACS_tract$res_pct_military_transport)
+  
+res_ACS_tract$res_pct_military_walked <- ifelse(is.nan(res_ACS_tract$res_pct_military_walked), 0, res_ACS_tract$res_pct_military_walked)
+  
+res_ACS_tract$res_pct_military_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_military_taxi), 0, res_ACS_tract$res_pct_military_taxi)
+  
+res_ACS_tract$res_pct_military_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_military_worked_home), 0, res_ACS_tract$res_pct_military_worked_home)
+
+  
+
+View(res_ACS_tract)
+```
+
+## Creating Plots for the Variables at Tract Level
+
+```{r ACS_Tract, echo=FALSE}
+res_ACS_tract %>%
+  ggplot() + 
+  geom_sf(data=res_ACS_tract, size=0.2, aes(fill=res_pct_unempl))+
+  labs(title = "Percent population in labor force\nover age 16 \nthat is unemployed\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent population in labor force over age 16 that is unemployed.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_without_bachelors)) +
+  labs(title = "Percent population over age 25 without\na Bachelor's degree\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent population over age 25 without a Bachelor's degree.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_travel_30min)) +
+  labs(title = "Workers over age 16 traveling \n who did not work from home \n30 minutes or more to work\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers traveling to work for 30min or more.png",plot=last_plot())
+```
+
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_no_vehicle)) +
+  labs(title = "Percent worker over age 16 \nwith no vehicle available\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent worker with no vehicle available.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_drove)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Drove alone\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Drove alone.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_carpooled)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Carpooled\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Carpooled.png",plot=last_plot())
+
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_transport)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Public transport \n(excluding taxicab)\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Public transport.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_walked)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Walked\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Walked.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_taxi_other)) +
+  labs(title = "Percent workers over age 16 \nby means of transportation to work : \nTaxicab, Motorcycle, Bicycle, Other means\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Taxicab and other.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_worked_home)) +
+  labs(title = "Percent workers over age 16 by means of \ntransportation to work : Worked from home\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by means of transportation to work : Worked from home.png",plot=last_plot())
+
+```
+
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_private)) +
+  labs(title = "Percent workers over age 16 \nby occupation : Private company \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private company.png",plot=last_plot())
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_own_business)) +
+  labs(title = "Percent workers over age 16 by \noccupation : Self-employed in own incorporated business \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own incorporated business.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_not_for_profit)) +
+  labs(title = "Percent workers over age 16 by \noccupation : Private not-for-profit \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Private not-for-profit.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_govt)) +
+  labs(title = "Percent workers over age 16 by \noccupation : Local, state and federal government \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Local, state and federal government.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_selfEmp_unpaid)) +
+  labs(title = "Percent workers over age 16 by occupation : \nSelf-employed in own not incorporated business \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by occupation : Self-employed in own not incorporated business.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_ag)) +
+  labs(title = "Percent workers over age 16 by industry : \nAgri, forestry, fishing, hunting, mining \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Agri, forestry, fishing, hunting, mining.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_constr)) +
+  labs(title = "Percent workers over age 16 \nby industry : Costruction\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Costruction.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_manuf)) +
+  labs(title = "Percent workers over age 16 \nby industry : Manufacturing\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Manufacturing.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_wholesale)) +
+  labs(title = "Percent workers over age 16 \nby industry : Wholesale trade\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Wholesale trade.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_retail)) +
+  labs(title = "Percent workers over age 16 \nby industry : Retail trade\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Retail trade.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_transport)) +
+  labs(title = "Percent workers over age 16 by \nindustry : Transportation, warehousing, utilities\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Transportation, warehousing, utilities.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_info)) +
+  labs(title = "Percent workers over age 16 \nby industry : Information\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Information.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_fin)) +
+  labs(title = "Percent workers over age 16 by industry : \nFinance, insurance, real estate. rental, leasing\nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Finance, insurance, real estate. rental, leasing.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_prof)) +
+  labs(title = "Percent workers over age 16 by \nindustry : Professional, scientific, management \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Professional, scientific, management.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_edu)) +
+  labs(title = "Percent workers over age 16 by industry : \nEducational services, health care, social assistance \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Educational services, health care, social assistance.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_arts)) +
+  labs(title = "Percent workers over age 16 by industry : \nArts, entertainment, recreation, accomodation, food services \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Arts, entertainment, recreation, accomodation, food services.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_other)) +
+  labs(title = "Percent workers over age 16 by industry : \nOther services, except public administration \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Other services, except public administration.png",plot=last_plot())
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = res_ACS_tract, size = 0.2, aes(fill = res_pct_pub_admin)) +
+  labs(title = "Percent workers over age 16 by \nindustry : Public administration \nby Census residence tract, 2014/18",
+       caption = "Source: American Community Survey 2014/18 (5-year) estimates.") +
+  theme_map() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        legend.title = element_text(size = 11, face = "bold"),
+        legend.text = element_text(size = 11),
+        legend.position = "right") +
+  scale_fill_viridis(name = "Percent")
+ggsave(path="../output/acs/",device="png",filename="Residence tract_Percent workers over age 16 by industry : Public administration.png",plot=last_plot())
+```
+
+
