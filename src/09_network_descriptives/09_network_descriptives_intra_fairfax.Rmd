@@ -2,7 +2,8 @@
 title: "09_network_descriptives_intra_fairfax"
 author: "Sarah McDonald"
 date: "6/29/2020"
-output: html_document
+output: md_document
+always_allow_html: true
 ---
 
 Load packages
@@ -57,15 +58,122 @@ print(network)
 
 Next, we will work through summary statistics of our network with descriptions of each, in the context of the origin-destination data.
 
+```{r}
+network_stats <- data.frame(var="S000") 
+```
+
+##### Counts
+The _order_ of a graph indicates the number of nodes (or vertices). In this case, the nodes are Census tracts.
+
+```{r}
+network_stats$node_count <- gorder(network)  
+print(gorder(network))
+```
+
+The _size_ of graph indicates the number of edges (or links). Relevant to OD data, the an edge represents a residence-workplace relationship between Census tracts.
+
+```{r}
+network_stats$edge_count <- gsize(network)  
+print(gsize(network))
+```
+
+We can also add up the sum of weights for a count of jobs represented in the graph.
+
+```{r}
+network_stats$jobs_count <- sum(edgelist$weight)
+print(sum(edgelist$weight))
+```
+
+The __degree__ indicates the number of adjacent edges. An adjacent edge shares a common vertex. In relation to the OD, the degree function produces a count of links for each node, in this case, for each Census tract. The average degree is printed.
+```{r}
+network_stats$mean_deg <- mean(igraph::degree(network))
+print(mean(igraph::degree(network)))
+
+hist(igraph::degree(network), breaks = seq(0,300, 25), main="Histogram of Node Degree")
+```
+
+__Betweenness__ is a measure of centrality, which counts the number of shortest paths (geodesic) going through a node. 
+
+```{r}
+network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4))
+print(mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4)))
+hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4), main = "Histogram of Betweenness", breaks = seq(0, 100, 10))
+```
+
+##### Isolates, Dyads, and Triads 
+
+Isolates are non-connected nodes, which means either the workplace or residence did not have a corresponding relationship.
+```{r}
+network_stats$isolates <- sum(igraph::degree(simplify(network))==0)
+```
+
+Triads
+(these will change if directionality is included.)
+
+Why do we care about triads?
+
+```{r}
+network_stats$triads_003 <- igraph::triad.census(network)[1]
+# empty graph, no connections
+```
+
+```{r}
+network_stats$triads_102 <- igraph::triad.census(network)[3]
+#  graph with a mutual connection between two vertices.
+```
+
+
+```{r}
+network_stats$triads_201 <- igraph::triad.census(network)[11]
+#graph with two mutual connection between two vertices.
+```
+
+
+```{r}
+network_stats$triads_300 <- igraph::triad.census(network)[16]
+# complete graph
+```
 
 
 
+Dyads (this will change with directionality)
+
+```{r}
+# The number of pairs with mutual connections.
+network_stats$dyad_mut <- igraph::dyad_census(network)$mut
+
+# The number of pairs with non-mutual connections.
+network_stats$dyad_asym <- igraph::dyad_census(network)$asym
+
+# The number of pairs with no connections.
+network_stats$dyad_null <- igraph::dyad_census(network)$null
+```
 
 
+##### Density and Transitivity
+
+The __diameter__ of a graph is the length of the longest shortest path (geodesic) passing through a node.  
+```{r}
+
+```
 
 
+### Sources
+http://www.people.vcu.edu/~gasmerom/MAT131/graphs.html#:~:text=Two%20vertices%20are%20said%20to,edge%20(arc)%20connecting%20them.&text=Adjacent%20edges%20are%20edges%20that%20share%20a%20common%20vertex.&text=The%20degree%20of%20a%20vertex,edges%20incident%20with%20that%20vertex.&text=A%20graph%20is%20said%20to,are%20joined%20by%20a%20path.
 
+https://github.com/uva-bi-sdad/oss-2020/blob/master/src/github-network-analysis/02_international-collaboration/03_country-networks/03_ctry-nets-cum-analysis.Rmd
 
+https://www.jessesadler.com/post/network-analysis-with-r/
+
+https://kateto.net/wp-content/uploads/2018/03/R%20for%20Networks%20Workshop%20-%20Ognyanova%20-%202018.pdf
+
+https://kateto.net/network-visualization
+
+https://ebookcentral-proquest-com.proxy01.its.virginia.edu/lib/uva/reader.action?docID=4199226&ppg=185
+
+https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.4.pdf
+
+https://igraph.org/r/doc/igraph.pdf
 
 
 
