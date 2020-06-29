@@ -89,6 +89,9 @@ wrk_ACS_data <- Fairfax %>% transmute(
 view(wrk_ACS_data)
 ```
 
+```{r}
+write.csv(wrk_ACS_data, "/data/acs/wrk_ACS_data.csv")
+```
 
 
 Making plots
