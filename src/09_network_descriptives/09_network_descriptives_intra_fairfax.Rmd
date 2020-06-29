@@ -1,0 +1,80 @@
+---
+title: "09_network_descriptives_intra_fairfax"
+author: "Sarah McDonald"
+date: "6/29/2020"
+output: html_document
+---
+
+Load packages
+```{r, warning=F, message=F}
+library(dplyr)
+library(igraph)
+library(lubridate)
+library(sna)
+library(intergraph)
+```
+
+Load data frame and filter for residence AND workplace within Fairfax County. 
+
+```{r}
+data <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobsall.csv")
+
+# focus on within county first
+data <- data %>% 
+  filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))
+```
+
+
+Create edge list, which defines the "from" and "to" relationships of the Fairfax workforce. We define "from" as residence and "to" as workplace. For this script, we will define the weight as S000, which is the total number of jobs, in other words,the total number of jobs for which a worker lives in the "from" Census tract and commutes to the workplace in the "to" Census tract (check interpretation). 
+
+```{r, warning=F, message =F}
+edgelist <- data %>% 
+  select(h_geocode_tract, w_geocode_tract, S000) %>% 
+  rename(from = h_geocode_tract, to = w_geocode_tract, weight = S000) %>% 
+  group_by(from, to) %>% 
+  summarize(weight = sum(weight)) %>% 
+  arrange(-weight)
+```
+
+Next, we create the __igraph__ network object. Simple graphs are graphs which do not contain loop and multiple edges. 
+The function below keeps the loops, which would indicate working and living in the same tract, but removes multiple edges, because we will start wth a simple, undirected graph.
+
+(It might be good to create a direct network later, since we are exploring flows FROM residence TO workplace.)
+
+```{r}
+network <- simplify(graph.data.frame(edgelist, directed = FALSE), 
+                         remove.loops = FALSE, 
+                         edge.attr.comb = igraph_opt("edge.attr.comb"))
+#U: undirected
+#N: Named
+#W: Weighted
+
+print(network)
+```
+
+
+### Summary Statistics
+
+Next, we will work through summary statistics of our network with descriptions of each, in the context of the origin-destination data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
