@@ -32,32 +32,29 @@ the "to" Census tract (check interpretation).
 Next, we create the **igraph** network object. Simple graphs are graphs
 which do not contain loop and multiple edges. The function below keeps
 the loops, which would indicate working and living in the same tract,
-but removes multiple edges, because we will start wth a simple,
-undirected graph.
+but removes multiple edges, because we will start wth a simple, directed
+graph.
 
-(It might be good to create a direct network later, since we are
-exploring flows FROM residence TO workplace.)
-
-    network <- simplify(graph.data.frame(edgelist, directed = FALSE), 
+    network <- simplify(graph.data.frame(edgelist, directed = TRUE), 
                              remove.loops = FALSE, 
                              edge.attr.comb = igraph_opt("edge.attr.comb"))
-    #U: undirected
+    #D: directed
     #N: Named
     #W: Weighted
 
     print(network)
 
-    ## IGRAPH 29e6b37 UNW- 258 23930 -- 
+    ## IGRAPH 12ab6f5 DNW- 258 32620 -- 
     ## + attr: name (v/c), weight (e/n)
-    ## + edges from 29e6b37 (vertex names):
-    ##  [1] 51059480202--51059480202 51059480202--51059482501 51059480202--51059460502
-    ##  [4] 51059480202--51059461602 51059480202--51059430400 51059480202--51059490103
-    ##  [7] 51059480202--51059440501 51059480202--51059432202 51059480202--51059471202
-    ## [10] 51059480202--51059482601 51059480202--51059430802 51059480202--51059490101
-    ## [13] 51059480202--51059431500 51059480202--51059452400 51059480202--51059471301
-    ## [16] 51059480202--51059492202 51059480202--51059491502 51059480202--51059432402
-    ## [19] 51059480202--51059461601 51059480202--51059432500 51059480202--51059461100
-    ## [22] 51059480202--51059491501 51059480202--51059471100 51059480202--51059491103
+    ## + edges from 12ab6f5 (vertex names):
+    ##  [1] 51059480202->51059480202 51059480202->51059482501 51059480202->51059460502
+    ##  [4] 51059480202->51059461602 51059480202->51059490103 51059480202->51059471202
+    ##  [7] 51059480202->51059482601 51059480202->51059490101 51059480202->51059471301
+    ## [10] 51059480202->51059461601 51059480202->51059461100 51059480202->51059471100
+    ## [13] 51059480202->51059492100 51059480202->51059491702 51059480202->51059492000
+    ## [16] 51059480202->51059460400 51059480202->51059491201 51059480202->51059481106
+    ## [19] 51059480202->51059482203 51059480202->51059482602 51059480202->51059440800
+    ## [22] 51059480202->51059481202 51059480202->51059422102 51059480202->51059431001
     ## + ... omitted several edges
 
 ### Summary Statistics
@@ -73,7 +70,7 @@ The *order* of a graph indicates the number of nodes (or vertices). In
 this case, the nodes are Census tracts.
 
     network_stats$node_count <- gorder(network)  
-    print(gorder(network))
+    print(network_stats$node_count )
 
     ## [1] 258
 
@@ -82,15 +79,15 @@ to OD data, the an edge represents a residence-workplace relationship
 between Census tracts.
 
     network_stats$edge_count <- gsize(network)  
-    print(gsize(network))
+    print(network_stats$edge_count)
 
-    ## [1] 23930
+    ## [1] 32620
 
 We can also add up the sum of weights for a count of jobs represented in
 the graph.
 
     network_stats$jobs_count <- sum(edgelist$weight)
-    print(sum(edgelist$weight))
+    print(network_stats$jobs_count)
 
     ## [1] 239741
 
@@ -99,24 +96,26 @@ shares a common vertex. In relation to the OD, the degree function
 produces a count of links for each node, in this case, for each Census
 tract. The average degree is printed.
 
-    network_stats$mean_deg <- mean(igraph::degree(network))
-    print(mean(igraph::degree(network)))
+    network_stats$mean_deg_total <- mean(igraph::degree(network))
+    network_stats$mean_deg_out <- mean(igraph::degree(network, mode = "out"))
+    network_stats$mean_deg_in <- mean(igraph::degree(network, mode = "in"))
+    print(network_stats$mean_deg_total)
 
-    ## [1] 185.5039
+    ## [1] 252.8682
 
-    hist(igraph::degree(network), breaks = seq(0,300, 25), main="Histogram of Node Degree")
+    hist(igraph::degree(network), breaks = seq(0,425, 25), main="Histogram of Node Degree")
 
 ![](09_network_descriptives_intra_fairfax_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
 **Betweenness** is a measure of centrality, which counts the number of
 shortest paths (geodesic) going through a node.
 
-    network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4))
-    print(mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4)))
+    network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4))
+    print(network_stats$mean_btw)
 
-    ## [1] 36.74031
+    ## [1] 131.6938
 
-    hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4), main = "Histogram of Betweenness", breaks = seq(0, 100, 10))
+    hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4), main = "Histogram of Betweenness", breaks = seq(0, 500, 25))
 
 ![](09_network_descriptives_intra_fairfax_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
@@ -127,62 +126,66 @@ residence did not have a corresponding relationship.
 
     network_stats$isolates <- sum(igraph::degree(simplify(network))==0)
 
-Triads (these will change if directionality is included.)
+Triads Why do we care about triads?
 
-Why do we care about triads?
-
-    network_stats$triads_003 <- igraph::triad.census(network)[1]
-
-    ## Warning in igraph::triad.census(network): At motifs.c:1052 :Triad census called
-    ## on an undirected graph
-
-    # empty graph, no connections
-
-    network_stats$triads_102 <- igraph::triad.census(network)[3]
-
-    ## Warning in igraph::triad.census(network): At motifs.c:1052 :Triad census called
-    ## on an undirected graph
-
-    #  graph with a mutual connection between two vertices.
-
-    network_stats$triads_201 <- igraph::triad.census(network)[11]
-
-    ## Warning in igraph::triad.census(network): At motifs.c:1052 :Triad census called
-    ## on an undirected graph
-
-    #graph with two mutual connection between two vertices.
-
-    network_stats$triads_300 <- igraph::triad.census(network)[16]
-
-    ## Warning in igraph::triad.census(network): At motifs.c:1052 :Triad census called
-    ## on an undirected graph
-
-    # complete graph
+    network_stats$triads_003 <- igraph::triad.census(network)[1] # empty graph, no connections
+    network_stats$triads_012 <- igraph::triad.census(network)[2]
+    network_stats$triads_102 <- igraph::triad.census(network)[3] #graph with a mutual connection between two vertices.
+    network_stats$triads_021D <- igraph::triad.census(network)[4]
+    network_stats$triads_021U <- igraph::triad.census(network)[5]
+    network_stats$triads_021C <- igraph::triad.census(network)[6]
+    network_stats$triads_111D <- igraph::triad.census(network)[7]
+    network_stats$triads_111U <- igraph::triad.census(network)[8]
+    network_stats$triads_030T <- igraph::triad.census(network)[9]
+    network_stats$triads_030C <- igraph::triad.census(network)[10]
+    network_stats$triads_201 <- igraph::triad.census(network)[11] #graph with two mutual connection between two vertices.
+    network_stats$triads_120D <- igraph::triad.census(network)[12]
+    network_stats$triads_120U <- igraph::triad.census(network)[13]
+    network_stats$triads_120C <- igraph::triad.census(network)[14]
+    network_stats$triads_210 <- igraph::triad.census(network)[15]
+    network_stats$triads_300 <- igraph::triad.census(network)[16] # complete graph
 
 Dyads (this will change with directionality)
 
     # The number of pairs with mutual connections.
     network_stats$dyad_mut <- igraph::dyad_census(network)$mut
 
-    ## Warning in igraph::dyad_census(network): At motifs.c:858 :Dyad census called on
-    ## undirected graph
-
     # The number of pairs with non-mutual connections.
     network_stats$dyad_asym <- igraph::dyad_census(network)$asym
 
-    ## Warning in igraph::dyad_census(network): At motifs.c:858 :Dyad census called on
-    ## undirected graph
-
     # The number of pairs with no connections.
     network_stats$dyad_null <- igraph::dyad_census(network)$null
-
-    ## Warning in igraph::dyad_census(network): At motifs.c:858 :Dyad census called on
-    ## undirected graph
 
 ##### Density and Transitivity
 
 The **diameter** of a graph is the length of the longest shortest path
 (geodesic) passing through a node.
+
+    network_stats$diameter <- diameter(network,directed=TRUE, 
+                                       unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE}, weights=NA)
+
+    #UNCONNECTED Logical, what to do if the graph is unconnected. If FALSE, the function will
+    #return a number that is one larger the largest possible diameter, which is always
+    #the number of vertices. If TRUE, the diameters of the connected components
+    #will be calculated and the largest one will be returned
+
+    #WEIGHTS Optional positive weight vector for calculating weighted distances. If the graph
+    #has a weight edge attribute, then this is used by default.
+
+Mean Distance: The average length of all the shortest paths from or to
+the nodes in the network.
+
+    network_stats$mean_distance <- mean_distance(network, directed = TRUE, 
+                                       unconnected = if (network_stats$isolates == 0) {FALSE} else {TRUE})
+
+Edge Density: ratio of the number of edges and the number of possible
+edges. The density is in the middle (1 is max, 0 is min density).
+
+    network_stats$density <- edge_density(network, loops=TRUE) 
+
+Transitivity:
+
+    network_stats$transitivity <- transitivity(network, weights = TRUE, type = "undirected")
 
 ### Sources
 

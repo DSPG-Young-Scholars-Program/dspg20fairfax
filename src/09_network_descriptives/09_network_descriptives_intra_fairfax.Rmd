@@ -2,8 +2,9 @@
 title: "09_network_descriptives_intra_fairfax"
 author: "Sarah McDonald"
 date: "6/29/2020"
-output: md_document
-always_allow_html: true
+output: html_document
+#output: md_document
+#always_allow_html: true
 ---
 
 Load packages
@@ -38,15 +39,14 @@ edgelist <- data %>%
 ```
 
 Next, we create the __igraph__ network object. Simple graphs are graphs which do not contain loop and multiple edges. 
-The function below keeps the loops, which would indicate working and living in the same tract, but removes multiple edges, because we will start wth a simple, undirected graph.
+The function below keeps the loops, which would indicate working and living in the same tract, but removes multiple edges, because we will start wth a simple, directed graph.
 
-(It might be good to create a direct network later, since we are exploring flows FROM residence TO workplace.)
 
 ```{r}
-network <- simplify(graph.data.frame(edgelist, directed = FALSE), 
+network <- simplify(graph.data.frame(edgelist, directed = TRUE), 
                          remove.loops = FALSE, 
                          edge.attr.comb = igraph_opt("edge.attr.comb"))
-#U: undirected
+#D: directed
 #N: Named
 #W: Weighted
 
@@ -67,37 +67,39 @@ The _order_ of a graph indicates the number of nodes (or vertices). In this case
 
 ```{r}
 network_stats$node_count <- gorder(network)  
-print(gorder(network))
+print(network_stats$node_count )
 ```
 
 The _size_ of graph indicates the number of edges (or links). Relevant to OD data, the an edge represents a residence-workplace relationship between Census tracts.
 
 ```{r}
 network_stats$edge_count <- gsize(network)  
-print(gsize(network))
+print(network_stats$edge_count)
 ```
 
 We can also add up the sum of weights for a count of jobs represented in the graph.
 
 ```{r}
 network_stats$jobs_count <- sum(edgelist$weight)
-print(sum(edgelist$weight))
+print(network_stats$jobs_count)
 ```
 
 The __degree__ indicates the number of adjacent edges. An adjacent edge shares a common vertex. In relation to the OD, the degree function produces a count of links for each node, in this case, for each Census tract. The average degree is printed.
 ```{r}
-network_stats$mean_deg <- mean(igraph::degree(network))
-print(mean(igraph::degree(network)))
+network_stats$mean_deg_total <- mean(igraph::degree(network))
+network_stats$mean_deg_out <- mean(igraph::degree(network, mode = "out"))
+network_stats$mean_deg_in <- mean(igraph::degree(network, mode = "in"))
+print(network_stats$mean_deg_total)
 
-hist(igraph::degree(network), breaks = seq(0,300, 25), main="Histogram of Node Degree")
+hist(igraph::degree(network), breaks = seq(0,425, 25), main="Histogram of Node Degree")
 ```
 
 __Betweenness__ is a measure of centrality, which counts the number of shortest paths (geodesic) going through a node. 
 
 ```{r}
-network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4))
-print(mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4)))
-hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="undirected"), 4), main = "Histogram of Betweenness", breaks = seq(0, 100, 10))
+network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4))
+print(network_stats$mean_btw)
+hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4), main = "Histogram of Betweenness", breaks = seq(0, 500, 25))
 ```
 
 ##### Isolates, Dyads, and Triads 
@@ -108,30 +110,25 @@ network_stats$isolates <- sum(igraph::degree(simplify(network))==0)
 ```
 
 Triads
-(these will change if directionality is included.)
-
 Why do we care about triads?
 
 ```{r}
-network_stats$triads_003 <- igraph::triad.census(network)[1]
-# empty graph, no connections
-```
-
-```{r}
-network_stats$triads_102 <- igraph::triad.census(network)[3]
-#  graph with a mutual connection between two vertices.
-```
-
-
-```{r}
-network_stats$triads_201 <- igraph::triad.census(network)[11]
-#graph with two mutual connection between two vertices.
-```
-
-
-```{r}
-network_stats$triads_300 <- igraph::triad.census(network)[16]
-# complete graph
+network_stats$triads_003 <- igraph::triad.census(network)[1] # empty graph, no connections
+network_stats$triads_012 <- igraph::triad.census(network)[2]
+network_stats$triads_102 <- igraph::triad.census(network)[3] #graph with a mutual connection between two vertices.
+network_stats$triads_021D <- igraph::triad.census(network)[4]
+network_stats$triads_021U <- igraph::triad.census(network)[5]
+network_stats$triads_021C <- igraph::triad.census(network)[6]
+network_stats$triads_111D <- igraph::triad.census(network)[7]
+network_stats$triads_111U <- igraph::triad.census(network)[8]
+network_stats$triads_030T <- igraph::triad.census(network)[9]
+network_stats$triads_030C <- igraph::triad.census(network)[10]
+network_stats$triads_201 <- igraph::triad.census(network)[11] #graph with two mutual connection between two vertices.
+network_stats$triads_120D <- igraph::triad.census(network)[12]
+network_stats$triads_120U <- igraph::triad.census(network)[13]
+network_stats$triads_120C <- igraph::triad.census(network)[14]
+network_stats$triads_210 <- igraph::triad.census(network)[15]
+network_stats$triads_300 <- igraph::triad.census(network)[16] # complete graph
 ```
 
 
@@ -154,8 +151,41 @@ network_stats$dyad_null <- igraph::dyad_census(network)$null
 
 The __diameter__ of a graph is the length of the longest shortest path (geodesic) passing through a node.  
 ```{r}
+network_stats$diameter <- diameter(network,directed=TRUE, 
+                                   unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE}, weights=NA)
+
+#UNCONNECTED Logical, what to do if the graph is unconnected. If FALSE, the function will
+#return a number that is one larger the largest possible diameter, which is always
+#the number of vertices. If TRUE, the diameters of the connected components
+#will be calculated and the largest one will be returned
+
+#WEIGHTS Optional positive weight vector for calculating weighted distances. If the graph
+#has a weight edge attribute, then this is used by default.
 
 ```
+
+
+Mean Distance: The average length of all the shortest paths from or to the nodes in the network.
+```{r}
+network_stats$mean_distance <- mean_distance(network, directed = TRUE, 
+                                   unconnected = if (network_stats$isolates == 0) {FALSE} else {TRUE})
+
+```
+
+
+Edge Density: ratio of the number of edges and the number of possible edges. The density is in the middle (1 is max, 0 is min density).
+```{r}
+network_stats$density <- edge_density(network, loops=TRUE) 
+```
+
+
+Transitivity: 
+```{r}
+network_stats$transitivity <- transitivity(network, weights = TRUE, type = "undirected")
+
+```
+
+
 
 
 ### Sources
