@@ -241,7 +241,7 @@ leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
   addLegend("bottomleft", 
             pal = pal, 
             values =  ~pct_lf_highschool,
-            title = "Percentage of Labor Force <br> with HS Education or Less <br>by Quintile Group", 
+            title = "Percent Workers<br>with HS Education or Less<br>by Quintile Group", 
             opacity = 1,
             na.label = "Not Available",
             labFormat = function(type = "quantile", cuts = 5, p = pct_lf_highschool) {
@@ -262,7 +262,7 @@ leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
   addLegend("bottomleft", 
             pal = pal, 
             values =  ~median_worker_income,
-            title = "Median Worker Income in <br> Fairfax County,<br> by Quintile Group", 
+            title = "Median Worker Income<br><br>by Quintile Group", 
             opacity = 1,
             na.label = "Not Available",
             labFormat = function(type = "quantile", cuts = 5, p = median_worker_income) {
@@ -286,7 +286,7 @@ leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
   addLegend("bottomleft", 
             pal = pal, 
             values =  ~percent_employed_occupations_vuln,
-            title = "Percent Employed in Occupations <br>Vulnerable to Covid-19<br> by Quintile Group", 
+            title = "Percent Employed in<br>Vulnerable Occupations<br>by Quintile Group", 
             opacity = 1,
             na.label = "Not Available",
             labFormat = function(type = "quantile", cuts = 5, p = percent_employed_occupations_vuln) {
@@ -307,7 +307,7 @@ leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
   addLegend("bottomleft", 
             pal = pal, 
             values =  ~percent_employed_impacted_industry,
-            title = "Percent Employed in Occupations<br>Vulnerable to Covid-19<br>by Quintile Group", 
+            title = "Percent Employed in<br>Vulnerable Industries<br>by Quintile Group", 
             opacity = 1,
             na.label = "Not Available",
             labFormat = function(type = "quantile", cuts = 5, p = percent_employed_impacted_industry) {
