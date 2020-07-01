@@ -187,15 +187,15 @@ summary {
 <p>Load packages</p>
 <pre class="r"><code>library(dplyr)
 library(igraph)
-library(lubridate)
-library(sna)
-library(intergraph)</code></pre>
+library(lubridate)</code></pre>
 <p>Load data frame and filter for residence AND workplace within Fairfax County.</p>
 <pre class="r"><code>data &lt;- read.csv(&quot;/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobsall.csv&quot;)
 
 # focus on within county first
 data &lt;- data %&gt;% 
   filter(grepl(&quot;^51059.+&quot;, w_geocode_tract) &amp; grepl(&quot;^51059.+&quot;, h_geocode_tract))</code></pre>
+<div id="edge-list" class="section level1">
+<h1>Edge List</h1>
 <p>Create edge list, which defines the &quot;from&quot; and &quot;to&quot; relationships of the Fairfax workforce. We define &quot;from&quot; as residence and &quot;to&quot; as workplace. For this script, we will define the weight as S000, which is the total number of jobs, in other words,the total number of jobs for which a worker lives in the &quot;from&quot; Census tract and commutes to the workplace in the &quot;to&quot; Census tract (check interpretation).</p>
 <pre class="r"><code>edgelist &lt;- data %&gt;% 
   select(h_geocode_tract, w_geocode_tract, S000) %&gt;% 
@@ -207,14 +207,18 @@ data &lt;- data %&gt;%
 <pre class="r"><code>network &lt;- simplify(graph.data.frame(edgelist, directed = TRUE), 
                          remove.loops = FALSE, 
                          edge.attr.comb = igraph_opt(&quot;edge.attr.comb&quot;))
-#D: directed
+is_weighted(network)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is_directed(network)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>#D: directed
 #N: Named
 #W: Weighted
 
 print(network)</code></pre>
-<pre><code>## IGRAPH 313b0a0 DNW- 258 32620 -- 
+<pre><code>## IGRAPH b4c2ea2 DNW- 258 32620 -- 
 ## + attr: name (v/c), weight (e/n)
-## + edges from 313b0a0 (vertex names):
+## + edges from b4c2ea2 (vertex names):
 ##  [1] 51059480202-&gt;51059480202 51059480202-&gt;51059482501 51059480202-&gt;51059460502
 ##  [4] 51059480202-&gt;51059461602 51059480202-&gt;51059490103 51059480202-&gt;51059471202
 ##  [7] 51059480202-&gt;51059482601 51059480202-&gt;51059490101 51059480202-&gt;51059471301
@@ -246,12 +250,33 @@ print(network_stats$jobs_count)</code></pre>
 <pre class="r"><code>network_stats$mean_deg_total &lt;- mean(igraph::degree(network))
 network_stats$mean_deg_out &lt;- mean(igraph::degree(network, mode = &quot;out&quot;))
 network_stats$mean_deg_in &lt;- mean(igraph::degree(network, mode = &quot;in&quot;))
-print(network_stats$mean_deg_total)</code></pre>
-<pre><code>## [1] 252.8682</code></pre>
+
+#mean(sna::degree(intergraph::asNetwork(network), cmode=&quot;freeman&quot;))
+#mean(sna::degree(intergraph::asNetwork(network), cmode=&quot;indegree&quot;))
+#mean(sna::degree(intergraph::asNetwork(network), cmode=&quot;outdegree&quot;))
+
+knitr::kable(network_stats[, c(&quot;mean_deg_total&quot;, &quot;mean_deg_out&quot;, &quot;mean_deg_in&quot;)])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">mean_deg_total</th>
+<th align="right">mean_deg_out</th>
+<th align="right">mean_deg_in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">252.8682</td>
+<td align="right">126.4341</td>
+<td align="right">126.4341</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>hist(igraph::degree(network), breaks = seq(0,425, 25), main=&quot;Histogram of Node Degree&quot;)</code></pre>
 <p><img src="data:image/png;base64,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" width="672" /></p>
 <p><strong>Betweenness</strong> is a measure of centrality, which counts the number of shortest paths (geodesic) going through a node.</p>
 <pre class="r"><code>network_stats$mean_btw &lt;- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode=&quot;directed&quot;), 4))
+
 print(network_stats$mean_btw)</code></pre>
 <pre><code>## [1] 131.6938</code></pre>
 <pre class="r"><code>hist(round(sna::betweenness(intergraph::asNetwork(network), cmode=&quot;directed&quot;), 4), main = &quot;Histogram of Betweenness&quot;, breaks = seq(0, 500, 25))</code></pre>
@@ -261,7 +286,7 @@ print(network_stats$mean_btw)</code></pre>
 <h5>Isolates, Dyads, and Triads</h5>
 <p>Isolates are non-connected nodes, which means either the workplace or residence did not have a corresponding relationship.</p>
 <pre class="r"><code>network_stats$isolates &lt;- sum(igraph::degree(simplify(network))==0)</code></pre>
-<p>Triads Why do we care about triads?</p>
+<p>Triads</p>
 <pre class="r"><code>network_stats$triads_003 &lt;- igraph::triad.census(network)[1] # empty graph, no connections
 network_stats$triads_012 &lt;- igraph::triad.census(network)[2]
 network_stats$triads_102 &lt;- igraph::triad.census(network)[3] #graph with a mutual connection between two vertices.
@@ -277,38 +302,224 @@ network_stats$triads_120D &lt;- igraph::triad.census(network)[12]
 network_stats$triads_120U &lt;- igraph::triad.census(network)[13]
 network_stats$triads_120C &lt;- igraph::triad.census(network)[14]
 network_stats$triads_210 &lt;- igraph::triad.census(network)[15]
-network_stats$triads_300 &lt;- igraph::triad.census(network)[16] # complete graph</code></pre>
-<p>Dyads (this will change with directionality)</p>
-<pre class="r"><code># The number of pairs with mutual connections.
-network_stats$dyad_mut &lt;- igraph::dyad_census(network)$mut
+network_stats$triads_300 &lt;- igraph::triad.census(network)[16] # complete graph
 
-# The number of pairs with non-mutual connections.
+knitr::kable(network_stats[, c(colnames(network_stats)[grepl(&quot;^triads_&quot;, colnames(network_stats))])][1:8])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">triads_003</th>
+<th align="right">triads_012</th>
+<th align="right">triads_102</th>
+<th align="right">triads_021D</th>
+<th align="right">triads_021U</th>
+<th align="right">triads_021C</th>
+<th align="right">triads_111D</th>
+<th align="right">triads_111U</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">159438</td>
+<td align="right">358305</td>
+<td align="right">116240</td>
+<td align="right">67378</td>
+<td align="right">314441</td>
+<td align="right">123361</td>
+<td align="right">327796</td>
+<td align="right">81845</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(network_stats[, c(colnames(network_stats)[grepl(&quot;^triads_&quot;, colnames(network_stats))])][9:16])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">triads_030T</th>
+<th align="right">triads_030C</th>
+<th align="right">triads_201</th>
+<th align="right">triads_120D</th>
+<th align="right">triads_120U</th>
+<th align="right">triads_120C</th>
+<th align="right">triads_210</th>
+<th align="right">triads_300</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">239500</td>
+<td align="right">12881</td>
+<td align="right">84399</td>
+<td align="right">298958</td>
+<td align="right">80819</td>
+<td align="right">113242</td>
+<td align="right">314417</td>
+<td align="right">136036</td>
+</tr>
+</tbody>
+</table>
+<p>Dyads</p>
+<p>Mutual Dyads are the count of pairs with mutual connections. Asymmetric Dyads are the count of pairs with non-mutual connections. Null Dyads are the count of pairs with no connections.</p>
+<pre class="r"><code>network_stats$dyad_mut &lt;- igraph::dyad_census(network)$mut
 network_stats$dyad_asym &lt;- igraph::dyad_census(network)$asym
+network_stats$dyad_null &lt;- igraph::dyad_census(network)$null
 
-# The number of pairs with no connections.
-network_stats$dyad_null &lt;- igraph::dyad_census(network)$null</code></pre>
+knitr::kable(network_stats[, c(colnames(network_stats)[grepl(&quot;^dyad_&quot;, colnames(network_stats))])])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">dyad_mut</th>
+<th align="right">dyad_asym</th>
+<th align="right">dyad_null</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">8818</td>
+<td align="right">14984</td>
+<td align="right">9351</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="density-and-transitivity" class="section level5">
 <h5>Density and Transitivity</h5>
 <p>The <strong>diameter</strong> of a graph is the length of the longest shortest path (geodesic) passing through a node.</p>
 <pre class="r"><code>network_stats$diameter &lt;- diameter(network,directed=TRUE, 
-                                   unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE}, weights=NA)
-
-#UNCONNECTED Logical, what to do if the graph is unconnected. If FALSE, the function will
-#return a number that is one larger the largest possible diameter, which is always
-#the number of vertices. If TRUE, the diameters of the connected components
-#will be calculated and the largest one will be returned
-
-#WEIGHTS Optional positive weight vector for calculating weighted distances. If the graph
-#has a weight edge attribute, then this is used by default.</code></pre>
+                                   unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE})</code></pre>
 <p>Mean Distance: The average length of all the shortest paths from or to the nodes in the network.</p>
 <pre class="r"><code>network_stats$mean_distance &lt;- mean_distance(network, directed = TRUE, 
                                    unconnected = if (network_stats$isolates == 0) {FALSE} else {TRUE})</code></pre>
-<p>Edge Density: ratio of the number of edges and the number of possible edges. The density is in the middle (1 is max, 0 is min density).</p>
-<pre class="r"><code>network_stats$density &lt;- edge_density(network, loops=TRUE) </code></pre>
-<p>Transitivity:</p>
-<pre class="r"><code>network_stats$transitivity &lt;- transitivity(network, weights = TRUE, type = &quot;undirected&quot;)</code></pre>
+<p>Edge Density: ratio of the number of edges and the number of possible edges. Density ranges from 0 (minimum) to 1 (maximum).</p>
+<pre class="r"><code>network_stats$density &lt;- edge_density(network, loops=TRUE) 
+print(network_stats$density)</code></pre>
+<pre><code>## [1] 0.4900547</code></pre>
+<p>Transitivity: The probability that the adjacent vertices of a vertex are connected</p>
+<pre class="r"><code>network_stats$transitivity_global &lt;- transitivity(network, weights = TRUE, type = &quot;global&quot;)
+network_stats$transitivity_local_avg &lt;- mean(transitivity(network, weights = TRUE, type = &quot;local&quot;))
+#network_stats$transitivity_barrat &lt;- transitivity(network, weights = TRUE, type = &quot;weighted&quot;) # weighted (this does not work)
+
+knitr::kable(network_stats[, c(&quot;transitivity_global&quot;, &quot;transitivity_local_avg&quot;)])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">transitivity_global</th>
+<th align="right">transitivity_local_avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.7821521</td>
+<td align="right">0.4726695</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+<div id="community-detection" class="section level3">
+<h3>Community Detection</h3>
+<p>Louvain Method: The multi-level modularity optimization algorithm</p>
+<pre class="r"><code># this doesn't work for directed networks
+louvain &lt;- igraph::cluster_louvain(as.undirected(network))
+network_stats$louvain &lt;- modularity(louvain)
+network_stats$louvain_scaled &lt;- modularity(louvain) / gorder(network)
+network_stats$louvain_logged &lt;- modularity(louvain) / log(gorder(network))
+
+knitr::kable(network_stats[, c(&quot;louvain&quot;,&quot;louvain_scaled&quot;, &quot;louvain_logged&quot;)])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">louvain</th>
+<th align="right">louvain_scaled</th>
+<th align="right">louvain_logged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1867802</td>
+<td align="right">0.000724</td>
+<td align="right">0.0336361</td>
+</tr>
+</tbody>
+</table>
+<p>Fast and Greedy: searches for a dense sub-graph</p>
+<pre class="r"><code># does not work for directed graphs
+fstgrdy &lt;- cluster_fast_greedy(as.undirected(network))
+network_stats$fstgrdy &lt;- modularity(fstgrdy)
+network_stats$fstgrdy_scaled &lt;- modularity(fstgrdy) / gorder(network)
+network_stats$fstgrdy_logged &lt;- modularity(fstgrdy) / log(gorder(network))
+
+knitr::kable(network_stats[, c(&quot;fstgrdy&quot;,&quot;fstgrdy_scaled&quot;, &quot;fstgrdy_logged&quot;)])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">fstgrdy</th>
+<th align="right">fstgrdy_scaled</th>
+<th align="right">fstgrdy_logged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1849842</td>
+<td align="right">0.000717</td>
+<td align="right">0.0333127</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="centrality" class="section level3">
+<h3>Centrality</h3>
+<p>Degree Centrality: Centralize a graph according to the degrees of vertices Closenses Centrality: Centralize a graph according to the closeness of vertices Betweenness Centrality: Centralize a graph according to the betweenness of vertices Eigenvector Centrality: Centralize a graph according to the eigenvector centrality of vertices</p>
+<pre class="r"><code>network_stats$centr_deg_total &lt;- round(centr_degree(network, mode = &quot;all&quot;)$centralization, 3)
+network_stats$centr_deg_out &lt;- round(centr_degree(network, mode = &quot;out&quot;)$centralization, 3)
+network_stats$centr_deg_in &lt;- round(centr_degree(network, mode = &quot;in&quot;)$centralization, 3)
+
+network_stats$centr_clo_total &lt;- round(centr_clo(network, mode = &quot;all&quot;)$centralization, 3)
+network_stats$centr_clo_out &lt;- round(centr_clo(network, mode = &quot;out&quot;)$centralization, 3)
+network_stats$centr_clo_in &lt;- round(centr_clo(network, mode = &quot;in&quot;)$centralization, 3)
+
+network_stats$centr_betw_total &lt;- round(centr_betw(network, directed = TRUE)$centralization, 3)
+
+network_stats$centr_eigen_total &lt;- round(centr_eigen(network, directed = TRUE)$centralization, 3)</code></pre>
+</div>
+<div id="decomposition-statistics" class="section level3">
+<h3>Decomposition Statistics</h3>
+<pre class="r"><code>decomposition_stats &lt;- table(sapply(decompose.graph(network), vcount))</code></pre>
+</div>
+</div>
+<div id="nodelist" class="section level1">
+<h1>Nodelist</h1>
+<pre class="r"><code>nodelist &lt;- data.frame(id = c(1:(igraph::vcount(network))), tract = igraph::V(network)$name)</code></pre>
+<div id="degree-weighted-degree-k-core-and-modularity" class="section level3">
+<h3>degree, weighted degree, k core and modularity</h3>
+<p>Degree Centrality and Weighted Degree Centrality (All/Out/In):</p>
+<pre class="r"><code>nodelist$deg_cent_total &lt;- igraph::degree(network, mode = &quot;all&quot;)
+nodelist$deg_cent_out &lt;- igraph::degree(network, mode = &quot;out&quot;)
+nodelist$deg_cent_in &lt;- igraph::degree(network, mode = &quot;in&quot;)
+
+nodelist$wtd_deg_cent_total &lt;- igraph::strength(network, mode = &quot;all&quot;)
+nodelist$wtd_deg_cent_out &lt;- igraph::strength(network, mode = &quot;out&quot;)
+nodelist$wtd_deg_cent_in &lt;- igraph::strength(network, mode = &quot;in&quot;)</code></pre>
+<p>Betweeness Centrality:</p>
+<pre class="r"><code>nodelist$btw_cent &lt;- round(sna::betweenness(intergraph::asNetwork(network), cmode=&quot;directed&quot;), 4)</code></pre>
+<p>Closeness Centrality (All/In/Out):</p>
+<pre class="r"><code>nodelist$close_cent_total &lt;- closeness(network, mode = &quot;all&quot;) 
+nodelist$close_cent_out &lt;- closeness(network, mode = &quot;out&quot;) 
+nodelist$close_cent_in &lt;- closeness(network, mode = &quot;in&quot;) </code></pre>
+<p>Eigenvector Centrality:</p>
+<pre class="r"><code>nodelist$eigen_cent &lt;- eigen_centrality(network, directed = TRUE)$vector</code></pre>
+<pre><code>## Warning in eigen_centrality(network, directed = TRUE): At centrality.c:
+## 362 :Weighted directed graph in eigenvector centrality</code></pre>
+</div>
+<div id="membership" class="section level3">
+<h3>Membership</h3>
+<pre class="r"><code>components &lt;- components(network)
+fstgrdy &lt;- fastgreedy.community(as.undirected(network))
+louvain &lt;- cluster_louvain(as.undirected(network))
+
+nodelist$component &lt;- components$membership
+nodelist$louvain_comm &lt;- louvain$membership
+nodelist$fstgrdy_comm &lt;- fstgrdy$membership</code></pre>
 </div>
 <div id="sources" class="section level3">
 <h3>Sources</h3>
@@ -320,6 +531,7 @@ network_stats$dyad_null &lt;- igraph::dyad_census(network)$null</code></pre>
 <p><a href="https://ebookcentral-proquest-com.proxy01.its.virginia.edu/lib/uva/reader.action?docID=4199226&amp;ppg=185" class="uri">https://ebookcentral-proquest-com.proxy01.its.virginia.edu/lib/uva/reader.action?docID=4199226&amp;ppg=185</a></p>
 <p><a href="https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.4.pdf" class="uri">https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.4.pdf</a></p>
 <p><a href="https://igraph.org/r/doc/igraph.pdf" class="uri">https://igraph.org/r/doc/igraph.pdf</a></p>
+</div>
 </div>
 
 

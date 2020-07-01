@@ -3,8 +3,6 @@ Load packages
     library(dplyr)
     library(igraph)
     library(lubridate)
-    library(sna)
-    library(intergraph)
 
 Load data frame and filter for residence AND workplace within Fairfax
 County.
@@ -14,6 +12,9 @@ County.
     # focus on within county first
     data <- data %>% 
       filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))
+
+Edge List
+=========
 
 Create edge list, which defines the "from" and "to" relationships of the
 Fairfax workforce. We define "from" as residence and "to" as workplace.
@@ -38,15 +39,23 @@ graph.
     network <- simplify(graph.data.frame(edgelist, directed = TRUE), 
                              remove.loops = FALSE, 
                              edge.attr.comb = igraph_opt("edge.attr.comb"))
+    is_weighted(network)
+
+    ## [1] TRUE
+
+    is_directed(network)
+
+    ## [1] TRUE
+
     #D: directed
     #N: Named
     #W: Weighted
 
     print(network)
 
-    ## IGRAPH 12ab6f5 DNW- 258 32620 -- 
+    ## IGRAPH 0332cc0 DNW- 258 32620 -- 
     ## + attr: name (v/c), weight (e/n)
-    ## + edges from 12ab6f5 (vertex names):
+    ## + edges from 0332cc0 (vertex names):
     ##  [1] 51059480202->51059480202 51059480202->51059482501 51059480202->51059460502
     ##  [4] 51059480202->51059461602 51059480202->51059490103 51059480202->51059471202
     ##  [7] 51059480202->51059482601 51059480202->51059490101 51059480202->51059471301
@@ -99,9 +108,29 @@ tract. The average degree is printed.
     network_stats$mean_deg_total <- mean(igraph::degree(network))
     network_stats$mean_deg_out <- mean(igraph::degree(network, mode = "out"))
     network_stats$mean_deg_in <- mean(igraph::degree(network, mode = "in"))
-    print(network_stats$mean_deg_total)
 
-    ## [1] 252.8682
+    #mean(sna::degree(intergraph::asNetwork(network), cmode="freeman"))
+    #mean(sna::degree(intergraph::asNetwork(network), cmode="indegree"))
+    #mean(sna::degree(intergraph::asNetwork(network), cmode="outdegree"))
+
+    knitr::kable(network_stats[, c("mean_deg_total", "mean_deg_out", "mean_deg_in")])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">mean_deg_total</th>
+<th align="right">mean_deg_out</th>
+<th align="right">mean_deg_in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">252.8682</td>
+<td align="right">126.4341</td>
+<td align="right">126.4341</td>
+</tr>
+</tbody>
+</table>
 
     hist(igraph::degree(network), breaks = seq(0,425, 25), main="Histogram of Node Degree")
 
@@ -111,6 +140,7 @@ tract. The average degree is printed.
 shortest paths (geodesic) going through a node.
 
     network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4))
+
     print(network_stats$mean_btw)
 
     ## [1] 131.6938
@@ -126,7 +156,7 @@ residence did not have a corresponding relationship.
 
     network_stats$isolates <- sum(igraph::degree(simplify(network))==0)
 
-Triads Why do we care about triads?
+Triads
 
     network_stats$triads_003 <- igraph::triad.census(network)[1] # empty graph, no connections
     network_stats$triads_012 <- igraph::triad.census(network)[2]
@@ -145,16 +175,92 @@ Triads Why do we care about triads?
     network_stats$triads_210 <- igraph::triad.census(network)[15]
     network_stats$triads_300 <- igraph::triad.census(network)[16] # complete graph
 
-Dyads (this will change with directionality)
+    knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^triads_", colnames(network_stats))])][1:8])
 
-    # The number of pairs with mutual connections.
+<table>
+<thead>
+<tr class="header">
+<th align="right">triads_003</th>
+<th align="right">triads_012</th>
+<th align="right">triads_102</th>
+<th align="right">triads_021D</th>
+<th align="right">triads_021U</th>
+<th align="right">triads_021C</th>
+<th align="right">triads_111D</th>
+<th align="right">triads_111U</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">159438</td>
+<td align="right">358305</td>
+<td align="right">116240</td>
+<td align="right">67378</td>
+<td align="right">314441</td>
+<td align="right">123361</td>
+<td align="right">327796</td>
+<td align="right">81845</td>
+</tr>
+</tbody>
+</table>
+
+    knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^triads_", colnames(network_stats))])][9:16])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">triads_030T</th>
+<th align="right">triads_030C</th>
+<th align="right">triads_201</th>
+<th align="right">triads_120D</th>
+<th align="right">triads_120U</th>
+<th align="right">triads_120C</th>
+<th align="right">triads_210</th>
+<th align="right">triads_300</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">239500</td>
+<td align="right">12881</td>
+<td align="right">84399</td>
+<td align="right">298958</td>
+<td align="right">80819</td>
+<td align="right">113242</td>
+<td align="right">314417</td>
+<td align="right">136036</td>
+</tr>
+</tbody>
+</table>
+
+Dyads
+
+Mutual Dyads are the count of pairs with mutual connections. Asymmetric
+Dyads are the count of pairs with non-mutual connections. Null Dyads are
+the count of pairs with no connections.
+
     network_stats$dyad_mut <- igraph::dyad_census(network)$mut
-
-    # The number of pairs with non-mutual connections.
     network_stats$dyad_asym <- igraph::dyad_census(network)$asym
-
-    # The number of pairs with no connections.
     network_stats$dyad_null <- igraph::dyad_census(network)$null
+
+    knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^dyad_", colnames(network_stats))])])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">dyad_mut</th>
+<th align="right">dyad_asym</th>
+<th align="right">dyad_null</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">8818</td>
+<td align="right">14984</td>
+<td align="right">9351</td>
+</tr>
+</tbody>
+</table>
 
 ##### Density and Transitivity
 
@@ -162,15 +268,7 @@ The **diameter** of a graph is the length of the longest shortest path
 (geodesic) passing through a node.
 
     network_stats$diameter <- diameter(network,directed=TRUE, 
-                                       unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE}, weights=NA)
-
-    #UNCONNECTED Logical, what to do if the graph is unconnected. If FALSE, the function will
-    #return a number that is one larger the largest possible diameter, which is always
-    #the number of vertices. If TRUE, the diameters of the connected components
-    #will be calculated and the largest one will be returned
-
-    #WEIGHTS Optional positive weight vector for calculating weighted distances. If the graph
-    #has a weight edge attribute, then this is used by default.
+                                       unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE})
 
 Mean Distance: The average length of all the shortest paths from or to
 the nodes in the network.
@@ -179,13 +277,160 @@ the nodes in the network.
                                        unconnected = if (network_stats$isolates == 0) {FALSE} else {TRUE})
 
 Edge Density: ratio of the number of edges and the number of possible
-edges. The density is in the middle (1 is max, 0 is min density).
+edges. Density ranges from 0 (minimum) to 1 (maximum).
 
     network_stats$density <- edge_density(network, loops=TRUE) 
+    print(network_stats$density)
 
-Transitivity:
+    ## [1] 0.4900547
 
-    network_stats$transitivity <- transitivity(network, weights = TRUE, type = "undirected")
+Transitivity: The probability that the adjacent vertices of a vertex are
+connected
+
+    network_stats$transitivity_global <- transitivity(network, weights = TRUE, type = "global")
+    network_stats$transitivity_local_avg <- mean(transitivity(network, weights = TRUE, type = "local"))
+    #network_stats$transitivity_barrat <- transitivity(network, weights = TRUE, type = "weighted") # weighted (this does not work)
+
+    knitr::kable(network_stats[, c("transitivity_global", "transitivity_local_avg")])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">transitivity_global</th>
+<th align="right">transitivity_local_avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.7821521</td>
+<td align="right">0.4726695</td>
+</tr>
+</tbody>
+</table>
+
+### Community Detection
+
+Louvain Method: The multi-level modularity optimization algorithm
+
+    # this doesn't work for directed networks
+    louvain <- igraph::cluster_louvain(as.undirected(network))
+    network_stats$louvain <- modularity(louvain)
+    network_stats$louvain_scaled <- modularity(louvain) / gorder(network)
+    network_stats$louvain_logged <- modularity(louvain) / log(gorder(network))
+
+    knitr::kable(network_stats[, c("louvain","louvain_scaled", "louvain_logged")])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">louvain</th>
+<th align="right">louvain_scaled</th>
+<th align="right">louvain_logged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1867802</td>
+<td align="right">0.000724</td>
+<td align="right">0.0336361</td>
+</tr>
+</tbody>
+</table>
+
+Fast and Greedy: searches for a dense sub-graph
+
+    # does not work for directed graphs
+    fstgrdy <- cluster_fast_greedy(as.undirected(network))
+    network_stats$fstgrdy <- modularity(fstgrdy)
+    network_stats$fstgrdy_scaled <- modularity(fstgrdy) / gorder(network)
+    network_stats$fstgrdy_logged <- modularity(fstgrdy) / log(gorder(network))
+
+    knitr::kable(network_stats[, c("fstgrdy","fstgrdy_scaled", "fstgrdy_logged")])
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">fstgrdy</th>
+<th align="right">fstgrdy_scaled</th>
+<th align="right">fstgrdy_logged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1849842</td>
+<td align="right">0.000717</td>
+<td align="right">0.0333127</td>
+</tr>
+</tbody>
+</table>
+
+### Centrality
+
+Degree Centrality: Centralize a graph according to the degrees of
+vertices Closenses Centrality: Centralize a graph according to the
+closeness of vertices Betweenness Centrality: Centralize a graph
+according to the betweenness of vertices Eigenvector Centrality:
+Centralize a graph according to the eigenvector centrality of vertices
+
+    network_stats$centr_deg_total <- round(centr_degree(network, mode = "all")$centralization, 3)
+    network_stats$centr_deg_out <- round(centr_degree(network, mode = "out")$centralization, 3)
+    network_stats$centr_deg_in <- round(centr_degree(network, mode = "in")$centralization, 3)
+
+    network_stats$centr_clo_total <- round(centr_clo(network, mode = "all")$centralization, 3)
+    network_stats$centr_clo_out <- round(centr_clo(network, mode = "out")$centralization, 3)
+    network_stats$centr_clo_in <- round(centr_clo(network, mode = "in")$centralization, 3)
+
+    network_stats$centr_betw_total <- round(centr_betw(network, directed = TRUE)$centralization, 3)
+
+    network_stats$centr_eigen_total <- round(centr_eigen(network, directed = TRUE)$centralization, 3)
+
+### Decomposition Statistics
+
+    decomposition_stats <- table(sapply(decompose.graph(network), vcount))
+
+Nodelist
+========
+
+    nodelist <- data.frame(id = c(1:(igraph::vcount(network))), tract = igraph::V(network)$name)
+
+### degree, weighted degree, k core and modularity
+
+Degree Centrality and Weighted Degree Centrality (All/Out/In):
+
+    nodelist$deg_cent_total <- igraph::degree(network, mode = "all")
+    nodelist$deg_cent_out <- igraph::degree(network, mode = "out")
+    nodelist$deg_cent_in <- igraph::degree(network, mode = "in")
+
+    nodelist$wtd_deg_cent_total <- igraph::strength(network, mode = "all")
+    nodelist$wtd_deg_cent_out <- igraph::strength(network, mode = "out")
+    nodelist$wtd_deg_cent_in <- igraph::strength(network, mode = "in")
+
+Betweeness Centrality:
+
+    nodelist$btw_cent <- round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4)
+
+Closeness Centrality (All/In/Out):
+
+    nodelist$close_cent_total <- closeness(network, mode = "all") 
+    nodelist$close_cent_out <- closeness(network, mode = "out") 
+    nodelist$close_cent_in <- closeness(network, mode = "in") 
+
+Eigenvector Centrality:
+
+    nodelist$eigen_cent <- eigen_centrality(network, directed = TRUE)$vector
+
+    ## Warning in eigen_centrality(network, directed = TRUE): At centrality.c:
+    ## 362 :Weighted directed graph in eigenvector centrality
+
+### Membership
+
+    components <- components(network)
+    fstgrdy <- fastgreedy.community(as.undirected(network))
+    louvain <- cluster_louvain(as.undirected(network))
+
+    nodelist$component <- components$membership
+    nodelist$louvain_comm <- louvain$membership
+    nodelist$fstgrdy_comm <- fstgrdy$membership
 
 ### Sources
 
