@@ -1,0 +1,48 @@
+---
+title: "Costar"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Working on sample costar data given to UVA DSPG by FairFax
+
+
+Loading in libraries
+```{r}
+library(data.table)
+library(dplyr)
+library(tidyverse)
+library(readxl)
+```
+
+Loading costar data into R
+```{r}
+costarSample = read_excel("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/costar/costar_tysons_sample.xlsx")
+view(costarSample)
+```
+
+Recoding property
+```{r}
+costarSample[costarSample$PropertyType %like% "Office", ]$PropertyType <- "Office"
+costarSample[costarSample$PropertyType %like% "Retail", ]$PropertyType <- "Retail"
+unique(costarSample$PropertyType)
+```
+
+grouping by PropertyType to show missingness for particular columns
+```{r}
+missingnessVars = c("PropertyType", "Secondary Type", "Building Class", "For Sale Status", "Style", "Number Of Elevators", "Number Of Parking Spaces", "Number Of Stories", "Office Space" , "Percent Leased", "Vacancy %", "Avg Effective/Unit", "Parking Ratio", "Typical Floor Size", "Number Of Units", "Number Of Parking Spaces", "Tenancy", "Taxes Total", "Developer Name", "Leasing Company Name", "Owner Name", "Recorded Owner Name", "True Owner Name")
+
+missingness <- costarSample %>%
+  select(missingnessVars) %>%
+  group_by(PropertyType) %>%
+  summarise_all(~sum(is.na(.))) %>%
+  mutate(PropertyType, sumNA = rowSums(.[-1]))
+
+view(missingness)
+```
+
