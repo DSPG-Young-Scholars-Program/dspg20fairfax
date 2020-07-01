@@ -103,9 +103,12 @@ ACS_data <- Fairfax %>% transmute(
   percent_employed_occupations_vuln= ((C24060_003E + C24060_004E + C24060_005E + C24060_006E)/C24060_001E)*100,
   percent_employed_impacted_industry= ((C24070_006E + C24070_012E + C24070_013E)/C24070_001E)*100
 
-)
+) %>% rename(NAME = NAME.y) %>% select(-NAME.x)
 
 
-View(ACS_data)
+
+write.csv(ACS_data, "data/acs/acs_employment.csv", row.names = FALSE)
+
+#View(ACS_data)
 
 
