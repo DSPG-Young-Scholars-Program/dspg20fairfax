@@ -1,0 +1,300 @@
+---
+title: "11_acs_employment_map"
+author: "Sean Pietrowicz"
+date: "6/30/2020"
+output: html_document
+---
+
+Data:
+```{r}
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+
+var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
+
+#View(var_ACS5)
+
+###############################################################
+# Creating a vector with the variable we nedd from the survey #
+###############################################################
+
+vars <-c(
+  # labor force
+  "B23025_002",
+
+  # unemplyed
+  "B23025_005",
+
+  #part time,
+  "B23022_003", "B23022_004", "B23022_027", "B23022_028", "B23022_001",
+
+  # Median Income,
+  "B24011_001",
+
+  # No Bachelor's degree
+  "B23006_001", "B23006_024",
+
+  # class of workers
+  "C24060_001", "C24060_003", "C24060_004", "C24060_005", "C24060_006",
+
+  # industry
+  "C24070_001", "C24070_006", "C24070_012", "C24070_013"
+
+)
+
+#View(vars)
+####################################################
+# Use the get_acs function to pull the survey data #
+####################################################
+
+# If geography=tract, we need to define the state and county #
+# If you put the name of the state and county in the function, it will indicate the code for that state and/or county #
+# Virginia state code is 51 and Fairfax county code 059
+
+Fairfax<-get_acs(geography = "tract", variables=vars,state="51",county="059",
+                 year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
+                 geometry=TRUE, keep_geo_vars = TRUE)
+
+#View(Fairfax)
+
+
+################################################
+# Description of the variable to be calcualted #
+################################################
+
+#percent_unemployed <- (number of unemployed / number of persons in labor force * 100)
+#percent_employed_part_time <- (number of part-time / number of persons in labor force * 100)
+#percent_lf_highschool <- (sum persons in labor force with HS education or less than HS education / total in labor force * 100)
+#median_household_income <- (NOTE: this variable will have missingness. Use listwise deletion for tracts with no data.)
+#percent_employed_occupations_vuln <- identified as vulnerable to covid job loss per Brookings Institution in this appendix table
+#percent_employed_impacted_industry <- identified as most impacted by covid per Brookings Institution in this table
+
+
+#############################
+# Calculating the variables #
+#############################
+
+ACS_data <- Fairfax %>% transmute(
+  STATEFP= STATEFP,
+  COUNTYFP= COUNTYFP,
+  TRACTCE= TRACTCE,
+  AFFGEOID= AFFGEOID,
+  GEOID= GEOID,
+  NAME.x= NAME.x,
+  LSAD= LSAD,
+  ALAND= ALAND,
+  AWATER= AWATER,
+  NAME.y= NAME.y,
+  geometry=geometry,
+
+  pct_unempl= (B23025_005E/B23025_002E)*100,
+  pct_empl_part_time= ((B23022_003E-B23022_004E + B23022_027E-B23022_028E)/(B23022_001E))*100,
+  pct_lf_highschool= (1-(B23006_024E/B23006_001E))*100,
+  median_household_income= B24011_001E,
+  percent_employed_occupations_vuln= ((C24060_003E + C24060_004E + C24060_005E + C24060_006E)/C24060_001E)*100,
+  percent_employed_impacted_industry= ((C24070_006E + C24070_012E + C24070_013E)/C24070_001E)*100
+
+) %>% rename(NAME = NAME.y) %>% select(-NAME.x)
+
+#Calculating Quintile Ranks:
+
+quintile_calc <- function(indicator){
+  as.integer(cut(indicator, quantile(indicator, probs=0:5/5, na.rm = TRUE), include.lowest=TRUE))
+}
+
+ACS_data$quintile_pct_unempl <- quintile_calc(ACS_data$pct_unempl)
+ACS_data$quintile_pct_empl_part_time <- quintile_calc(ACS_data$pct_empl_part_time)
+ACS_data$quintile_pct_lf_highschool <- quintile_calc(ACS_data$pct_lf_highschool)
+ACS_data$quintile_median_household_income <- 6- quintile_calc(ACS_data$median_household_income)
+ACS_data$quintile_percent_employed_occupations_vuln <- quintile_calc(ACS_data$percent_employed_occupations_vuln)
+ACS_data$quintile_percent_employed_impacted_industry <- quintile_calc(ACS_data$percent_employed_impacted_industry)
+
+#SummaryScore
+
+ACS_data$SummaryScore <- rowSums(data.frame(ACS_data$quintile_pct_unempl,
+                                        ACS_data$quintile_pct_empl_part_time,
+                                        ACS_data$quintile_pct_lf_highschool,
+                                        ACS_data$quintile_median_household_income,
+                                        ACS_data$quintile_percent_employed_occupations_vuln,
+                                        ACS_data$quintile_percent_employed_impacted_industry) == 4) + rowSums(data.frame(ACS_data$quintile_pct_unempl,
+                                        ACS_data$quintile_pct_empl_part_time,
+                                        ACS_data$quintile_pct_lf_highschool,
+                                        ACS_data$quintile_median_household_income,
+                                        ACS_data$quintile_percent_employed_occupations_vuln,
+                                        ACS_data$quintile_percent_employed_impacted_industry) == 5)
+                                       
+ACS_data <- na.omit(ACS_data)
+
+```
+
+
+```{r}
+
+#SummaryScore Leaflet
+
+pal <- colorNumeric("Reds", domain = ACS_data$SummaryScore)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(SummaryScore),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~SummaryScore,
+            title = "Aggregate Vulnerability to Covid by Census Tract in <br> Fairfax County", 
+            opacity = 1
+                  )
+
+```
+
+```{r}
+
+
+#Percent Unemployed
+
+pal <- colorQuantile("Reds", domain = ACS_data$pct_unempl, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_unempl),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_unempl,
+            title = "Percent Unemployed in <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = pct_unempl) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+```{r}
+
+#Percentage Employed Part Time
+
+pal <- colorQuantile("Oranges", domain = ACS_data$pct_empl_part_time, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_empl_part_time),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_empl_part_time,
+            title = "Percent Employed Part Time in <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = pct_empl_part_time) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+```{r}
+
+#Percent Labor Force with High School Education or Less
+
+pal <- colorQuantile("Greens", domain = ACS_data$pct_lf_highschool, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_lf_highschool),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_lf_highschool,
+            title = "Percentage of Labor Force <br> with HS Education or Less <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = pct_lf_highschool) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+```{r}
+
+#Median Household Income
+
+pal <- colorQuantile("Blues", domain = ACS_data$median_household_income, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(median_household_income),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~median_household_income,
+            title = "Median Household Income in <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = median_household_income) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+```{r}
+
+#Percent Employed in Occupations Vulnerable to Covid-19
+
+pal <- colorQuantile("Purples", domain = ACS_data$percent_employed_occupations_vuln, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(percent_employed_occupations_vuln),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~percent_employed_occupations_vuln,
+            title = "Percent Employed in Occupations <br> Vulnerable to Covid-19 in <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = percent_employed_occupations_vuln) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+```{r}
+
+#Percent Employed in Industries Impacted by Covid-19
+
+pal <- colorQuantile("Purples", domain = ACS_data$percent_employed_impacted_industry, probs = seq(0, 1, length = 6), right = FALSE)
+
+leaflet(data = ACS_data,options = leafletOptions(minZoom = 10))%>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(percent_employed_impacted_industry),fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~percent_employed_impacted_industry,
+            title = "Percent Employed in Occupations <br> Vulnerable to Covid-19 in <br> Fairfax County,<br> by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = percent_employed_impacted_industry) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+  
+
+
+```
+
+
+
+
+```{r}
+knitr::kable(quantile(data_fairfax_final$perTotalJobs, prob = seq(0, 1, length = 10), type = 5), col.names = "")
+  
+
+boxplot(data_fairfax_final$perTotalJobs)
+```
+
+
