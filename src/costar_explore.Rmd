@@ -33,16 +33,97 @@ costarSample[costarSample$PropertyType %like% "Retail", ]$PropertyType <- "Retai
 unique(costarSample$PropertyType)
 ```
 
-grouping by PropertyType to show missingness for particular columns
+Grouping by PropertyType to show missingness for particular columns
 ```{r}
 missingnessVars = c("PropertyType", "Secondary Type", "Building Class", "For Sale Status", "Style", "Number Of Elevators", "Number Of Parking Spaces", "Number Of Stories", "Office Space" , "Percent Leased", "Vacancy %", "Avg Effective/Unit", "Parking Ratio", "Typical Floor Size", "Number Of Units", "Number Of Parking Spaces", "Tenancy", "Taxes Total", "Developer Name", "Leasing Company Name", "Owner Name", "Recorded Owner Name", "True Owner Name")
 
-missingness <- costarSample %>%
+missingness_sum <- costarSample %>%
+  filter(PropertyType == "Office" | PropertyType == "Retail") %>%
   select(missingnessVars) %>%
   group_by(PropertyType) %>%
   summarise_all(~sum(is.na(.))) %>%
   mutate(PropertyType, sumNA = rowSums(.[-1]))
 
-view(missingness)
+missingness_perc <- costarSample %>%
+  filter(PropertyType == "Office" | PropertyType == "Retail") %>%
+  select(missingnessVars) %>%
+  group_by(PropertyType) %>%
+  summarise_all(~sum(is.na(.)) / NROW(costarSample)) %>%
+  mutate(PropertyType, sumNA = rowSums(.[-1]))
+
+view(missingness_sum)
+view(missingness_perc)
 ```
 
+
+```{r}
+library(RColorBrewer)
+colors <- c(brewer.pal(6, "Dark2"), brewer.pal(7, "Set1"))
+```
+
+
+Leaflet Maps
+```{r}
+library(leaflet)
+library(RColorBrewer)
+colors <- c(brewer.pal(6, "Dark2"), brewer.pal(7, "Set1"))
+
+pal <- colorFactor(palette = colors, domain = costarSample$PropertyType)
+locByType <- leaflet(costarSample) %>%
+  addTiles() %>%
+#  addCircleMarkers(clusterOptions = markerClusterOptions(pa)) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(PropertyType), radius = 4) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~PropertyType,
+            title = "Property Location by Property Type", 
+            opacity = 1)
+locByType
+
+pal <- colorFactor(c("red", "green"), domain = costarSample$`For Sale Status`)
+locForSale <- leaflet(costarSample) %>%
+  addTiles() %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = .75, color = ~pal(`For Sale Status`), 
+                   radius = ~ifelse(`For Sale Status` == "Y", 10, 4)) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`For Sale Status`,
+            labels =c("For Sale", "Not For Sale"),
+            title = "Property Location by For Sale Status", 
+            opacity = 1)
+locForSale
+
+pal <- colorFactor(palette = "Set1", domain = costarSample$`Building Class`)
+locByBuildClass <- leaflet(costarSample) %>%
+  addTiles() %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Building Class`), radius = 4) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Building Class`,
+            title = "Property Location by Building Class", 
+            opacity = 1)
+locByBuildClass
+
+pal <- colorFactor(palette = colors, domain = costarSample$`Number Of Elevators`)
+locByElev <- leaflet(costarSample[costarSample$`Number Of Elevators` > 0, ]) %>%
+  addTiles() %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Number Of Elevators`), radius = 5) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Number Of Elevators`,
+            title = "Property Location by Number Of Elevators > 1", 
+            opacity = 1)
+locByElev
+
+pal <- colorFactor(palette = c("green", "red", "orange"), domain = costarSample$`Affordable Type`)
+locByApt <- leaflet(costarSample[costarSample$PropertyType == "Multi-Family", ]) %>%
+  addTiles() %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Affordable Type`), 
+                   radius = 6) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Affordable Type`,
+            title = "Property Location of Apartment Buildings by Affordability", 
+            opacity = 1)
+locByApt
+```
