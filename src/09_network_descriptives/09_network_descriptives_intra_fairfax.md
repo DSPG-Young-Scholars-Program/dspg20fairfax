@@ -53,9 +53,9 @@ graph.
 
     print(network)
 
-    ## IGRAPH 0332cc0 DNW- 258 32620 -- 
+    ## IGRAPH b9e929c DNW- 258 32620 -- 
     ## + attr: name (v/c), weight (e/n)
-    ## + edges from 0332cc0 (vertex names):
+    ## + edges from b9e929c (vertex names):
     ##  [1] 51059480202->51059480202 51059480202->51059482501 51059480202->51059460502
     ##  [4] 51059480202->51059461602 51059480202->51059490103 51059480202->51059471202
     ##  [7] 51059480202->51059482601 51059480202->51059490101 51059480202->51059471301
@@ -411,15 +411,15 @@ Betweeness Centrality:
 
 Closeness Centrality (All/In/Out):
 
-    nodelist$close_cent_total <- closeness(network, mode = "all") 
-    nodelist$close_cent_out <- closeness(network, mode = "out") 
-    nodelist$close_cent_in <- closeness(network, mode = "in") 
+    nodelist$close_cent_total <- igraph::centr_clo(network, mode = "all")$res 
+    nodelist$close_cent_out <- igraph::centr_clo(network, mode = "out")$res  
+    nodelist$close_cent_in <- igraph::centr_clo(network, mode = "in")$res 
 
 Eigenvector Centrality:
 
-    nodelist$eigen_cent <- eigen_centrality(network, directed = TRUE)$vector
+    nodelist$eigen_cent <- igraph::eigen_centrality(network, directed = TRUE)$vector
 
-    ## Warning in eigen_centrality(network, directed = TRUE): At centrality.c:
+    ## Warning in igraph::eigen_centrality(network, directed = TRUE): At centrality.c:
     ## 362 :Weighted directed graph in eigenvector centrality
 
 ### Membership

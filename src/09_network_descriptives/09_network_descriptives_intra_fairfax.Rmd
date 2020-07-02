@@ -270,14 +270,14 @@ nodelist$btw_cent <- round(sna::betweenness(intergraph::asNetwork(network), cmod
 
 Closeness Centrality (All/In/Out): 
 ```{r}
-nodelist$close_cent_total <- closeness(network, mode = "all") 
-nodelist$close_cent_out <- closeness(network, mode = "out") 
-nodelist$close_cent_in <- closeness(network, mode = "in") 
+nodelist$close_cent_total <- igraph::centr_clo(network, mode = "all")$res 
+nodelist$close_cent_out <- igraph::centr_clo(network, mode = "out")$res  
+nodelist$close_cent_in <- igraph::centr_clo(network, mode = "in")$res 
 ```
 
 Eigenvector Centrality: 
 ```{r}
-nodelist$eigen_cent <- eigen_centrality(network, directed = TRUE)$vector
+nodelist$eigen_cent <- igraph::eigen_centrality(network, directed = TRUE)$vector
 ```
 
 ### Membership

@@ -216,9 +216,9 @@ is_weighted(network)</code></pre>
 #W: Weighted
 
 print(network)</code></pre>
-<pre><code>## IGRAPH b4c2ea2 DNW- 258 32620 -- 
+<pre><code>## IGRAPH c8787a2 DNW- 258 32620 -- 
 ## + attr: name (v/c), weight (e/n)
-## + edges from b4c2ea2 (vertex names):
+## + edges from c8787a2 (vertex names):
 ##  [1] 51059480202-&gt;51059480202 51059480202-&gt;51059482501 51059480202-&gt;51059460502
 ##  [4] 51059480202-&gt;51059461602 51059480202-&gt;51059490103 51059480202-&gt;51059471202
 ##  [7] 51059480202-&gt;51059482601 51059480202-&gt;51059490101 51059480202-&gt;51059471301
@@ -503,12 +503,12 @@ nodelist$wtd_deg_cent_in &lt;- igraph::strength(network, mode = &quot;in&quot;)<
 <p>Betweeness Centrality:</p>
 <pre class="r"><code>nodelist$btw_cent &lt;- round(sna::betweenness(intergraph::asNetwork(network), cmode=&quot;directed&quot;), 4)</code></pre>
 <p>Closeness Centrality (All/In/Out):</p>
-<pre class="r"><code>nodelist$close_cent_total &lt;- closeness(network, mode = &quot;all&quot;) 
-nodelist$close_cent_out &lt;- closeness(network, mode = &quot;out&quot;) 
-nodelist$close_cent_in &lt;- closeness(network, mode = &quot;in&quot;) </code></pre>
+<pre class="r"><code>nodelist$close_cent_total &lt;- igraph::centr_clo(network, mode = &quot;all&quot;)$res 
+nodelist$close_cent_out &lt;- igraph::centr_clo(network, mode = &quot;out&quot;)$res  
+nodelist$close_cent_in &lt;- igraph::centr_clo(network, mode = &quot;in&quot;)$res </code></pre>
 <p>Eigenvector Centrality:</p>
-<pre class="r"><code>nodelist$eigen_cent &lt;- eigen_centrality(network, directed = TRUE)$vector</code></pre>
-<pre><code>## Warning in eigen_centrality(network, directed = TRUE): At centrality.c:
+<pre class="r"><code>nodelist$eigen_cent &lt;- igraph::eigen_centrality(network, directed = TRUE)$vector</code></pre>
+<pre><code>## Warning in igraph::eigen_centrality(network, directed = TRUE): At centrality.c:
 ## 362 :Weighted directed graph in eigenvector centrality</code></pre>
 </div>
 <div id="membership" class="section level3">
