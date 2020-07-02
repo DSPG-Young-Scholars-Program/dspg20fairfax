@@ -48,8 +48,7 @@ missingness_perc <- costarSample %>%
   filter(PropertyType == "Office" | PropertyType == "Retail") %>%
   select(missingnessVars) %>%
   group_by(PropertyType) %>%
-  summarise_all(~sum(is.na(.)) / NROW(costarSample)) %>%
-  mutate(PropertyType, sumNA = rowSums(.[-1]))
+  summarise_all(~mean(is.na(.)) * 100)
 
 view(missingness_sum)
 view(missingness_perc)
