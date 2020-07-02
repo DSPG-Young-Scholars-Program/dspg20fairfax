@@ -35,7 +35,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "public/"]
 
 [[menu.main]]
     url = "/fairfax/"
-    name = "Fairfax"
+    name = "Fairfax County"
     weight = 3
 
 [[menu.main]]
