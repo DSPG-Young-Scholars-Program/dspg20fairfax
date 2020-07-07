@@ -3,10 +3,12 @@ vars <- c("S000", "SA01", "SA02",
           "SE03", "SI01", "SI02", 
           "SI03" )
 
+
+
 network_stats <- function(vars, years){
   library(dplyr)
   library(igraph)
-  
+  library(tnet)
   
   network_stats <- data.frame(var = rep(vars, each = length(years)), year = rep(years, length(vars)))
   
@@ -29,11 +31,12 @@ network_stats <- function(vars, years){
           arrange(-weight) %>%
           filter(weight != 0)
         
-        
-        
+
         network <- simplify(graph.data.frame(edgelist, directed = TRUE), 
                             remove.loops = FALSE, 
                             edge.attr.comb = igraph_opt("edge.attr.comb"))
+      
+        
         
         if(is_weighted(network) != TRUE){
           stop("Network not weighted.")
@@ -163,8 +166,6 @@ network_stats <- function(vars, years){
 }
 
 
-
-network_stats(vars, 2010:2017)
 
 
 
