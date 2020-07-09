@@ -1,16 +1,8 @@
-vars <- c("S000", "SA01", "SA02",           
-          "SA03", "SE01", "SE02", 
-          "SE03", "SI01", "SI02", 
-          "SI03" )
-
-years <- 2010:2017
-
-types <- c("all", "private","federal")
-
-network_stats <- function(vars, types, years){
+network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = FALSE){
   library(dplyr)
   library(igraph)
   library(tnet)
+  library(expm)
   
   network_summary <- data.frame(year = rep(years, each = length(vars) * length(types)), 
                               type = rep(rep(types, each = length(vars)), length(years)),
@@ -31,9 +23,7 @@ network_stats <- function(vars, types, years){
             data <- data %>% 
               filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))
             
-            
             for(var in vars){
-              
               
               # set up edge list
               edgelist <- data %>% 
@@ -58,8 +48,6 @@ network_stats <- function(vars, types, years){
               if(is_directed(network)!= TRUE){
                 stop("Network not directed.")
               }
-              
-              
               
               network_summary[network_summary$var == var & network_summary$year == year & network_summary$type == type, "node_count"] <- gorder(network)  
               network_summary[network_summary$var == var & network_summary$year == year & network_summary$type == type, "edge_count"] <- gsize(network)  
@@ -155,7 +143,7 @@ network_stats <- function(vars, types, years){
               nodelist$close_cent_out <- igraph::centr_clo(network, mode = "out")$res  
               nodelist$close_cent_in <- igraph::centr_clo(network, mode = "in")$res 
               
-              #nodelist$eigen_cent <- igraph::eigen_centrality(network, directed = TRUE)$vector
+              nodelist$eigen_cent <- igraph::eigen_centrality(network, directed = TRUE)$vector
               
               components <- components(network)
               fstgrdy <- fastgreedy.community(as.undirected(network))
@@ -165,11 +153,69 @@ network_stats <- function(vars, types, years){
               nodelist$louvain_comm <- louvain$membership
               nodelist$fstgrdy_comm <- fstgrdy$membership
               
+              
+              nodelist$page_rank <- page_rank(network, directed=TRUE, weights=NULL)$vector
+              nodelist$alpha_cent <- alpha_centrality(network, weights=NULL)
+              nodelist$power_cent <- power_centrality(network, rescale=TRUE)
+              nodelist$subgraph_cent <- subgraph_centrality(network,diag=TRUE)
+              nodelist$auth_score <- authority_score(network, scale = TRUE, weights = NULL)$vector
+              nodelist$hub_score <- hub_score(network, scale = TRUE, weights = NULL)$vector
+              nodelist$local_trans <- transitivity(network, type = "local", weights = NULL)
+              nodelist$in_ecc_cent <- eccentricity(network, mode = "in")
+              nodelist$out_ecc_cent <- eccentricity(network, mode = "out")
+              nodelist$load_cent <- sna::loadcent(get.adjacency(network,sparse=F),
+                                                  gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+              nodelist$info_cent <- sna::infocent(get.adjacency(network,sparse=F),
+                                                  gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+              nodelist$stress_cent <- sna::stresscent(get.adjacency(network,sparse=F),
+                                                      gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+              nodelist$gilschmidt <- sna::gilschmidt(get.adjacency(network,sparse=F),
+                                                     gmode = "digraph", diag = TRUE, normalize=TRUE)
+              nodelist$hyper_index <- netrankr::hyperbolic_index(network)
+              
+              nodelist$k_core_in <- coreness(network, mode="in")
+              nodelist$k_core_out <- coreness(network, mode="out")
+              
+              if(centiserve == TRUE){
+
+                  nodelist$comm_bet <- centiserve::communibet(network, normalized = TRUE)
+                  nodelist$decay_in <- centiserve::decay(network, mode="in", weights=NULL)
+                  nodelist$decay_out <- centiserve::decay(network, mode="out", weights=NULL)
+                  nodelist$diffus_indeg <- centiserve::diffusion.degree(network,mode="in",loops=TRUE)
+                  nodelist$diffus_outdeg <- centiserve::diffusion.degree(network,mode="out",loops=TRUE)     
+                  nodelist$entropy_in <- 1/centiserve::entropy(network,mode="in",weights=NULL)
+                  nodelist$entropy_out <- 1/centiserve::entropy(network,mode="out",weights=NULL)
+                  nodelist$geokpath_in <- centiserve::geokpath(network,mode="in",weights=NULL)
+                  nodelist$geokpath_out <- centiserve::geokpath(network,mode="out",weights=NULL)
+                  nodelist$laplacian_in <- centiserve::laplacian(network,mode="in",loops=TRUE)
+                  nodelist$laplacian_out <- centiserve::laplacian(network,mode="out",loops=TRUE)
+                  nodelist$leverage_in <- centiserve::leverage(network,mode="in",loops=TRUE)  
+                  nodelist$leverage_out <- centiserve::leverage(network,mode="out",loops=TRUE)  
+                  nodelist$lin_cent_in <- centiserve::lincent(network,mode="in",weights=NULL)
+                  nodelist$lin_cent_out <- centiserve::lincent(network,mode="out",weights=NULL)
+                  nodelist$lobby_in <- centiserve::lobby(network,mode="in",loops=TRUE) 
+                  nodelist$lobby_out <- centiserve::lobby(network,mode="out",loops=TRUE) 
+                  nodelist$markov_cent <- centiserve::markovcent(network) 
+                  nodelist$radiality_in <- centiserve::radiality(network, mode="in",weights=NULL)   
+                  nodelist$radiality_out <- centiserve::radiality(network, mode="out",weights=NULL)
+                  nodelist$mnc_in <- centiserve::mnc(network, mode="in")
+                  nodelist$mnc_out <- centiserve::mnc(network, mode="out")
+                  nodelist$dmnc_in <- centiserve::dmnc(network, mode="in")
+                  nodelist$dmnc_out <- centiserve::dmnc(network, mode="out")
+                  nodelist$epc <- centiserve::epc(network) 
+                  nodelist$topocoefficient <- 1/centiserve::topocoefficient(as.undirected(network))
+              }
+              
+              if(bottleneck == TRUE){
+                  nodelist$bottleneck_in <- centiserve::bottleneck(network, mode="in")
+                  nodelist$bottleneck_out <- centiserve::bottleneck(network, mode="out")
+              }
+              
               assign(paste("nodelist", year, var, type, sep = "_"), nodelist, envir = .GlobalEnv)
               assign(paste("network", year, var, type, sep = "_"), network, envir = .GlobalEnv)
               assign(paste("edgelist", year, var, type,  sep = "_"), edgelist, envir = .GlobalEnv)  
               
-            }
+          }
             
           } else {
       
@@ -180,9 +226,17 @@ network_stats <- function(vars, types, years){
   network_summary <<- network_summary
 }
 
-network_stats(vars = "S000", types= "federal", years= 2014:2016)
 
+network_stats(vars = "S000", types= "all", years= 2017)
 
+vars <- c("S000", "SA01", "SA02",           
+          "SA03", "SE01", "SE02", 
+          "SE03", "SI01", "SI02", 
+          "SI03" )
+
+years <- 2010:2017
+
+types <- c("all", "private","federal")
 
 
 
