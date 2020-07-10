@@ -13,7 +13,7 @@ library(shiny)
 
 source("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/09_network_descriptives/network_functions.R")
 
-network_stats(vars = "S000", years = 2017, types = types)
+network_stats(vars = "SA01", years = 2014, types = types)
 
 data_fairfax <-   get_acs(geography = "tract",
                           variables = "B00001_001",
@@ -21,9 +21,29 @@ data_fairfax <-   get_acs(geography = "tract",
                           county = 059, 
                           geometry = TRUE)
 
-data_fairfax_final <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist_2017_S000_all[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+for(type in types){
+  nodelist <- get(paste("nodelist_2015_S000_", type, sep = ""))
+  
+  fairfax_data <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+  fairfax_data <- st_transform(fairfax_data, 4326)
 
-data_fairfax_final <- st_transform(data_fairfax_final, 4326)
+  #pal <- colorQuantile("Blues",5,  domain = fairfax_data$wtd_deg_cent_out)
+
+  #pal_in <- colorQuantile("Oranges",5, domain = fairfax_data$wtd_deg_cent_in)
+
+  #pal_btw <- colorQuantile("Purples",5,  domain = fairfax_data$btw_cent)
+
+  #pal_eigen <- colorQuantile("Greens",5,  domain = fairfax_data$eigen_cent)
+  
+  assign(paste("fairfax_2015_S000_", type, sep =  ""), fairfax_data)
+  
+}
+
+
+
+fairfax_2015_S000_all <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist_2015_S000_all[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+
+fairfax_2015_S000_all <- st_transform(fairfax_2015_S000_all, 4326)
 
 ```
 
@@ -32,16 +52,16 @@ data_fairfax_final <- st_transform(data_fairfax_final, 4326)
 ```{r, figures-side, fig.show="hold", out.width="50%", echo = F}
 
 
-pal <- colorQuantile("Blues",5,  domain = data_fairfax_final$wtd_deg_cent_out)
+pal <- colorQuantile("Blues",5,  domain = fairfax_2015_S000_all$wtd_deg_cent_out)
 
-pal_in <- colorQuantile("Oranges",5, domain = data_fairfax_final$wtd_deg_cent_in)
+pal_in <- colorQuantile("Oranges",5, domain = fairfax_2015_S000_all$wtd_deg_cent_in)
 
-pal_btw <- colorQuantile("Purples",5,  domain = data_fairfax_final$btw_cent)
+pal_btw <- colorQuantile("Purples",5,  domain = fairfax_2015_S000_all$btw_cent)
 
-pal_eigen <- colorQuantile("Greens",5,  domain = data_fairfax_final$eigen_cent)
+pal_eigen <- colorQuantile("Greens",5,  domain = fairfax_2015_S000_all$eigen_cent)
 
 
-l1 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+l1 <- leaflet(data = fairfax_2015_S000_all,options = leafletOptions(minZoom = 10))%>%
   addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
   addPolygons(fillColor = ~pal(wtd_deg_cent_out), fillOpacity = .8, stroke = FALSE) %>%
   addLegend("bottomleft", 
@@ -56,7 +76,7 @@ l1 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%
 
 
 
-l2 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+l2 <- leaflet(data = fairfax_2015_S000_all,options = leafletOptions(minZoom = 10))%>%
   addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
   addPolygons(fillColor = ~pal_in(wtd_deg_cent_in), fillOpacity = .8, stroke = FALSE) %>%
   addLegend("bottomleft", 
@@ -72,7 +92,7 @@ l2 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%
 
 
 
-l3 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+l3 <- leaflet(data = fairfax_2015_S000_all,options = leafletOptions(minZoom = 10))%>%
   addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
   addPolygons(fillColor = ~pal_btw(btw_cent), fillOpacity = .8, stroke = FALSE) %>%
   addLegend("bottomleft", 
@@ -86,7 +106,7 @@ l3 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%
             })
 
 
-l4 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+l4 <- leaflet(data = fairfax_2015_S000_all,options = leafletOptions(minZoom = 10))%>%
   addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
   addPolygons(fillColor = ~pal_eigen(eigen_cent), fillOpacity = .8, stroke = FALSE) %>%
   addLegend("bottomleft", 
@@ -105,7 +125,7 @@ fluidRow(column(6, l1),
 fluidRow(column(6, l3), 
          column(6, l4))
 
-cor(st_drop_geometry(data_fairfax_final[, -1]))
+cor(st_drop_geometry(fairfax_2015_S000_all[, -1]))
 
 ```
 
