@@ -227,7 +227,7 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
 }
 
 
-network_stats(vars = "S000", types= "all", years= 2017)
+#network_stats(vars = "S000", types= "all", years= 2017)
 
 vars <- c("S000", "SA01", "SA02",           
           "SA03", "SE01", "SE02", 

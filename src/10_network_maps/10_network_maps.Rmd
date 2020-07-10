@@ -1,0 +1,120 @@
+---
+title: "Network Maps"
+author: "Sarah McDonald"
+date: "7/10/2020"
+output: html_document
+---
+```{r, echo = F, message = F, warning=F, results = 'hide'}
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(shiny)
+
+
+source("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/09_network_descriptives/network_functions.R")
+
+network_stats(vars = "S000", years = 2017, types = types)
+
+data_fairfax <-   get_acs(geography = "tract",
+                          variables = "B00001_001",
+                          state = "VA",
+                          county = 059, 
+                          geometry = TRUE)
+
+data_fairfax_final <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist_2017_S000_all[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+
+data_fairfax_final <- st_transform(data_fairfax_final, 4326)
+
+```
+
+# All jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
+
+```{r, figures-side, fig.show="hold", out.width="50%", echo = F}
+
+
+pal <- colorQuantile("Blues",5,  domain = data_fairfax_final$wtd_deg_cent_out)
+
+pal_in <- colorQuantile("Oranges",5, domain = data_fairfax_final$wtd_deg_cent_in)
+
+pal_btw <- colorQuantile("Purples",5,  domain = data_fairfax_final$btw_cent)
+
+pal_eigen <- colorQuantile("Greens",5,  domain = data_fairfax_final$eigen_cent)
+
+
+l1 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+  addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+  addPolygons(fillColor = ~pal(wtd_deg_cent_out), fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~wtd_deg_cent_out,
+            title = "Weighted Degree Centrality: Out<br> By Quantile Group", 
+            opacity = 1, 
+            labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_out) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+            })
+
+
+
+l2 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+  addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+  addPolygons(fillColor = ~pal_in(wtd_deg_cent_in), fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal_in, 
+            values = ~wtd_deg_cent_in,
+            title = "Weighted Degree Centrality: In<br> By Quantile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_in) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+            })
+
+
+
+
+l3 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+  addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+  addPolygons(fillColor = ~pal_btw(btw_cent), fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal_btw, 
+            values = ~btw_cent,
+            title = "Betweenness Centrality<br> By Quantile Group", 
+            opacity = 1, 
+            labFormat = function(type = "quantile", cuts = 10, p = btw_cent) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+            })
+
+
+l4 <- leaflet(data = data_fairfax_final,options = leafletOptions(minZoom = 10))%>%
+  addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+  addPolygons(fillColor = ~pal_eigen(eigen_cent), fillOpacity = .8, stroke = FALSE) %>%
+  addLegend("bottomleft", 
+            pal = pal_eigen, 
+            values = ~eigen_cent,
+            title = "Eigen Centrality<br> By Quantile Group", 
+            opacity = 1, 
+            labFormat = function(type = "quantile", cuts = 10, p = eigen_cent) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+            })
+
+
+fluidRow(column(6, l1), 
+         column(6,l2))
+fluidRow(column(6, l3), 
+         column(6, l4))
+
+cor(st_drop_geometry(data_fairfax_final[, -1]))
+
+```
+
+
+
+
+
+# federal jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
+
+# private jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
+
+
