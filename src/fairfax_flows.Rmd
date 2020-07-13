@@ -13,89 +13,190 @@ libraries
 ```{r}
 library(dplyr)
 library(ggplot2)
+library(readr)
+library(tidyverse)
 ```
 
 
 Reading in data tables
 ```{r}
-jobs_all <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobsall.csv")
-jobs_fed <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobs_federal.csv")
-jobs_priv <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobs_priv.csv")
+jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_fed <- read_csv("~/git/dspg20fairfax/data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_priv <- read_csv("~/git/dspg20fairfax/data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+
+
+va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
 ```
 
 
 Parsing GEOID into FIPS codes
-```{r}
-# First parsing residence GEOIDs (I assume h_geocode_tract is supposed to be r_geocode_tract)
-jobs_all$r_state <- as.numeric(substr(jobs_all$h_geocode_tract, 1, 2))
-jobs_all$r_county <- as.numeric(substr(jobs_all$h_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_all$r_tract <- as.numeric(substr(jobs_all$h_geocode_tract, 6, 11))
+```{r} 
+jobs_all$h_state <- substr(jobs_all$h_geocode_tract, 1, 2)
+jobs_all$h_county <- substr(jobs_all$h_geocode_tract, 3, 5)
+jobs_all$h_tract <- substr(jobs_all$h_geocode_tract, 6, 11)
 
-jobs_fed$r_state <- as.numeric(substr(jobs_fed$h_geocode_tract, 1, 2))
-jobs_fed$r_county <- as.numeric(substr(jobs_fed$h_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_fed$r_tract <- as.numeric(substr(jobs_fed$h_geocode_tract, 6, 11))
+jobs_fed$h_state <- substr(jobs_fed$h_geocode_tract, 1, 2)
+jobs_fed$h_county <- substr(jobs_fed$h_geocode_tract, 3, 5)
+jobs_fed$h_tract <- substr(jobs_fed$h_geocode_tract, 6, 11)
 
-jobs_priv$r_state <- as.numeric(substr(jobs_priv$h_geocode_tract, 1, 2))
-jobs_priv$r_county <- as.numeric(substr(jobs_priv$h_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_priv$r_tract <- as.numeric(substr(jobs_priv$h_geocode_tract, 6, 11))
+jobs_priv$h_state <- substr(jobs_priv$h_geocode_tract, 1, 2)
+jobs_priv$h_county <- substr(jobs_priv$h_geocode_tract, 3, 5)
+jobs_priv$h_tract <- substr(jobs_priv$h_geocode_tract, 6, 11)
 
 # Now parsing workplace GEOIDs
-jobs_all$w_state <- as.numeric(substr(jobs_all$w_geocode_tract, 1, 2))
-jobs_all$w_county <- as.numeric(substr(jobs_all$w_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_all$w_tract <- as.numeric(substr(jobs_all$w_geocode_tract, 6, 11))
+jobs_all$w_state <- substr(jobs_all$w_geocode_tract, 1, 2)
+jobs_all$w_county <- substr(jobs_all$w_geocode_tract, 3, 5)
+jobs_all$w_tract <- substr(jobs_all$w_geocode_tract, 6, 11)
 
-jobs_fed$w_state <- as.numeric(substr(jobs_fed$w_geocode_tract, 1, 2))
-jobs_fed$w_county <- as.numeric(substr(jobs_fed$w_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_fed$w_tract <- as.numeric(substr(jobs_fed$w_geocode_tract, 6, 11))
+jobs_fed$w_state <- substr(jobs_fed$w_geocode_tract, 1, 2)
+jobs_fed$w_county <- substr(jobs_fed$w_geocode_tract, 3, 5)
+jobs_fed$w_tract <- substr(jobs_fed$w_geocode_tract, 6, 11)
 
-jobs_priv$w_state <- as.numeric(substr(jobs_priv$w_geocode_tract, 1, 2))
-jobs_priv$w_county <- as.numeric(substr(jobs_priv$w_geocode_tract, 3, 5)) #gets rid of leading 0
-jobs_priv$w_tract <- as.numeric(substr(jobs_priv$w_geocode_tract, 6, 11))
+jobs_priv$w_state <- substr(jobs_priv$w_geocode_tract, 1, 2)
+jobs_priv$w_county <- substr(jobs_priv$w_geocode_tract, 3, 5)
+jobs_priv$w_tract <- substr(jobs_priv$w_geocode_tract, 6, 11)
 
 ```
 
 What % of jobs flow from outside of Fairfax County?
 ```{r}
 # for jobs all (059 is Fairfax code)
-bool_cond <-jobs_all$r_county != 59 & jobs_all$w_county == 59#this means all jobs where residence is outside of                                                             # Fairfax but workplace is in Fairfax
+bool_cond <-jobs_all$h_county != "059" & jobs_all$w_county == "059"
+#this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 
 flows_in <- jobs_all[bool_cond, ]
+
+#percents <- data.frame("type" = c(1, 2), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
+#percents
+#ggplot(percents, aes("", y = shares, fill = type)) + geom_bar(stat="identity", width=.2) +
+#  coord_polar("y", start=0) 
 
 pie(c(mean(bool_cond) * 100, (1 - mean(bool_cond)) * 100), labels = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"))
 ```
 
 Of the flows into Fairfax County from outside, what percent are from other counties in Virginia?
 ```{r}
-perc_flows_other_counties_VA <- c(mean(flows_in$r_state == 51) *100, (1 - mean(flows_in$r_state == 51)) *100)
+perc_flows_other_counties_VA <- mean(flows_in$h_state == "51") *100
 perc_flows_other_counties_VA
 
-agg <- flows_in[flows_in$r_state == 51, ] %>%
-  group_by(r_county) %>%
+agg_cnty_VA <- flows_in[flows_in$h_state == "51", ] %>%
+  group_by(h_county) %>%
   summarise(S000 = sum(S000))
 
-trimmed <- agg[order(-agg$S000), ][1:10, ]
-ggplot(trimmed, aes(factor(r_county), S000)) + geom_col() + coord_flip()
+#Use VA crosswalk to get county names
+va_xw$h_county <- substring(va_xw$cty, 3, 6)
+essential <- va_xw %>%
+  select(h_county, ctyname)
+
+agg_cnty_VA_with_names <- inner_join(x = agg_cnty_VA, y = unique(essential), by = "h_county")
+
+trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000), ][1:10, ]
+ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other counties in Virginia")
 ```
 
 
 Of the flows into Fairfax County from outside, what percent are from other states?
 ```{r}
-percent_flows_other_states <- c(mean(flows_in$r_state != 51) * 100)
+percent_flows_other_states <- mean(flows_in$h_state != "51") * 100
 percent_flows_other_states
 
-agg <- flows_in[flows_in$r_state != 51, ] %>%
-  group_by(r_state) %>%
+agg_states_no_names <- flows_in[flows_in$h_state != "51", ] %>%
+  group_by(h_state) %>%
+  summarise(S000 = sum(S000))
+
+trimmed <- agg_states_no_names[order(-agg_states_no_names$S000), ][1:10, ]
+trimmed$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", 
+                   "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
+
+ggplot(trimmed, aes(State, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other states")
+
+#Use other states cross walks to get state names
+```
+
+```{r}
+#Adding in column to be able to easily match between different state xwalk files
+flows_in[flows_in$h_state != "51", ]
+flows_in$cty <- substring(flows_in$h_geocode_tract, 1, 5)
+flows_in
+```
+
+
+Building same dataframe as flows_in but with County Name, State column added for relevant rows
+```{r}
+nc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+dc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+pa_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+wv_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+md_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+oh_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+ny_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+fl_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+nj_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+sc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+```
+
+
+```{r}
+#NC done
+essential <- nc_xw %>%
+  select(cty, ctyname)
+nc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#dc done
+essential <- dc_xw %>%
+  select(cty, ctyname)
+dc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#pa done
+essential <- pa_xw %>%
+  select(cty, ctyname)
+pa_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#wv done
+essential <- wv_xw %>%
+  select(cty, ctyname)
+wv_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#md done
+essential <- md_xw %>%
+  select(cty, ctyname)
+md_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#oh done
+essential <- oh_xw %>%
+  select(cty, ctyname)
+oh_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#ny done
+essential <- ny_xw %>%
+  select(cty, ctyname)
+ny_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#fl done
+essential <- fl_xw %>%
+  select(cty, ctyname)
+fl_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#nj done
+essential <- nj_xw %>%
+  select(cty, ctyname)
+nj_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+
+#sc done
+essential <- sc_xw %>%
+  select(cty, ctyname)
+sc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+```
+
+
+```{r}
+top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
+
+agg <- top_ten_with_names %>%
+  group_by(ctyname) %>%
   summarise(S000 = sum(S000))
 
 trimmed <- agg[order(-agg$S000), ][1:10, ]
-ggplot(trimmed, aes(factor(r_state), S000)) + geom_col() + coord_flip()
+ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other counties in other states")
 
-flows_in_other_states <- flows_in[flows_in$r_state != 51, ]
-
-agg <- flows_in_other_states %>%
-  group_by(r_county) %>%
-  summarise(S000 = sum(S000))
-
-trimmed <- agg[order(-agg$S000), ][1:10, ]
-ggplot(trimmed, aes(factor(r_county), S000)) + geom_col() + coord_flip()
 ```
