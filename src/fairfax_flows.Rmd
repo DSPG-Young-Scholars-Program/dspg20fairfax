@@ -197,6 +197,6 @@ agg <- top_ten_with_names %>%
   summarise(S000 = sum(S000))
 
 trimmed <- agg[order(-agg$S000), ][1:10, ]
-ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other counties in other states")
+ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states")
 
 ```
