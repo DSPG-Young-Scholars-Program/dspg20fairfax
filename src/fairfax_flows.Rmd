@@ -58,21 +58,44 @@ What % of jobs flow from outside of Fairfax County?
 ```{r}
 # for jobs all (059 is Fairfax code)
 bool_cond <-jobs_all$r_county != 59 & jobs_all$w_county == 59#this means all jobs where residence is outside of                                                             # Fairfax but workplace is in Fairfax
+
+flows_in <- jobs_all[bool_cond, ]
+
 pie(c(mean(bool_cond) * 100, (1 - mean(bool_cond)) * 100), labels = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"))
 ```
 
 Of the flows into Fairfax County from outside, what percent are from other counties in Virginia?
 ```{r}
-perc_flows_VA <- c(mean(jobs_all[bool_cond, ]$r_state == 51) *100, (1 - mean(jobs_all[bool_cond, ]$r_state == 51)) *100)
-perc_flows_VA
+perc_flows_other_counties_VA <- c(mean(flows_in$r_state == 51) *100, (1 - mean(flows_in$r_state == 51)) *100)
+perc_flows_other_counties_VA
 
-agg <- jobs_all[jobs_all[bool_cond, ]$r_state == 51, ] %>%
+agg <- flows_in[flows_in$r_state == 51, ] %>%
   group_by(r_county) %>%
   summarise(S000 = sum(S000))
 
 trimmed <- agg[order(-agg$S000), ][1:10, ]
-
 ggplot(trimmed, aes(factor(r_county), S000)) + geom_col() + coord_flip()
 ```
 
 
+Of the flows into Fairfax County from outside, what percent are from other states?
+```{r}
+percent_flows_other_states <- c(mean(flows_in$r_state != 51) * 100)
+percent_flows_other_states
+
+agg <- flows_in[flows_in$r_state != 51, ] %>%
+  group_by(r_state) %>%
+  summarise(S000 = sum(S000))
+
+trimmed <- agg[order(-agg$S000), ][1:10, ]
+ggplot(trimmed, aes(factor(r_state), S000)) + geom_col() + coord_flip()
+
+flows_in_other_states <- flows_in[flows_in$r_state != 51, ]
+
+agg <- flows_in_other_states %>%
+  group_by(r_county) %>%
+  summarise(S000 = sum(S000))
+
+trimmed <- agg[order(-agg$S000), ][1:10, ]
+ggplot(trimmed, aes(factor(r_county), S000)) + geom_col() + coord_flip()
+```
