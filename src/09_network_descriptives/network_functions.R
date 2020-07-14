@@ -1,3 +1,4 @@
+
 network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = FALSE){
   library(dplyr)
   library(igraph)
@@ -65,6 +66,7 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
               #network_summary[network_summary$var == var & network_summary$year == year & network_summary$type == type, "mean_btw"] <- igraph::betweenness(network, direct= TRUE)
               
               network_summary[network_summary$var == var & network_summary$year == year & network_summary$type == type, "isolates"]  <- sum(igraph::degree(simplify(network))==0)
+              
               
               
               network_summary[network_summary$var == var & network_summary$year == year & network_summary$type == type, "triads_003"] <- igraph::triad.census(network)[1] # empty graph, no connections
@@ -156,7 +158,8 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
               
               nodelist$page_rank <- page_rank(network, directed=TRUE, weights=NULL)$vector
               nodelist$alpha_cent <- alpha_centrality(network, weights=NULL)
-              nodelist$power_cent <- power_centrality(network, rescale=TRUE)
+              #nodelist$power_cent <- power_centrality(network, rescale=TRUE)
+              #breaks on 2015, federal, S000
               nodelist$subgraph_cent <- subgraph_centrality(network,diag=TRUE)
               nodelist$auth_score <- authority_score(network, scale = TRUE, weights = NULL)$vector
               nodelist$hub_score <- hub_score(network, scale = TRUE, weights = NULL)$vector
@@ -165,8 +168,9 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
               nodelist$out_ecc_cent <- eccentricity(network, mode = "out")
               nodelist$load_cent <- sna::loadcent(get.adjacency(network,sparse=F),
                                                   gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
-              nodelist$info_cent <- sna::infocent(get.adjacency(network,sparse=F),
-                                                  gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+              #nodelist$info_cent <- sna::infocent(get.adjacency(network,sparse=F),
+              #                                    gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+              #breaks on 2015, federal, S000
               nodelist$stress_cent <- sna::stresscent(get.adjacency(network,sparse=F),
                                                       gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
               nodelist$gilschmidt <- sna::gilschmidt(get.adjacency(network,sparse=F),
@@ -227,7 +231,7 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
 }
 
 
-#network_stats(vars = "S000", types= "all", years= 2017)
+
 
 vars <- c("S000", "SA01", "SA02",           
           "SA03", "SE01", "SE02", 
@@ -238,8 +242,8 @@ years <- 2010:2017
 
 types <- c("all", "private","federal")
 
+#network_stats(vars = "S000", types= types, years= 2015)
 
 
-
-
+#https://stackoverflow.com/questions/38698118/calculating-alpha-power-centralities-by-igraph
 
