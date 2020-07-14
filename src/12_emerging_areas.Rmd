@@ -1,0 +1,66 @@
+---
+title: "Emerging Areas"
+author: "Susweta Ray"
+date: "7/12/2020"
+output: html_document
+---
+
+
+
+
+```{r}
+library(readxl)
+library(data.table)
+library(R.utils)
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+library(viridis)
+```
+
+```{r}
+data <- read_excel('/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx')
+head(data)
+```
+
+```{r}
+data1 <- data %>%
+  arrange(desc(`Estimate of Employees`))%>% slice_head(n=100)
+
+  data1
+```
+
+
+```{r}
+pal <- colorFactor(
+  palette = 'Dark2',
+  domain = data1$`2 Digit NAICS`
+)
+labels <- lapply(
+  paste("<strong>Company name: </strong>",
+         data1$`Business Name`,
+        "<br />",
+        "<strong>6 digit title: </strong>",
+        data1$`6 Digit Title`,
+        "<br />",
+        "<strong>Number of employees: </strong>",
+        data1$`Estimate of Employees`),
+        htmltools::HTML
+  )
+leaflet(data = data1, options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addCircleMarkers(data = data1, lng= data1$Longitude, lat= data1$Latitude, radius = 3.5, color = ~pal(`2 Digit NAICS`), label = ~labels, labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
+        "color" = "black",
+        "font-family" = "serif",
+        "font-style" = "italic",
+        "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+        "font-size" = "12px",
+        "border-color" = "rgba(0,0,0,0.5)")))
+
+```
+
+
+
