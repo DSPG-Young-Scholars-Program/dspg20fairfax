@@ -12,7 +12,7 @@ library(tigris)
 ##Import Occupations Data
 
 occupations_byworkplace <- read_excel(
-  "~/git/dspg20fairfax/data/original/jobseq/occupations_byworkplace.xlsx", skip = 2)[1:27,]
+  "./data/original/jobseq/occupations_byworkplace.xlsx", skip = 2)[1:27,]
 occupations_byworkplace <- data.table(occupations_byworkplace)
 
 #Clean Headers & ZCTA Region Column
@@ -43,7 +43,7 @@ occupations_byworkplace$totalvulnerable <- rowSums(occupations_byworkplace[,3:17
 
 ##Import UIclaims by Zipcode
 
-uiclaims <- read.delim("~/git/dspg20fairfax/data/original/vworks/uiclaims_initials.txt") %>%
+uiclaims <- read.delim("./data/original/vworks/uiclaims_initials.txt") %>%
   filter(areatyname == "Zip Code")
 
 #Fix Dates
@@ -51,9 +51,12 @@ uiclaims <- read.delim("~/git/dspg20fairfax/data/original/vworks/uiclaims_initia
 uiclaims$startdate <- substr(uiclaims$startdate,1,nchar(uiclaims$startdate)-9)
 uiclaims$enddate <- substr(uiclaims$enddate,1,nchar(uiclaims$enddate)-9)
 
+# Filter to 2020 claims and initial claims only
+uiclaims <- uiclaims %>% filter(periodyear == 2020 & claimtype == 1)
+
 #Create Total Claims Column
 
-uiaggregate <-aggregate(cbind(claimants) ~ area, data = uiclaims, sum)
+uiaggregate <- aggregate(cbind(claimants) ~ area, data = uiclaims, sum)
 uiheader <- c("ZCTA", "totalclaims")
 names(uiaggregate) <- uiheader
 
