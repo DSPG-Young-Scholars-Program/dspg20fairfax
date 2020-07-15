@@ -4,6 +4,17 @@ author: "Sarah McDonald"
 date: "7/10/2020"
 output: html_document
 ---
+
+### Interpretation of Centrality Measures:
+
+_Weighted Out-Degree Centrality:_ These plots highlight census tracts from which individuals depart to get to their jobs in other tracts.
+
+_Weighted In-Degree Centrality:_ These plots highlight census tracts that are work destinations.
+
+_Betweenness Centrality:_ Betweenness centrality measures if a particular tract lies on paths between other tracts. 
+
+_Eigenvector Centrality:_ Also known as rank centrality, measures importance of a tract based on if neighboring connections are important, in other words, have lots of connections.
+
 ```{r, echo = F, message = F, warning=F, results = 'hide'}
 library(tidycensus)
 library(leaflet)
@@ -113,9 +124,9 @@ leaflet_creator <- function(types){
 
 ```
 
-# All jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
+### All jobs
 
-```{r}
+```{r, echo = F}
 
 leaflet_creator("all")
 
@@ -126,9 +137,9 @@ fluidRow(column(6, l_btw_2015_S000_all),
          column(6, l_eigen_2015_S000_all))
 ```
 
-# federal jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
+### Federal Jobs
 
-```{r}
+```{r, echo = F}
 
 type = "federal"
 
@@ -211,11 +222,9 @@ fluidRow(column(6, l_btw_2015_S000_federal),
          column(6, l_eigen_2015_S000_federal))
 ```
 
+### Private Jobs
 
-
-# private jobs (top: indegree/outdegree, bottom: betweennness and eigenvector)
-
-```{r}
+```{r, echo = F}
 leaflet_creator("private")
 
 fluidRow(column(6, l_out_2015_S000_private), 
