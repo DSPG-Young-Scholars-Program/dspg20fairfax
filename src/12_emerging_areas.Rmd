@@ -1,6 +1,6 @@
 ---
 title: "Emerging Areas"
-author: "Susweta Ray"
+author: "Susweta"
 date: "7/12/2020"
 output: html_document
 ---
@@ -21,40 +21,45 @@ library(htmlwidgets)
 ```
 
 ```{r}
-data <- read_excel('/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx')
+data <- read_excel('/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx')%>%
+  select_all(~gsub("\\s+|\\.", "_", .)) %>% 
+  select_all(tolower)
 head(data)
 ```
 
 ```{r}
 data1 <- data %>%
-  arrange(desc(`Estimate of Employees`))%>% slice_head(n=100)
+  arrange(desc(estimate_of_employees))%>% slice_head(n=100)
 
   data1
 ```
 
 
 ```{r}
-pal <- colorQuantile("Reds", data1$`Estimate of Employees`, probs = seq(0, 1, length = 7), right = FALSE)
+pal <- colorQuantile("Reds", data1$estimate_of_employees, probs = seq(0, 1, length = 7), right = FALSE)
 labels <- lapply(
   paste("<strong>Company name: </strong>",
-         data1$`Business Name`,
+         data1$business_name,
         "<br />",
         "<strong>6 digit title: </strong>",
-        data1$`6 Digit Title`,
+        data1$`6_digit_title`,
         "<br />",
         "<strong>Number of employees: </strong>",
-        data1$`Estimate of Employees`),
+        data1$estimate_of_employees),
         htmltools::HTML
   )
 leaflet(data = data1, options = leafletOptions(minZoom = 10)) %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addCircleMarkers(data = data1, lng= data1$Longitude, lat= data1$Latitude, radius = 3.5, color = ~pal(`Estimate of Employees`), label = ~labels, labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
-        "color" = "black",
-        "font-family" = "serif",
-        "font-style" = "italic",
-        "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
-        "font-size" = "12px",
-        "border-color" = "rgba(0,0,0,0.5)")))
+  addCircleMarkers(data = data1, lng= data1$longitude, lat= data1$latitude, radius = 3.5, color = ~pal(estimate_of_employees), label = ~labels, 
+                   labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
+                  "color" = "black",
+                  "font-family" = "serif",
+                  "font-style" = "italic",
+                  "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                  "font-size" = "12px",
+                  "border-color" = "rgba(0,0,0,0.5)")))%>%
+  addLegend("bottomleft", pal = pal, values = data1$estimate_of_employees, title = "Percent workers employed by<br>top 100 largest employers<br> in Fairfax County")
+    
 
 ```
 
@@ -95,7 +100,7 @@ data_final <- st_transform(data_final, 4326)
 pal <- colorQuantile("Reds", domain = data_final$perTotalJobs, probs = seq(0, 1, length = 7), right = FALSE)
 
 leaflet(data = data_final,options = leafletOptions(minZoom = 10))%>%
-  addTiles() %>%
+  addProviderTiles("CartoDB.Positron") %>%
   addPolygons(fillColor = ~pal(perTotalJobs),fillOpacity = .8, stroke = FALSE) %>%
   addMarkers(data = data1, label = ~labels, labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
         "color" = "black",
