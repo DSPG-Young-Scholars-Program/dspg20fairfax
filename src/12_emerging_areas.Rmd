@@ -58,7 +58,10 @@ leaflet(data = data1, options = leafletOptions(minZoom = 10)) %>%
                   "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
                   "font-size" = "12px",
                   "border-color" = "rgba(0,0,0,0.5)")))%>%
-  addLegend("bottomleft", pal = pal, values = data1$estimate_of_employees, title = "Percent workers employed by<br>top 100 largest employers<br> in Fairfax County")
+  addLegend("bottomleft", pal = pal, values = data1$estimate_of_employees, title = "Top 100 largest employers in<br> Fairfax County by quantile<br>group of number of employees", opacity = 1, labFormat = function(type = "quantile", cuts = 10, p = data1$estimate_of_employees) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
     
 
 ```
