@@ -91,7 +91,7 @@ essential <- va_xw %>%
 agg_cnty_VA_with_names <- inner_join(x = agg_cnty_VA, y = unique(essential), by = "h_county")
 
 trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000), ][1:10, ]
-ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other counties in Virginia")
+ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia")
 ```
 
 
@@ -200,3 +200,11 @@ trimmed <- agg[order(-agg$S000), ][1:10, ]
 ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states")
 
 ```
+
+
+
+```{r}
+library(stplanr)
+
+```
+
