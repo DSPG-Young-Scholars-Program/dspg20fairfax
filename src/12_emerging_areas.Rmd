@@ -1,0 +1,125 @@
+---
+title: "Emerging Areas"
+author: "Susweta"
+date: "7/12/2020"
+output: html_document
+---
+
+
+
+
+```{r}
+library(readxl)
+library(data.table)
+library(R.utils)
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+```
+
+```{r}
+data <- read_excel('/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx')%>%
+  select_all(~gsub("\\s+|\\.", "_", .)) %>% 
+  select_all(tolower)
+head(data)
+```
+
+```{r}
+data1 <- data %>%
+  arrange(desc(estimate_of_employees))%>% slice_head(n=100)
+
+  data1
+```
+
+
+```{r}
+pal <- colorQuantile("Reds", data1$estimate_of_employees, probs = seq(0, 1, length = 7), right = FALSE)
+labels <- lapply(
+  paste("<strong>Company name: </strong>",
+         data1$business_name,
+        "<br />",
+        "<strong>6 digit title: </strong>",
+        data1$`6_digit_title`,
+        "<br />",
+        "<strong>Number of employees: </strong>",
+        data1$estimate_of_employees),
+        htmltools::HTML
+  )
+leaflet(data = data1, options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addCircleMarkers(data = data1, lng= data1$longitude, lat= data1$latitude, radius = 3.5, color = ~pal(estimate_of_employees), label = ~labels, 
+                   labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
+                  "color" = "black",
+                  "font-family" = "serif",
+                  "font-style" = "italic",
+                  "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                  "font-size" = "12px",
+                  "border-color" = "rgba(0,0,0,0.5)")))%>%
+  addLegend("bottomleft", pal = pal, values = data1$estimate_of_employees, title = "Top 100 largest employers in<br> Fairfax County by quantile<br>group of number of employees", opacity = 1, labFormat = function(type = "quantile", cuts = 10, p = data1$estimate_of_employees) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+    
+
+```
+
+
+
+
+
+```{r}
+wac <- read.csv("/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
+
+va_xwalk <- read.csv("/sfs/qumulo/qhome/sr2wm/Git/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor", "trct" = "factor"))
+
+fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
+
+# Note: C000 = total number of jobs
+data_jobs <- fairfax_wac %>% select(w_geocode, cty, trct, bgrp, C000) %>% group_by(trct) %>% summarize(totaljobs = sum(C000),perTotalJobs = (totaljobs/sum(fairfax_wac$C000))*100)
+
+```
+
+
+Get ACS shapefiles
+```{r, warning = F, message = F, results = 'hide'}
+data_fairfax <-   get_acs(geography = "tract",
+          variables = "B00001_001",
+          state = "VA",
+          county = 059, 
+          geometry = TRUE)
+
+data_final <- merge(data_fairfax, data_jobs, by.x= "GEOID", by.y = "trct", all = TRUE)
+
+data_final <- st_transform(data_final, 4326)
+
+```
+
+
+
+```{r}
+pal <- colorQuantile("Reds", domain = data_final$perTotalJobs, probs = seq(0, 1, length = 7), right = FALSE)
+
+leaflet(data = data_final,options = leafletOptions(minZoom = 10))%>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(perTotalJobs),fillOpacity = .8, stroke = FALSE) %>%
+  addMarkers(data = data1, label = ~labels, labelOptions = labelOptions(noHide = F, direction= "bottom", style = list(
+        "color" = "black",
+        "font-family" = "serif",
+        "font-style" = "italic",
+        "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+        "font-size" = "12px",
+        "border-color" = "rgba(0,0,0,0.5)"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~perTotalJobs,
+            title = "Percent of All<br> Fairfax County Jobs,<br> by Decile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+```
+
