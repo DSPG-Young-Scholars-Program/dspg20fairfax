@@ -15,6 +15,7 @@ library(dplyr)
 library(ggplot2)
 library(readr)
 library(tidyverse)
+library(forcats)
 ```
 
 
@@ -61,7 +62,7 @@ jobs_priv$w_tract <- substr(jobs_priv$w_geocode_tract, 6, 11)
 What % of jobs flow from outside of Fairfax County?
 ```{r}
 # for jobs all (059 is Fairfax code)
-bool_cond <-jobs_all$h_county != "059" & jobs_all$w_county == "059"
+bool_cond <-jobs_all$h_county != "059" & (jobs_all$w_county == "059" & jobs_all$w_state == "51")
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 
 flows_in <- jobs_all[bool_cond, ]
@@ -91,7 +92,15 @@ essential <- va_xw %>%
 agg_cnty_VA_with_names <- inner_join(x = agg_cnty_VA, y = unique(essential), by = "h_county")
 
 trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000), ][1:10, ]
-ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia")
+
+trimmed %>%
+  mutate(ctyname = fct_reorder(ctyname, S000)) %>%
+  ggplot(aes(S000, ctyname)) +
+  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia") +
+  xlab("Number of Jobs") + 
+  ylab("County Name")
+  
 ```
 
 
@@ -105,13 +114,17 @@ agg_states_no_names <- flows_in[flows_in$h_state != "51", ] %>%
   summarise(S000 = sum(S000))
 
 trimmed <- agg_states_no_names[order(-agg_states_no_names$S000), ][1:10, ]
-trimmed$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", 
-                   "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
+trimmed$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 
-ggplot(trimmed, aes(State, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other states")
-
-#Use other states cross walks to get state names
+trimmed %>%
+  mutate(ctyname = fct_reorder(State, S000)) %>%
+  ggplot(aes(S000, ctyname)) +
+  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  ggtitle("Number of Jobs flowing into Fairfax from other states") +
+  xlab("Number of Jobs") + 
+  ylab("State")
 ```
+
 
 ```{r}
 #Adding in column to be able to easily match between different state xwalk files
@@ -122,6 +135,7 @@ flows_in
 
 
 Building same dataframe as flows_in but with County Name, State column added for relevant rows
+Takes a long time to run
 ```{r}
 nc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
 dc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
@@ -197,14 +211,42 @@ agg <- top_ten_with_names %>%
   summarise(S000 = sum(S000))
 
 trimmed <- agg[order(-agg$S000), ][1:10, ]
-ggplot(trimmed, aes(ctyname, S000)) + geom_col() + coord_flip() + ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states")
+#ggplot(trimmed, aes(ctyname, S000)) +
+#  geom_col() + 
+#  coord_flip() + 
+#  ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states")
+  
+  
+trimmed %>%
+  mutate(ctyname = fct_reorder(ctyname, S000)) %>%
+  ggplot(aes(S000, ctyname)) +
+  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states") +
+  xlab("Number of Jobs") + 
+  ylab("County Name")
 
 ```
 
 
 
+
+Mapping Flows
 ```{r}
 library(stplanr)
+fairfax_points <- blocks("VA", county = "Fairfax County")
+fairfax_points
+```
 
+```{r}
+flows_in[, 3:20]
+as.tibble(data.frame(fairfax_points[, 6:18]))
+```
+
+
+```{r}
+data.frame(fairfax_points)
+trimmed
+#what spacial object to use?  centriods from where?
+od2line(trimmed, (data.frame(fairfax_points[, 6:18])))
 ```
 
