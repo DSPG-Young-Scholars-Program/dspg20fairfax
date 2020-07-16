@@ -21,11 +21,13 @@ library(ggplot2)
 ##```
 
 ```{r}
-var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
-View(var_ACS5)
+# Get Census API key
+readRenviron("~/.Renviron")
+Sys.getenv("CENSUS_API_KEY")
 ```
 
 ```{r}
+# Select variables
 vars <- c("B08101_001",
           "B08101_002",
           "B08101_003",
@@ -44,29 +46,26 @@ vars <- c("B08101_001",
 ```
 
 ```{r}
-Fairfax<-get_acs(geography = "tract", variables=vars,state="51",county="059", 
-                year=2018,survey = "acs5",cache_table = TRUE, output = "wide",
-                 geometry=TRUE, keep_geo_vars = TRUE)
+# Get variables
+Fairfax <- get_acs(geography = "tract", variables = vars, state = "51", county = "059", 
+                year = 2018, survey = "acs5", cache_table = TRUE, output = "wide",
+                geometry = TRUE, keep_geo_vars = TRUE)
 ```
 
 ```{r}
-View(Fairfax)
-```
-
-Making Variables Now
-```{r}
+# Calculate
 wrk_ACS_data <- Fairfax %>% transmute(
-  STATEFP= STATEFP,
-  COUNTYFP= COUNTYFP,
-  TRACTCE= TRACTCE,
-  AFFGEOID= AFFGEOID,
-  GEOID= GEOID,
-  NAME.x= NAME.x,
-  LSAD= LSAD,
-  ALAND= ALAND,
-  AWATER= AWATER,
-  NAME.y= NAME.y,
-  geometry=geometry,
+  STATEFP = STATEFP,
+  COUNTYFP = COUNTYFP,
+  TRACTCE = TRACTCE,
+  AFFGEOID = AFFGEOID,
+  GEOID = GEOID,
+  NAME.x = NAME.x,
+  LSAD = LSAD,
+  ALAND = ALAND,
+  AWATER = AWATER,
+  NAME.y = NAME.y,
+  geometry = geometry,
   
   wrk_pct_16_19 = (B08101_002E / B08101_001E) * 100,
   wrk_pct_20_24 = (B08101_003E / B08101_001E) * 100,
@@ -90,7 +89,8 @@ view(wrk_ACS_data)
 ```
 
 ```{r}
-write.csv(wrk_ACS_data, "/data/acs/wrk_ACS_data.csv")
+write_csv(wrk_ACS_data, "./data/acs/wrk_ACS_data.csv", col_names = TRUE)
+write_rds(wrk_ACS_data, "./data/acs/wrk_ACS_data.Rds")
 ```
 
 
