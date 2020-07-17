@@ -21,12 +21,10 @@ library(forcats)
 
 Reading in data tables
 ```{r}
-jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-jobs_fed <- read_csv("~/git/dspg20fairfax/data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-jobs_priv <- read_csv("~/git/dspg20fairfax/data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-
-
-va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
+jobs_all <- read_csv("../data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_fed <- read_csv("../data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_priv <- read_csv("../data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+va_xw <- read_csv("../data/original/va_xwalk.csv")
 ```
 
 
@@ -35,64 +33,57 @@ Parsing GEOID into FIPS codes
 jobs_all$h_state <- substr(jobs_all$h_geocode_tract, 1, 2)
 jobs_all$h_county <- substr(jobs_all$h_geocode_tract, 3, 5)
 jobs_all$h_tract <- substr(jobs_all$h_geocode_tract, 6, 11)
-
+jobs_all$h_stcty <- substr(jobs_all$h_geocode_tract, 1, 5)
 jobs_fed$h_state <- substr(jobs_fed$h_geocode_tract, 1, 2)
 jobs_fed$h_county <- substr(jobs_fed$h_geocode_tract, 3, 5)
 jobs_fed$h_tract <- substr(jobs_fed$h_geocode_tract, 6, 11)
-
+jobs_fed$h_stcty <- substr(jobs_fed$h_geocode_tract, 1, 5)
 jobs_priv$h_state <- substr(jobs_priv$h_geocode_tract, 1, 2)
 jobs_priv$h_county <- substr(jobs_priv$h_geocode_tract, 3, 5)
 jobs_priv$h_tract <- substr(jobs_priv$h_geocode_tract, 6, 11)
-
+jobs_priv$h_stcty <- substr(jobs_priv$h_geocode_tract, 1, 5)
 # Now parsing workplace GEOIDs
 jobs_all$w_state <- substr(jobs_all$w_geocode_tract, 1, 2)
 jobs_all$w_county <- substr(jobs_all$w_geocode_tract, 3, 5)
 jobs_all$w_tract <- substr(jobs_all$w_geocode_tract, 6, 11)
-
+jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
 jobs_fed$w_state <- substr(jobs_fed$w_geocode_tract, 1, 2)
 jobs_fed$w_county <- substr(jobs_fed$w_geocode_tract, 3, 5)
 jobs_fed$w_tract <- substr(jobs_fed$w_geocode_tract, 6, 11)
-
+jobs_fed$w_stcty <- substr(jobs_fed$w_geocode_tract, 1, 5)
 jobs_priv$w_state <- substr(jobs_priv$w_geocode_tract, 1, 2)
 jobs_priv$w_county <- substr(jobs_priv$w_geocode_tract, 3, 5)
 jobs_priv$w_tract <- substr(jobs_priv$w_geocode_tract, 6, 11)
-
+jobs_priv$w_stcty <- substr(jobs_priv$w_geocode_tract, 1, 5)
 ```
 
 What % of jobs flow from outside of Fairfax County?
 ```{r}
 # for jobs all (059 is Fairfax code)
-bool_cond <-jobs_all$h_county != "059" & (jobs_all$w_county == "059" & jobs_all$w_state == "51")
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
-
-flows_in <- jobs_all[bool_cond, ]
-
+flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
+bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
 #percents <- data.frame("type" = c(1, 2), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
 #percents
 #ggplot(percents, aes("", y = shares, fill = type)) + geom_bar(stat="identity", width=.2) +
 #  coord_polar("y", start=0) 
-
-pie(c(mean(bool_cond) * 100, (1 - mean(bool_cond)) * 100), labels = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"))
+pie(c(mean(bool_cond) * 100, (1 - mean(bool_cond)) * 100), 
+    labels = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"))
 ```
 
 Of the flows into Fairfax County from outside, what percent are from other counties in Virginia?
 ```{r}
 perc_flows_other_counties_VA <- mean(flows_in$h_state == "51") *100
 perc_flows_other_counties_VA
-
 agg_cnty_VA <- flows_in[flows_in$h_state == "51", ] %>%
   group_by(h_county) %>%
   summarise(S000 = sum(S000))
-
 #Use VA crosswalk to get county names
 va_xw$h_county <- substring(va_xw$cty, 3, 6)
 essential <- va_xw %>%
   select(h_county, ctyname)
-
 agg_cnty_VA_with_names <- inner_join(x = agg_cnty_VA, y = unique(essential), by = "h_county")
-
 trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000), ][1:10, ]
-
 trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
@@ -100,7 +91,6 @@ trimmed %>%
   ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia") +
   xlab("Number of Jobs") + 
   ylab("County Name")
-  
 ```
 
 
@@ -108,14 +98,11 @@ Of the flows into Fairfax County from outside, what percent are from other state
 ```{r}
 percent_flows_other_states <- mean(flows_in$h_state != "51") * 100
 percent_flows_other_states
-
 agg_states_no_names <- flows_in[flows_in$h_state != "51", ] %>%
   group_by(h_state) %>%
   summarise(S000 = sum(S000))
-
 trimmed <- agg_states_no_names[order(-agg_states_no_names$S000), ][1:10, ]
 trimmed$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
-
 trimmed %>%
   mutate(ctyname = fct_reorder(State, S000)) %>%
   ggplot(aes(S000, ctyname)) +
@@ -126,27 +113,19 @@ trimmed %>%
 ```
 
 
-```{r}
-#Adding in column to be able to easily match between different state xwalk files
-flows_in[flows_in$h_state != "51", ]
-flows_in$cty <- substring(flows_in$h_geocode_tract, 1, 5)
-flows_in
-```
-
-
 Building same dataframe as flows_in but with County Name, State column added for relevant rows
 Takes a long time to run
 ```{r}
-nc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
-dc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
-pa_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
-wv_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
-md_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
-oh_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
-ny_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
-fl_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
-nj_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
-sc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+nc_xw <- read_csv("../data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+dc_xw <- read_csv("../data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+pa_xw <- read_csv("../data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+wv_xw <- read_csv("../data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+md_xw <- read_csv("../data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+oh_xw <- read_csv("../data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+ny_xw <- read_csv("../data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+fl_xw <- read_csv("../data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+nj_xw <- read_csv("../data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+sc_xw <- read_csv("../data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
 ```
 
 
@@ -154,62 +133,51 @@ sc_xw <- read_csv("~/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_ty
 #NC done
 essential <- nc_xw %>%
   select(cty, ctyname)
-nc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+nc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #dc done
 essential <- dc_xw %>%
   select(cty, ctyname)
-dc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+dc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #pa done
 essential <- pa_xw %>%
   select(cty, ctyname)
-pa_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+pa_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #wv done
 essential <- wv_xw %>%
   select(cty, ctyname)
-wv_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+wv_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #md done
 essential <- md_xw %>%
   select(cty, ctyname)
-md_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+md_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #oh done
 essential <- oh_xw %>%
   select(cty, ctyname)
-oh_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+oh_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #ny done
 essential <- ny_xw %>%
   select(cty, ctyname)
-ny_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+ny_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #fl done
 essential <- fl_xw %>%
   select(cty, ctyname)
-fl_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+fl_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #nj done
 essential <- nj_xw %>%
   select(cty, ctyname)
-nj_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
-
+nj_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 #sc done
 essential <- sc_xw %>%
   select(cty, ctyname)
-sc_names <- inner_join(x = flows_in, y = unique(essential), by = "cty")
+sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 ```
 
 
 ```{r}
 top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
-
 agg <- top_ten_with_names %>%
   group_by(ctyname) %>%
   summarise(S000 = sum(S000))
-
 trimmed <- agg[order(-agg$S000), ][1:10, ]
 #ggplot(trimmed, aes(ctyname, S000)) +
 #  geom_col() + 
@@ -224,29 +192,50 @@ trimmed %>%
   ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states") +
   xlab("Number of Jobs") + 
   ylab("County Name")
-
 ```
 
 
 
 
-Mapping Flows
+Mapping Flows (have to load in all top 10 states)
+
+c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 ```{r}
 library(stplanr)
-fairfax_points <- blocks("VA", county = "Fairfax County")
-fairfax_points
+va_points <- tracts("VA")
+md_points <- tracts("MD")
+dc_points <- tracts("DC")
+wv_points <- tracts("WV")
+pa_points <- tracts("PA")
+nc_points <- tracts("NC")
+nj_points <- tracts("NJ")
+ny_points <- tracts("NY")
+oh_points <- tracts("OH")
+sc_points <- tracts("SC")
+fl_points <- tracts("FL")
+```
+
+
+
+```{r}
+#cleaning to make sure we are only using matching GEOIDS...
+all_points <- rbind(va_points, md_points, dc_points, wv_points, pa_points, nc_points, ny_points, ny_points, oh_points, sc_points, fl_points)
+
+filtered_jobs <- jobs_all[jobs_all$w_geocode_tract %in% st_centroid(all_points)$GEOID, ]
+filtered_jobs <- filtered_jobs[filtered_jobs$h_geocode_tract %in% st_centroid(all_points)$GEOID, ]
+shapes <- od2line(filtered_jobs[, 3:22], st_centroid(all_points)[, 4:13])
+
 ```
 
 ```{r}
-flows_in[, 3:20]
-as.tibble(data.frame(fairfax_points[, 6:18]))
+shapes
 ```
+
 
 
 ```{r}
-data.frame(fairfax_points)
-trimmed
-#what spacial object to use?  centriods from where?
-od2line(trimmed, (data.frame(fairfax_points[, 6:18])))
+#plot(shapes, lwd = shapes$S000)
+
 ```
+
 
