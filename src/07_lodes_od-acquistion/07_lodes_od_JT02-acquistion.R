@@ -64,4 +64,4 @@ jobs_priv <- fairfax %>% select(-w_geocode, - h_geocode) %>%
 View(jobs_priv)
 
 #saving jobs_priv as csv to data/od
-write.csv(jobsall, "data/od/jobs_priv.csv")
+write.csv(jobs_priv, "data/od/jobs_priv.csv")
