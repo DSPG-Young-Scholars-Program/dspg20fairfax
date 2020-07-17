@@ -23,6 +23,7 @@ library(leaflet)
 ```{r}
 # Read in data
 vulnerable <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
+unemp <- read_rds(uiaggregate, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
 ```
 
 # Areas Vulnerable to Covid-Related Income and Job Loss
@@ -34,7 +35,41 @@ Describe data sources and what we did here.
 ## Findings
 Give a brief summary of findings, then describe each output below (explain summary map and individual indicators with their maps, why we selected them, and main takeaways for each map).
 
-### Relative Vulnerability Map
+### Initial Unemployment Filings
+```{r}
+# Total Claims
+pal <- colorBin("Oranges", domain = uiaggregate$totalclaims, bins = 6)
+
+      labels <- lapply(
+        paste("<strong>ZIP code: </strong>",
+              uiaggregate$GEOID10,
+              "<br />",
+              "<strong>Total Claims:</strong>",
+              round(uiaggregate$totalclaims, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = uiaggregate, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(totalclaims),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~uiaggregate$totalclaims,
+            title = "Number of<br>Claims", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+### Relative Vulnerability
 ```{r}
 #Summary score leaflet
 pal <- colorFactor("Oranges", domain = vulnerable$SummaryScore)
@@ -83,7 +118,7 @@ leaflet(data = vulnerable,
             na.label = "Not Available")
 ```
 
-# Which Areas Already Experience High Unemployment Rates?
+#### Which Areas Already Experience High Unemployment Rates?
 ```{r}
 #Percent In Labor Force Unemployed
 pal <- colorQuantile("Blues", domain = vulnerable$pct_unempl, probs = seq(0, 1, length = 6), right = FALSE)
@@ -116,7 +151,7 @@ leaflet(data = vulnerable,
                   })
 ```
 
-# Where are Part-Time Workers?
+#### Where are Part-Time Workers?
 ```{r}
 # Percent In Labor Force Employed Less Than Year Round Full Time
 pal <- colorQuantile("Oranges", domain = vulnerable$pct_part, probs = seq(0, 1, length = 6), right = FALSE)
@@ -149,7 +184,7 @@ leaflet(data = vulnerable,
                   })
 ```
 
-# Where are Workers with High School Education or Less?
+#### Where are Workers with High School Education or Less?
 ```{r}
 # Percent in Labor Force with High School Education or Less
 pal <- colorQuantile("Blues", domain = vulnerable$pct_hsless, probs = seq(0, 1, length = 6), right = FALSE)
@@ -182,7 +217,7 @@ leaflet(data = vulnerable,
                   })
 ```
 
-### Where are Low-Income Workers?
+#### Where are Low-Income Workers?
 ```{r}
 # Median Worker Income
 pal <- colorQuantile("Oranges", domain = vulnerable$medinc, probs = seq(0, 1, length = 6), right = FALSE)
@@ -214,7 +249,7 @@ leaflet(data = vulnerable,
                   })
 ```
 
-### Where are Workers in Occupations Vulnerable to Covid-Related Job and Income Loss?
+#### Where are Workers in Occupations Vulnerable to Covid-Related Job and Income Loss?
 ```{r}
 # Percent Employed in Occupations Vulnerable to Covid-Related Job and Income Loss
 pal <- colorQuantile("Blues", domain = vulnerable$pct_occup, probs = seq(0, 1, length = 6), right = FALSE)
@@ -247,7 +282,7 @@ leaflet(data = vulnerable,
                   })
 ```
 
-### Where are Workers in Industries Vulnerable to Covid-Related Job and Income Loss?
+#### Where are Workers in Industries Vulnerable to Covid-Related Job and Income Loss?
 ```{r}
 # Percent Employed in Industries Vulnerable to Covid-Related Job and Income Loss
 pal <- colorQuantile("Oranges", domain = vulnerable$pct_ind, probs = seq(0, 1, length = 6), right = FALSE)
