@@ -21,7 +21,7 @@ library(tigris)
 ##Import Occupations Data
 
 occupations_byworkplace <- read_excel(
-  "./data/original/jobseq/occupations_byworkplace.xlsx", skip = 2)[1:27,]
+  "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/jobseq/occupations_byworkplace.xlsx", skip = 2)[1:27,]
 occupations_byworkplace <- data.table(occupations_byworkplace)
 
 #Clean Headers & ZCTA Region Column
@@ -71,8 +71,6 @@ names(uiaggregate) <- uiheader
 
 #Link Total Claims to Vulnerable Claims and Create Percent Vulnerable Column (Zip)
 
-###Note: 22035 and 20151 are inexplicably over 1.###
-
 uiaggregate$ZCTA <- as.numeric(uiaggregate$ZCTA)
 occupations_byworkplace$ZCTA <- as.numeric(occupations_byworkplace$ZCTA)
 final_occupations <- left_join(occupations_byworkplace, uiaggregate, by = "ZCTA")
@@ -82,7 +80,7 @@ final_occupations$percentvulnerable <- final_occupations$totalvulnerable/final_o
 
 #Put Zip Codes into Mappable Format using uszips.csv from https://simplemaps.com/data/us-zips
 
-fairfax_zips <- read_csv("./data/uszips.csv") %>%
+fairfax_zips <- read_csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/uszips.csv") %>%
   filter(state_id == "VA") %>%
   filter(county_name == "Fairfax")
 zip_vector <- fairfax_zips$zip

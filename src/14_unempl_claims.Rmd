@@ -1,0 +1,95 @@
+---
+title: "Unemployment Claims in Fairfax County"
+output: html_document
+description: "Project description here"
+tags: ["R", "geospatial"]
+weight: 1
+draft: false
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+library(stringr)
+library(tigris)
+```
+
+```{r}
+# Read in data
+uiclaims <- read.delim("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/uiclaims_initials.txt") %>%
+  filter(areatyname == "Zip Code")
+
+# Filter to 2020 claims and initial claims only
+uiclaims <- uiclaims %>% filter(periodyear == 2020 & claimtype == 1)
+
+# Create Total Claims Column
+uiaggregate <- aggregate(cbind(claimants) ~ area, data = uiclaims, sum)
+uiheader <- c("ZCTA", "totalclaims")
+names(uiaggregate) <- uiheader
+
+# Put Zip Codes into Mappable Format using uszips.csv from https://simplemaps.com/data/us-zips
+fairfax_zips <- read_csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/uszips.csv") %>%
+  filter(state_id == "VA") %>%
+  filter(county_name == "Fairfax")
+zip_vector <- fairfax_zips$zip
+
+# Select Fairfax ZIPs
+uiaggregate <- uiaggregate %>%
+  filter(ZCTA %in% zip_vector)
+
+# Merge with Spatial Data
+options(tigris_use_cache = TRUE)
+char_zips <- zctas(cb = TRUE, uiaggregate$ZCTA)
+
+uiaggregate <- geo_join(char_zips, 
+                        uiaggregate, 
+                        by_sp = "GEOID10", 
+                        by_df = "ZCTA",
+                        how = "left")
+
+# Write data
+write_rds(uiaggregate, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/vworks/uiagg_spatial.Rds")
+```
+
+## Total initial unemployment claims in Fairfax County
+```{r}
+# Total Claims
+pal <- colorBin("Oranges", domain = uiaggregate$totalclaims, bins = 6)
+
+      labels <- lapply(
+        paste("<strong>ZIP code: </strong>",
+              uiaggregate$GEOID10,
+              "<br />",
+              "<strong>Total Claims:</strong>",
+              round(uiaggregate$totalclaims, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = uiaggregate, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(totalclaims),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~uiaggregate$totalclaims,
+            title = "Number of<br>Claims", 
+            opacity = 1,
+            na.label = "Not Available")
+```
