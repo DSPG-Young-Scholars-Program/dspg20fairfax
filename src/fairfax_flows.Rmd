@@ -175,10 +175,10 @@ sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "
 
 ```{r}
 top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
-agg <- top_ten_with_names %>%
-  group_by(ctyname) %>%
+agg_cnty_other_with_names <- top_ten_with_names %>%
+  group_by(ctyname, h_county) %>%
   summarise(S000 = sum(S000))
-trimmed <- agg[order(-agg$S000), ][1:10, ]
+trimmed <- agg_cnty_other_with_names[order(-agg_cnty_other_with_names$S000), ][1:10, ]
 #ggplot(trimmed, aes(ctyname, S000)) +
 #  geom_col() + 
 #  coord_flip() + 
@@ -198,8 +198,6 @@ trimmed %>%
 
 
 Mapping Flows (have to load in all top 10 states)
-
-c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 ```{r}
 library(stplanr)
 va_points <- tracts("VA")
@@ -223,19 +221,65 @@ all_points <- rbind(va_points, md_points, dc_points, wv_points, pa_points, nc_po
 
 filtered_jobs <- jobs_all[jobs_all$w_geocode_tract %in% st_centroid(all_points)$GEOID, ]
 filtered_jobs <- filtered_jobs[filtered_jobs$h_geocode_tract %in% st_centroid(all_points)$GEOID, ]
-shapes <- od2line(filtered_jobs[, 3:22], st_centroid(all_points)[, 4:13])
+shapes <- od2line(filtered_jobs[, 3:20], st_centroid(all_points)[, 4:13])
 
 ```
 
-```{r}
-shapes
-```
 
 
 
 ```{r}
-#plot(shapes, lwd = shapes$S000)
-
 ```
 
 
+practice
+```{r}
+all_flow_plot <- plot(shapes["h_geocode_tract"], lwd = shapes$S000 / 10)
+all_flow_plot
+```
+
+just doing a sample of all flows to get it working
+```{r}
+library(tmap)
+library(leaflet)
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+tm_shape(shapes[1:200, ] %>% select(w_geocode_tract, h_geocode_tract, S000, geometry)) +
+  tm_lines(lwd = "S000", col = "S000", palette = "YlGnBu")
+```
+
+```{r}
+#top 10 state fips, but not sure how to aggregate by state
+top10_state <- shapes[shapes$h_state %in% agg_states_no_names[order(-agg_states_no_names$S000), ][1:10, ]$h_state, ]
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+top10states_flowsmap <- tm_shape(top10_state %>% select(w_geocode_tract, h_geocode_tract, S000, geometry)) + tm_lines(lwd = "S000", col = "S000", palette = "YlGnBu")
+#top10states_flowsmap
+#od2line(jobs_all %>% select(h_state, w_state, w_county, w_tract, S000), st_centroid(states())[, 5:13])
+```
+
+
+```{r}
+#top 10 VA county
+top10_va <- shapes[shapes$h_county %in% agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000), ][1:10, ]$h_county, ]
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+top10va_flowsmap <- tm_shape(top10_va %>% select(w_geocode_tract, h_geocode_tract, S000, geometry)) + tm_lines(lwd = "S000", col = "S000", palette = "YlGnBu")
+#top10va_flowsmap
+```
+
+```{r}
+#top 10 outside VA county
+top10_cnty_other <- shapes[shapes$h_county %in% agg_cnty_other_with_names[order(-agg_cnty_other_with_names$S000), ][1:10, ]$h_county, ]
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+top10other_county_flowsmap <- tm_shape(top10_cnty_other %>% select(w_geocode_tract, h_geocode_tract, S000, geometry)) + tm_lines(lwd = "S000", col = "S000", palette = "YlGnBu")
+#top10other_county_flowsmap
+```
+
+viewing maps (takes a while, need to figure out how to aggregate... maybe not use tracts but use county)
+```{r}
+top10states_flowsmap
+top10va_flowsmap
+top10other_county_flowsmap
+```
