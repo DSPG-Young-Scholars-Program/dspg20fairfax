@@ -16,21 +16,25 @@ library(stringr)
 #Set Up Data
 #Fairfax County Code is: 51059
 
-rac <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_rac_S000_JT00_2017.csv", colClasses = c("h_geocode" = "factor"))
+rac <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_rac_S000_JT00_2017.csv", colClasses = c("h_geocode" = "factor"))
 
-va_xwalk <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor"))
+va_xwalk <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor"))
 
 fairfax_rac <- merge(rac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "h_geocode", by.y = "tabblk2010")
 
 # assign readable column names
 
-readable_col <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/lodes_wac_cols.csv")
+readable_col <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/lodes_wac_cols.csv")
 readable_col <- rbind(readable_col[1:42,],readable_col[53,])
 readable_col[1,2] <- "h_geocode"
 
 colnames(fairfax_rac) <- c(
   readable_col$Explanation,
   colnames(fairfax_rac)[!(colnames(fairfax_rac) %in% readable_col$Variable)])
+
+# Write out
+write_rds(fairfax_rac, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/fairfax_rac.Rds")
+
 
 # function to transform pie chart labels
 
@@ -41,9 +45,7 @@ pie_lab_transform <- function(data){
     mutate(ypos = cumsum(prop)- 0.5*prop )
 
 }
-
 ```
-
 
 
 ```{r, echo = F}
