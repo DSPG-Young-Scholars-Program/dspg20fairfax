@@ -207,8 +207,6 @@ sc_points <- tracts("SC")
 fl_points <- tracts("FL")
 ```
 
-CLEAR CLEAR CLEAR
-
 only do states and counties given by top 10 graphs
 
 Doing states first:
