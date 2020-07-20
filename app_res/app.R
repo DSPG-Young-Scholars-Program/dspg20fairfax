@@ -8,13 +8,13 @@ library(sf)
 resdata <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/res_ACS_data.Rds")
 resdata <- st_transform(resdata, 4269)
 
-vars_travel <- c("Percent workers traveling 30 minutes or more to work",
-                 "Percent workers driving alone", 
+vars_travel <- c("Percent workers driving alone", 
                  "Percent workers carpooling", 
                  "Percent workers using public transit", 
                  "Percent workers walking to work", 
                  "Percent workers using other transportation", 
-                 "Percent workers working from home")
+                 "Percent workers working from home",
+                 "Percent workers traveling 30 minutes or more to work")
 
 vars_class <- c("Percent employed in private companies", 
                 "Percent employed in private not-for-profit", 
@@ -38,23 +38,41 @@ vars_ind <- c("Percent employed in construction",
 ui <- fluidPage(theme = shinytheme("cosmo"),
                 tabsetPanel(
                   tabPanel("Commuting", 
+                           fluidRow(style = "margin: 17px",
+                             br(),
+                             h4(strong('Employed Fairfax County Residents\' Means of Commuting by Residence Census Tract')),
+                             p()
+                             ),
                            sidebarPanel(
-                             selectInput('whichvar_travel', 'Select Variable', vars_travel),
-                             br('Source: American Community Survey, 2014/18')),
+                             selectInput('whichvar_travel', 'Select Variable:', vars_travel),
+                             tags$b('Source:'),
+                             p('American Community Survey, 2014/18')),
                            mainPanel(
                              leafletOutput('plot_travel'))
                   ), 
                   tabPanel("Work Class", 
+                           fluidRow(style = "margin: 17px",
+                             br(),
+                             h4(strong('Employed Fairfax County Residents\' Work Class by Residence Census Tract')),
+                             p()
+                           ),
                            sidebarPanel(
-                             selectInput('whichvar_class', 'Select Variable', vars_class),
-                             br('Source: American Community Survey, 2014/18')),
+                             selectInput('whichvar_class', 'Select Variable:', vars_class),
+                             tags$b('Source:'),
+                             p('American Community Survey, 2014/18')),
                            mainPanel(
                              leafletOutput('plot_class'))
                   ), 
                   tabPanel("Industry", 
+                           fluidRow(style = "margin: 17px",
+                             br(),
+                             h4(strong('Employed Fairfax County Residents\' Work Industry by Residence Census Tract')),
+                             p()
+                           ),
                            sidebarPanel(
-                             selectInput('whichvar_ind', 'Select Variable', vars_ind),
-                             br('Source: American Community Survey, 2014/18')),
+                             selectInput('whichvar_ind', 'Select Variable:', vars_ind),
+                             tags$b('Source:'),
+                             p('American Community Survey, 2014/18')),
                            mainPanel(
                              leafletOutput('plot_ind'))
                   )
