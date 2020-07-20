@@ -66,8 +66,23 @@ What % of jobs flow from outside of Fairfax County?
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
 bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
-pie(c(mean(bool_cond) * 100, (1 - mean(bool_cond)) * 100), 
-    labels = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"))
+
+percents <- data.frame("type" = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
+percents
+pie <- ggplot(percents, aes("", y = shares, fill = type)) +
+  geom_bar(stat="identity", width=1) + 
+  geom_text(aes(label = paste0(round(shares), "%")), position = position_stack(vjust = 0.5))
+ 
+pie <- pie  +
+  coord_polar("y", start=0) +
+  scale_fill_manual(values=c("#D1E0BF", "#0E879C")) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Fairfax Jobs Inflows Breakdown") +
+  theme_classic() +
+  theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(hjust = 0.5))
+pie
 ```
 
 Of the flows into Fairfax County from outside, what percent are from other counties in Virginia?
@@ -86,7 +101,7 @@ agg_cnty_VA_trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000
 agg_cnty_VA_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  geom_bar(stat="identity", fill = "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia") +
   xlab("Number of Jobs") + 
   ylab("County Name")
@@ -105,7 +120,7 @@ agg_states_trimmed$State <- c("Maryland", "District of Columbia", "West Virginia
 agg_states_trimmed %>%
   mutate(ctyname = fct_reorder(State, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  geom_bar(stat="identity", fill= "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax from other states") +
   xlab("Number of Jobs") + 
   ylab("State")
@@ -181,7 +196,7 @@ agg_cnty_other_trimmed <- agg_cnty_other_with_names[order(-agg_cnty_other_with_n
 agg_cnty_other_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill= "dark green", alpha=.7) +
+  geom_bar(stat="identity", fill= "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states") +
   xlab("Number of Jobs") + 
   ylab("County Name")
@@ -215,12 +230,13 @@ Doing states first:
 flows_in_state <- flows_in[flows_in$h_state != "51", ] %>%
   group_by(h_state, w_state) %>%
   summarise(S000 = sum(S000)) %>%
+  ungroup() %>%
   arrange(-S000)
 #get states names
 flows_in_state <- flows_in_state[1:10, ]
 flows_in_state$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 
-states_flow_lines <- od2line(flows_in_state, states()[3:10])
+states_flow_lines <-st_as_sf(od2line(flows_in_state, states()[3:10]))
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S000, geometry)) + tm_lines(lwd = 2, col = "S000", palette = "YlGnBu")
@@ -234,13 +250,14 @@ Doing VA Counties now:
 flows_in_VA_cnty <- flows_in[flows_in$h_state == "51", ] %>%
   group_by(h_county, w_county) %>%
   summarise(S000 = sum(S000)) %>%
+  ungroup() %>%
   arrange(-S000)
 #join with names of h_county
 essential <- va_xw %>%
   select(h_county, ctyname)
 flows_in_VA_cnty <- inner_join(x = flows_in_VA_cnty, y = unique(essential), by = "h_county")
 
-va_cnty_flow_lines <- od2line(flows_in_VA_cnty[1:10, ], counties("VA")[, 2:18])
+va_cnty_flow_lines <- st_as_sf(od2line(flows_in_VA_cnty[1:10, ], counties("VA")[, 2:18]))
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_county, S000, geometry)) + tm_lines(lwd = 2, col = "S000", palette = "YlGnBu")
@@ -252,10 +269,11 @@ Doing counties outside of VA now:
 flows_from_other <- top_ten_with_names %>%
   group_by(h_county, w_county, ctyname) %>%
   summarise(S000 = sum(S000)) %>%
+  ungroup() %>%
   arrange(-S000)
 all_points <- rbind(va_points, md_points, dc_points, wv_points, pa_points, nc_points, ny_points, ny_points, oh_points, sc_points, fl_points)
 
-other_cnty_flow_lines <- od2line(flows_from_other[1:10, ], all_points[, 2:12])
+other_cnty_flow_lines <- st_as_sf(od2line(flows_from_other[1:10, ], all_points[, 2:12]))
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w_county, S000, geometry)) + tm_lines(lwd = 2, col = "S000", palette = "YlGnBu")
