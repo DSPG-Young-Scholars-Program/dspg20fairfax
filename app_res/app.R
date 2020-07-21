@@ -5,7 +5,7 @@ library(shinythemes)
 library(sf)
 
 # Load data
-resdata <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/res_ACS_data.Rds")
+resdata <- read_rds("res_ACS_data.Rds")
 resdata <- st_transform(resdata, 4269)
 
 vars_travel <- c("Percent workers driving alone", 

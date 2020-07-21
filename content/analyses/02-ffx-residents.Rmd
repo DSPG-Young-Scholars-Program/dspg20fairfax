@@ -152,7 +152,7 @@ ggplot(naic, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
 Describe how the map works, what it shows, and main takeaways.
 ```{r warning = F, message = F, echo = F}
 # Shiny app goes here, I just need to integrate it.
-# This app shows maps (after selection) for all commute types, all class of worker types, and all industry sectors. See static plots that we already have for what shows up.
+# See the app at https://teja.shinyapps.io/app_res/
 ```
 
 # References
