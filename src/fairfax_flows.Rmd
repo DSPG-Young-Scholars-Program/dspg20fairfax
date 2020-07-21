@@ -202,6 +202,19 @@ agg_cnty_other_trimmed %>%
   ylab("County Name")
 ```
 
+```{r}
+va_points <- tracts("VA")
+md_points <- tracts("MD")
+dc_points <- tracts("DC")
+wv_points <- tracts("WV")
+pa_points <- tracts("PA")
+nc_points <- tracts("NC")
+nj_points <- tracts("NJ")
+ny_points <- tracts("NY")
+oh_points <- tracts("OH")
+sc_points <- tracts("SC")
+fl_points <- tracts("FL")
+```
 
 
 
