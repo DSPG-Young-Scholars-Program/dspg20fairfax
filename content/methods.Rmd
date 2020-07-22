@@ -1,0 +1,44 @@
+---
+title: "Fairfax County 2020 Summer Project"
+output: html_document
+---
+
+```{css, echo=FALSE}
+/* this chunnk of code centers all of the headings */
+h1, h2, h3 {
+  text-align: center;
+}
+```
+
+### Data and Methods
+
+See our data discovery spreadsheet and the midterm presentation data discovery slide for initial information.
+
+Key questions to address about data: 
+what is the dataset
+who produces/owns the dataset
+what year(s) are available and what year(s) we used
+who/what does the dataset capture (what is the unit of analysis)
+what level of geography does the data have
+why did we use the dataset
+what information from the dataset did we use
+
+[American Community Survey](https://www.census.gov/programs-surveys/acs/) 
+
+[LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/) 
+
+[2019 Forbes 1000](https://www.someka.net/excel-template/fortune-1000-excel-list/) 
+
+[Virginia Employers](link here) 
+
+[Virginia Employment Commission Unemployment Insurance Claims](https://www.vec.virginia.gov/ui-claims-dashboard) 
+
+<center>
+
+##### [Visualizations go about here.] 
+
+</center>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex. Nulla convallis ante elit, at consequat ipsum ultricies ut. Aliquam erat volutpat. nderline. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in variu convallis ante elit, at consequat ipsum ultricies ut.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in varius purus. Nullam ut sodales ante. Fusee justo nisi, suscipit a lacus et, posuere sagittis ex. Nulla convallis ante elit, at consequat ipsum ultricies ut. Aliquam erat volutpat. nderline. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in variu convallis ante elit, at consequat ipsum ultricies ut.

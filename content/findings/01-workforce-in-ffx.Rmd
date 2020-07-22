@@ -1,0 +1,398 @@
+---
+title: "Workers in Fairfax County"
+output: html_document
+description: "Project description here"
+tags: ["R", "geospatial"]
+weight: 1
+draft: false
+---
+
+NOTES FOR THIS DOCUMENT:
+* LODES PLOTS NEED TO HAVE THE COLOR SCHEME REVISED + LABELS CLEANED UP (SPACES ETC)
+* ADD CONTENT AS MARKED.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning = F, message = F, echo = F}
+library(tidyverse)
+library(viridis)
+library(sf)
+library(RColorBrewer)
+library(leaflet)
+library(ggrepel)
+library(stringr)
+```
+
+```{r warning = F, message = F, echo = F}
+# Get data
+work <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
+wac <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
+#work <- read_rds("./data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
+#wac <- read_rds("./data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
+```
+
+```{r, warning = F, message = F, echo = F}
+# Function to transform pie chart labels
+pie_lab_transform <- function(data){
+  data <- data %>% 
+  arrange(desc(data)) %>%
+  mutate(prop = value / sum(value) *100) %>%
+  mutate(ypos = cumsum(prop)- 0.5*prop )
+}
+```
+
+# Workforce in Fairfax County
+Write introduction here.
+
+## Data and Methods
+Describe data sources and what we did here.
+
+## Workers in Fairfax County
+Give a brief summary of findings, then describe each output below.
+
+### What is the sociodemographic composition of workers in Fairfax County?
+Describe.
+```{r, echo = F}
+race <- data.frame(race = names(colSums(wac[, 29:34])), value = colSums(wac[,29:34]), row.names = NULL)
+race <- pie_lab_transform(race)
+
+for(i in  c("Race:", ",Alone", "Alone", "10")){
+  race$race <- gsub(i, "", race$race)
+}
+
+ggplot(race, aes(x = prop, y = reorder(race, prop), fill = race)) +
+  geom_bar(stat = "identity")+
+  theme_minimal() +
+  labs(title = "Fairfax County Jobs by Race", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+  theme(legend.position="none") 
+```
+
+Describe.
+```{r, echo = F}
+ethnicity <- data.frame(ethnicity = names(colSums(wac[,35:36])), value = colSums(wac[, 35:36]), row.names = NULL)
+ethnicity <- pie_lab_transform(ethnicity)
+
+for(i in  c("Ethnicity:", "10")){
+  ethnicity$ethnicity <- gsub(i, "", ethnicity$ethnicity)
+}
+
+ggplot(ethnicity, aes(x="", y = prop, fill = ethnicity)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position = "none") +
+  geom_text(aes(y = ypos, label = paste(ethnicity, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Ethnicity", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+Describe.
+```{r, echo = F}
+sex <- data.frame(sex = names(colSums(wac[,41:42])), value = colSums(wac[, 41:42]), row.names = NULL)
+sex <- pie_lab_transform(sex)
+
+for(i in  c("Sex:", "10")){
+  sex$sex <- gsub(i, "", sex$sex)
+}
+
+ggplot(sex, aes(x="", y=prop, fill=sex)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(sex, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Sex", subtitle = "LODES Workforce Characteristics, 2017")
+
+```
+
+### How educated are workers in Fairfax County?
+Describe.
+```{r, echo = F}
+education <- data.frame(education=names(colSums(wac[,37:40])), value=colSums(wac[, 37:40]), row.names = NULL)
+education <- pie_lab_transform(education)
+
+for(i in  c("EducationalAttainment:", "10,11")){
+  education$education <- gsub(i, "", education$education)
+}
+
+ggplot(education, aes(x="", y=prop, fill=education)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(education, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Education", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+### How much do workers in Fairfax County earn?
+Describe main takeaways.
+```{r, echo = F}
+earnings <- data.frame(earnings = names(colSums(wac[, 6:8])), value = colSums(wac[, 6:8]), row.names = NULL)
+earnings$earnings <- gsub("earnings", "", earnings$earnings)
+earnings <- pie_lab_transform(earnings)
+
+ggplot(earnings, aes(x = "", y = prop, fill = earnings)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "none") +
+  geom_text(aes(y = ypos, label = paste(earnings, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Earnings", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+### Which industry sectors employ workers in Fairfax County?
+```{r, echo = F}
+naic <- data.frame(naic = names(colSums(wac[,9:28])), value = colSums(wac[, 9:28]), row.names = NULL)
+
+naic$naic <- unlist(str_extract_all(naic$naic,  "(?<=\\().+?(?=\\))"))
+naic$naic <- gsub("and", "&", naic$naic)
+naic <- pie_lab_transform(naic)
+
+ggplot(naic, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
+  geom_bar(stat= "identity") +
+  theme_minimal() +
+  labs(title = "Fairfax County Jobs by NAIC Sector Code", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+  theme(legend.position="none") 
+```
+
+### Where are young and older adult workers?
+Describe how the map works, what it shows, and main takeaways.
+```{r warning = F, message = F, echo = F}
+# Map: Age groups
+pal_16to19 <- colorQuantile("Oranges", domain = work$wrk_pct_16_19, probs = seq(0, 1, length = 5), right = FALSE)
+pal_20to24 <- colorQuantile("Oranges", domain = work$wrk_pct_20_24, probs = seq(0, 1, length = 5), right = FALSE)
+pal_25to44 <- colorQuantile("Oranges", domain = work$wrk_pct_25_44, probs = seq(0, 1, length = 5), right = FALSE)
+pal_45to54 <- colorQuantile("Oranges", domain = work$wrk_pct_45_54, probs = seq(0, 1, length = 5), right = FALSE)
+pal_55to59 <- colorQuantile("Oranges", domain = work$wrk_pct_55_59, probs = seq(0, 1, length = 5), right = FALSE)
+pal_60to64 <- colorQuantile("Oranges", domain = work$wrk_pct_60_64, probs = seq(0, 1, length = 5), right = FALSE)
+pal_65up <- colorQuantile("Oranges", domain = work$wrk_pct_65_up, probs = seq(0, 1, length = 5), right = FALSE)
+
+leaflet(data = work,
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal_16to19(wrk_pct_16_19),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 16-19") %>%
+  addPolygons(fillColor = ~pal_20to24(wrk_pct_20_24),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 20-24") %>%
+  addPolygons(fillColor = ~pal_25to44(wrk_pct_25_44),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 25-44") %>%
+  addPolygons(fillColor = ~pal_45to54(wrk_pct_45_54),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 45-54") %>%
+  addPolygons(fillColor = ~pal_55to59(wrk_pct_55_59),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 55-59") %>%
+  addPolygons(fillColor = ~pal_60to64(wrk_pct_60_64),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 60-64") %>%
+  addPolygons(fillColor = ~pal_65up(wrk_pct_65_up),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers age 65+") %>%
+  addLegend(group = "Percent workers age 16-19", position = "bottomleft", 
+            pal = pal_16to19, 
+            values =  ~wrk_pct_16_19,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 20-24", position = "bottomleft", 
+            pal = pal_20to24, 
+            values =  ~wrk_pct_20_24,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 25-44", position = "bottomleft", 
+            pal = pal_25to44, 
+            values =  ~wrk_pct_25_44,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 45-54", position = "bottomleft", 
+            pal = pal_45to54, 
+            values =  ~wrk_pct_45_54,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 55-59", position = "bottomleft", 
+            pal = pal_55to59, 
+            values =  ~wrk_pct_55_59,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 60-64", position = "bottomleft", 
+            pal = pal_60to64, 
+            values =  ~wrk_pct_60_64,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers age 65+", position = "bottomleft", 
+            pal = pal_65up, 
+            values =  ~wrk_pct_65_up,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLayersControl(
+    overlayGroups = c("Percent workers age 16-19", "Percent workers age 20-24",
+                      "Percent workers age 25-44", "Percent workers age 45-54",
+                      "Percent workers age 55-59", "Percent workers age 60-64",
+                      "Percent workers age 65+"),
+    options = layersControlOptions(collapsed = FALSE)) %>% 
+  hideGroup("Percent workers age 20-24") %>%
+  hideGroup("Percent workers age 25-44") %>%
+  hideGroup("Percent workers age 45-54") %>%
+  hideGroup("Percent workers age 55-59") %>%
+  hideGroup("Percent workers age 60-64") %>%
+  hideGroup("Percent workers age 65+")
+
+```
+
+### How do workers get to their workplaces?
+Describe how the map works, what it shows, and main takeaways.
+```{r warning = F, message = F, echo = F}
+# Map: Transportation
+pal_drive <- colorQuantile("Oranges", domain = work$wrk_pct_drive, probs = seq(0, 1, length = 5), right = FALSE)
+pal_carpool <- colorQuantile("Oranges", domain = work$wrk_pct_carpool, probs = seq(0, 1, length = 5), right = FALSE)
+pal_pubtrans <- colorQuantile("Oranges", domain = work$wrk_pct_pub_trans, probs = seq(0, 1, length = 5), right = FALSE)
+pal_walk <- colorQuantile("Oranges", domain = work$wrk_pct_walk, probs = seq(0, 1, length = 5), right = FALSE)
+pal_other <- colorQuantile("Oranges", domain = work$wrk_pct_other, probs = seq(0, 1, length = 5), right = FALSE)
+pal_wfh <- colorQuantile("Oranges", domain = work$wrk_pct_none, probs = seq(0, 1, length = 5), right = FALSE)
+
+leaflet(data = work,
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal_drive(wrk_pct_drive),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers driving alone") %>%
+  addPolygons(fillColor = ~pal_carpool(wrk_pct_carpool),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers carpooling") %>%
+  addPolygons(fillColor = ~pal_pubtrans(wrk_pct_pub_trans),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers using public transit") %>%
+  addPolygons(fillColor = ~pal_walk(wrk_pct_walk),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers walking") %>%
+  addPolygons(fillColor = ~pal_other(wrk_pct_other),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers using other means") %>%
+  addPolygons(fillColor = ~pal_wfh(wrk_pct_none),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              group = "Percent workers working from home") %>%
+  addLegend(group = "Percent workers driving alone", position = "bottomleft", 
+            pal = pal_drive, 
+            values =  ~wrk_pct_drive,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers carpooling", position = "bottomleft", 
+            pal = pal_carpool, 
+            values =  ~wrk_pct_carpool,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers using public transit", position = "bottomleft", 
+            pal = pal_pubtrans, 
+            values =  ~wrk_pct_pub_trans,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers walking", position = "bottomleft", 
+            pal = pal_walk, 
+            values =  ~wrk_pct_walk,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers using other means", position = "bottomleft", 
+            pal = pal_other, 
+            values =  ~wrk_pct_other,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLegend(group = "Percent workers working from home", position = "bottomleft", 
+            pal = pal_wfh, 
+            values =  ~wrk_pct_none,
+            title = "Percent by<br>Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 10, p = perTotalJobs) {
+              n = length(cuts)
+              paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+            }) %>%
+  addLayersControl(
+    overlayGroups = c("Percent workers driving alone", "Percent workers carpooling",
+                      "Percent workers using public transit", "Percent workers walking",
+                      "Percent workers using other means", "Percent workers working from home"),
+    options = layersControlOptions(collapsed = FALSE)) %>% 
+  hideGroup("Percent workers carpooling") %>%
+  hideGroup("Percent workers using public transit") %>%
+  hideGroup("Percent workers walking") %>%
+  hideGroup("Percent workers using other means") %>%
+  hideGroup("Percent workers working from home")
+```
+
+# References
+Cite references here. Use a consistent format.
