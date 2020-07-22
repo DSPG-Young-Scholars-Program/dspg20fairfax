@@ -167,7 +167,7 @@ fairfax_data <- st_transform(fairfax_data, 4326)
 
 
 pal_out <- colorQuantile("Blues",5,  domain = fairfax_data$wtd_deg_cent_out)
-pal_in <- colorFactor(brewer.pal(n = 4, name = "Oranges"), fairfax_data$color_in)
+pal_in <- colorFactor(brewer.pal(n = 4, name = "teal"), fairfax_data$color_in)
 pal_btw <- colorFactor(brewer.pal(n = 4, name = "Purples"), fairfax_data$color_btw)
 pal_eigen <- colorFactor(brewer.pal(n = 4, name = "Greens"), fairfax_data$color_eigen)
 
