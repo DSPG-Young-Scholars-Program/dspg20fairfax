@@ -16,7 +16,11 @@ h1, h2, h3 {
 
 ### Fairfax County 2020 DSPG Team Members 
 
-##### [Photos go about here.] {style=text-align:center}
+<center>
+
+![](/teja.jpg) ![](/teja.jpg) ![](/teja.jpg)
+
+</center>
 
 ##### [Susweta Ray](https://github.com/SuswetaRay), [Sarah McDonald](https://github.com/sm9dv), [Owen Hart](https://github.com/hartowen), and [Sean Pietrowicz](https://github.com/sp3sd) {style=text-align:center}
 ###
@@ -35,7 +39,11 @@ h1, h2, h3 {
 
 ### Project Sponsors/Stakeholders 
 
-##### [Photos go about here.] {style=text-align:center}
+<center>
+
+![](/fairfax.png)   
+
+</center>
 
 
 
