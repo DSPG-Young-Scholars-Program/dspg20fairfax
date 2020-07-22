@@ -148,7 +148,7 @@ server <- function(input, output, session) {
                 title = "Percent by<br>Quintile Group", 
                 opacity = 1,
                 na.label = "Not Available",
-                labFormat = function(type = "quantile", cuts = 5, p = plotvar_travel) {
+                labFormat = function(type = "quantile", cuts = 5, p = plotvar_class) {
                   n = length(cuts)
                   paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                 })
