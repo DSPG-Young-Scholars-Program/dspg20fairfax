@@ -316,3 +316,33 @@ top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w
   tm_view(set.zoom.limits = c(7, 18), basemaps.alpha = 0.5)
 top10other_cnty_flowsmap
 ```
+```{r}
+flows_from_other <- top_ten_with_names %>%
+  group_by(h_stcty, w_stcty, ctyname) %>%
+  summarise(S000 = sum(S000)) %>%
+  ungroup() %>%
+  arrange(-S000)
+
+
+all_points$h_stcty <- paste(all_points$STATEFP, all_points$COUNTYFP, sep = "")
+
+other_cnty_flow_lines <- od2line(flows_from_other[1:10, ], all_points,
+                                 origin_code = "h_stcty", dest_code = "w_stcty", 
+                                 zone_code = "h_stcty")
+other_cnty_flow_lines <- st_as_sf(other_cnty_flow_lines)
+other_cnty_flow_lines
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w_stcty, S000, geometry)) +
+  tm_lines(lwd = 2, col = "S000", title.col = "Number of Jobs", style = "quantile",
+           palette = c("#60999A", "#E57200"),
+           popup.vars = c("Number of Jobs" = "S000")) +
+  tm_basemap("OpenStreetMap.HOT") +
+  tm_view(set.zoom.limits = c(7, 18), basemaps.alpha = 0.5)
+top10other_cnty_flowsmap
+```
+
+```{r}
+all_points[all_points$h_stcty == "11001", ]
+```
+
