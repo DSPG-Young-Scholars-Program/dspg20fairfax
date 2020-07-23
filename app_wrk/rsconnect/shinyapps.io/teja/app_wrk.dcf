@@ -1,0 +1,10 @@
+name: app_wrk
+title:
+username:
+account: teja
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2601495
+bundleId: 3421686
+url: https://teja.shinyapps.io/app_wrk/
+when: 1595430031.35288

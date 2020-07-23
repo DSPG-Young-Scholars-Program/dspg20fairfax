@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+        <link rel="canonical" href="../../antiquated/fairfax/">
+        <style>
+
+    html body {
+        font-family: 'Oxygen', sans-serif;
+        background-color: #FFFFFF;
+    }
+
+    :root {
+        --accent: #232D4B;
+        --border-width:  0 ;
+    }
+
+</style>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxygen">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=VT323">
+
+
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ascetic.min.css"> 
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.0/css/all.css" integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="../../css/main.css">
+
+
+
+
+ 
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+    
+
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+
+<script>$(document).on('click', function() { $('.collapse').collapse('hide'); })</script>
+
+
+<script>
+$(document).ready(function(){
+    
+  var input = $('#night-mode-toggle');
+  var container = $('#bigbody');
+  var stat = $('#button-status');
+  
+  container.toggleClass(localStorage.toggled);
+  stat.bootstrapToggle(localStorage.button).change();
+  
+  input.on('click', function() {
+      if (localStorage.toggled != "-nightmode" ) {
+          container.toggleClass("-nightmode", true );
+          localStorage.toggled = "-nightmode";
+          localStorage.button = "on";
+       } else {
+          container.toggleClass("-nightmode", false );
+          localStorage.toggled = "";
+          localStorage.button = "off"
+       }
+  })
+});
+</script>
+ <meta name="generator" content="Hugo 0.74.1" />
+        <link href="" rel="alternate" type="application/rss+xml" title="UVA Biocomplexity Institute" />
+        <link href="" rel="feed" type="application/rss+xml" title="UVA Biocomplexity Institute" />
+        
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="../../img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../../img/favicon/site.webmanifest">
+    <link rel="mask-icon" href="../../img/favicon/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="../../img/favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="msapplication-config" content="/img/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    
+    
+    
+    <meta property="og:title" content="">
+    <meta property="og:type" content="article">
+      
+      <meta name="twitter:card" content="summary">
+      <meta name="twitter:image" content="/favicon/uva-dspg-logo.jpg" >
+      
+    <meta property="description" content="">
+    <meta property="og:description" content="">
+    
+    <meta name="twitter:creator" content="">
+    <meta name="twitter:site" content="">
+    
+    </head>
+
+    
+    
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    
+
+    <body id = "bigbody">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand visible-xs" href="#"></a>
+                    <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse">
+                    
+                        <ul class="nav navbar-nav">
+                            
+                                <li><a href="../../">Home</a></li>
+                            
+                                <li><a href="../../overview/">Overview</a></li>
+                            
+                                <li><a href="../../methods/">Data &amp; Methods</a></li>
+                            
+                                <li><a href="../../findings/">Findings</a></li>
+                            
+                                <li><a href="../../team/">Team</a></li>
+                            
+                        </ul>
+                    
+                    
+                        <ul class="nav navbar-nav navbar-right">
+                            
+                                <li class="navbar-icon"><a href="https://biocomplexity.virginia.edu/social-decision-analytics/dspg-program"><i class="fas fa-globe-americas"></i></a></li>
+                            
+                                <li class="navbar-icon"><a href="https://github.com/DSPG-Young-Scholars-Program"><i class="fab fa-github"></i></a></li>
+                            
+                                <li class="navbar-icon"><a href="https://twitter.com/UVA_BI"><i class="fab fa-twitter"></i></a></li>
+                            
+                                <li class="navbar-icon"><a href="mailto:tp2sk@virginia.edu"><i class="far fa-envelope"></i></a></li>
+                            
+                            
+                        </ul>
+                    
+                </div>
+            </div>
+        </nav>
+
+
+<main>
+
+    <div class="item">
+
+    
+    
+    
+
+    
+    
+      
+    
+
+    <h4><a href="../../antiquated/fairfax/"></a></h4>
+    
+    <h5></h5>
+
+    
+    
+
+</div>
+
+
+    <br> <div class="text-justify"><h2 style="text-align:center" id="data-science-for-the-public-good-program">Data Science for the Public Good Program</h2>
+<h3 style="text-align:center" id="fairfax-county-project-2020">Fairfax County Project (2020)</h3>
+<h3 id="heading"></h3>
+<h5 style="text-align:center" id="sdad-teja-pristavec-leadhttpsbiocomplexityvirginiaeduteja-pristavec-brandon-kramerhttpsbiocomplexityvirginiaedubrandon-kramer-josh-goldsteinhttpsbiocomplexityvirginiaedujoshua-goldstein-joy-tobinhttpsbiocomplexityvirginiaedujoy-tobin-stephanie-shipphttpsbiocomplexityvirginiaedustephanie-shipp-and-sallie-kellerhttpsbiocomplexityvirginiaedusallie-keller"><strong>SDAD: <a href="https://biocomplexity.virginia.edu/teja-pristavec">Teja Pristavec (Lead)</a>, <a href="https://biocomplexity.virginia.edu/brandon-kramer">Brandon Kramer</a>, <a href="https://biocomplexity.virginia.edu/joshua-goldstein">Josh Goldstein</a>, <a href="https://biocomplexity.virginia.edu/joy-tobin">Joy Tobin</a>, <a href="https://biocomplexity.virginia.edu/stephanie-shipp">Stephanie Shipp</a>, and <a href="https://biocomplexity.virginia.edu/sallie-keller">Sallie Keller</a></strong></h5>
+<h5 style="text-align:center" id="dspg-susweta-rayhttpsgithubcomsuswetaray-sarah-mcdonaldhttpsgithubcomsm9dv-owen-harthttpsgithubcomhartowen-and-sean-pietrowiczhttpsgithubcomsp3sd"><strong>DSPG: <a href="https://github.com/SuswetaRay">Susweta Ray</a>, <a href="https://github.com/sm9dv">Sarah McDonald</a>, <a href="https://github.com/hartowen">Owen Hart</a>, and <a href="https://github.com/sp3sd">Sean Pietrowicz</a></strong></h5>
+<h3 id="heading-1"></h3>
+<p>Project summary. This project will explore labor markets in Fairfax County, VA to better understand the landscape and barriers to economic opportunity for the county’s residents, businesses, and places. With particular attention to post-COVID socioeconomic circumstances, the team will use local, state, and federal data sources to (1) provide Census tract-level characterization of the Fairfax County workforce, occupation sectors, and industry composition; (2) explore how this landscape may change post-pandemic and identify areas that are or have the potential to create emerging businesses/new industries; (3) map workforce flows within and in/out of Fairfax County by select employment factors and explore scenarios of post-pandemic change in workforce flows. The project findings can inform Fairfax County COVID response and provide insights into workforce readiness, economic vibrancy, and industry diversification, contributing to the county’s strategic plan goal of improving economic opportunity in the area.</p>
+<p>Larger SDAD projects. This effort is part of an ongoing SDAD project and partnership with Fairfax County. Our past Fairfax work developed sub-county level economic vulnerability and obesogenic environment exposure composite indices, a tract-level typology of gentrification, and a neighborhood change predictive model. Our DSPG work will build on our existing portfolio, following the One Fairfax equity policy and pursuing county-wide strategic plan economic opportunity goals to provide additional insight into economic and labor force conditions in the county.</p>
+<p>Project scope. The project will (1) as background, review existing Fairfax County documents to understand the baseline labor force and industry state of the county, as well as current strategies in place to develop, attract, and retain employees and employers; (2) implement the Data Science Framework with emphasis on data discovery, screening, acquisition, fitness-for-use assessment, preparation, linkage, and exploration; (3) develop a tract-level characterization of Fairfax County labor markets, explore potential post-pandemic changes and identify emerging areas, map network flows and examine change scenarios, and visualize and interpret findings; (4) communicate findings to sponsor with a symposium presentation, poster, Sage methods brief, and other outputs.</p>
+<p>Importance to sponsor. This project will allow our sponsor to better understand the landscape and barriers to economic opportunity for the county’s residents, businesses, and places, one of the goals of Fairfax County’s strategic plan. In light of the current pandemic, it will allow the county to identify the current characteristics of its resident and commuting labor force, the characteristics of its businesses and industries, the geographic and temporal flows between them, and how this landscape may change after covid. These insights can help shape post-pandemic employment, transportation, and housing policy and program development, as well as serve as a baseline for measuring future change across the county.</p>
+</div>
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+</main>
+
+        <footer id = "bigfooter">
+            <div style = "padding:15px;">
+                <p>Powered by <a href="https://gohugo.io">Hugo</a>. Themed by <a href="https://github.com/nathancday/min_night">alt_min_night</a>. <a href="https://biocomplexity.virginia.edu/social-decision-analytics">Website by University of Virginia Biocomplexity Institute.</a>
+                </p>
+                <a rel="license" href="https://creativecommons.org/licenses/by/4.0/"
+                title="Creative Commons Attribution 4.0 International license">
+                <i class="fab fa-creative-commons" aria-hidden="true"></i> Attribution 4.0 International license
+                </a>
+            </div>
+        </footer>
+        
+        <script async src="https://www.googletagmanager.com/gtag/js?id="></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments)};
+          gtag('js', new Date());
+          gtag('config', '');
+        </script>
+       
+    </body>
+
+</html>
+

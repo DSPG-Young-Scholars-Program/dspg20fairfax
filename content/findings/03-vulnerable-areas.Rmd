@@ -1,0 +1,322 @@
+---
+title: "Areas Vulnerable to Covid-Related Income and Job Loss"
+description: "Project description here"
+tags: ["R", "geospatial"]
+weight: 3
+draft: false
+output: html_document
+---
+
+NOTES FOR THIS FILE:
+ADD EXPLANATIONS AS NOTED.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning = F, message = F, echo = F}
+library(tidyverse)
+library(leaflet)
+```
+
+```{r}
+# Read in data
+vulnerable <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
+uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
+
+# Read in data
+#vulnerable <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
+#unemp <- read_rds(uiaggregate, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
+```
+
+# Areas Vulnerable to Covid-Related Income and Job Loss
+Write introduction here.
+
+## Data and Methods
+Describe data sources and what we did here.
+
+## Findings
+Give a brief summary of findings, then describe each output below (explain summary map and individual indicators with their maps, why we selected them, and main takeaways for each map).
+
+### Initial Unemployment Filings
+```{r}
+# Total Claims
+pal <- colorBin("Oranges", domain = uiaggregate$totalclaims, bins = 6)
+
+      labels <- lapply(
+        paste("<strong>ZIP code: </strong>",
+              uiaggregate$GEOID10,
+              "<br />",
+              "<strong>Total Claims:</strong>",
+              round(uiaggregate$totalclaims, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = uiaggregate, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(totalclaims),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~uiaggregate$totalclaims,
+            title = "Number of<br>Claims", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+### Relative Vulnerability
+```{r}
+#Summary score leaflet
+pal <- colorFactor("Oranges", domain = vulnerable$SummaryScore)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>Workers Unemployed:</strong>",
+              round(vulnerable$pct_unempl, 2),
+              "<br />",
+              "<strong>% Part-Time:</strong>",
+              round(vulnerable$pct_part, 2), 
+              "<br />",
+              "<strong>% High School or Less:</strong>",
+              round(vulnerable$pct_hsless, 2), 
+              "<br />",
+              "<strong>$ Median Worker Income:</strong>",
+              formatC(vulnerable$medinc, format = "f", big.mark = ",", digits = 0),
+              "<br />",
+              "<strong>% In Vulnerable Occupations:</strong>",
+              round(vulnerable$pct_occup, 2),
+              "<br />",
+              "<strong>% In Vulnerable Industries:</strong>",
+              round(vulnerable$pct_ind, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(SummaryScore),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~vulnerable$SummaryScore,
+            title = "Relative<br>Vulnerability", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+#### Which Areas Already Experience High Unemployment Rates?
+```{r}
+#Percent In Labor Force Unemployed
+pal <- colorQuantile("Blues", domain = vulnerable$pct_unempl, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>Workers Unemployed:</strong>",
+              round(vulnerable$pct_unempl, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(pct_unempl),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_unempl,
+            title = "Percent Unemployed<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_unempl) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+#### Where are Part-Time Workers?
+```{r}
+# Percent In Labor Force Employed Less Than Year Round Full Time
+pal <- colorQuantile("Oranges", domain = vulnerable$pct_part, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>% Part-Time:</strong>",
+              round(vulnerable$pct_part, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(pct_part),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_part,
+            title = "Percent Employed Part Time<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_part) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+#### Where are Workers with High School Education or Less?
+```{r}
+# Percent in Labor Force with High School Education or Less
+pal <- colorQuantile("Blues", domain = vulnerable$pct_hsless, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>% High School or Less:</strong>",
+              round(vulnerable$pct_hsless, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(pct_hsless),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_hsless,
+            title = "Percent Workers<br>with HS Education or Less<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_hsless) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+#### Where are Low-Income Workers?
+```{r}
+# Median Worker Income
+pal <- colorQuantile("Oranges", domain = vulnerable$medinc, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<strong>$ Median Worker Income:</strong>",
+              formatC(vulnerable$medinc, format = "f", big.mark = ",", digits = 0)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(medinc),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~medinc,
+            title = "Median Worker Income<br><br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = medinc) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+#### Where are Workers in Occupations Vulnerable to Covid-Related Job and Income Loss?
+```{r}
+# Percent Employed in Occupations Vulnerable to Covid-Related Job and Income Loss
+pal <- colorQuantile("Blues", domain = vulnerable$pct_occup, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>% In Vulnerable Occupations:</strong>",
+              round(vulnerable$pct_occup, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(pct_occup),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_occup,
+            title = "Percent Employed in<br>Vulnerable Occupations<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_occup) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+#### Where are Workers in Industries Vulnerable to Covid-Related Job and Income Loss?
+```{r}
+# Percent Employed in Industries Vulnerable to Covid-Related Job and Income Loss
+pal <- colorQuantile("Oranges", domain = vulnerable$pct_ind, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>% In Vulnerable Industries:</strong>",
+              round(vulnerable$pct_ind, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(pct_ind),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_ind,
+            title = "Percent Employed in<br>Vulnerable Industries<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_ind) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+# References
+Citations here.
