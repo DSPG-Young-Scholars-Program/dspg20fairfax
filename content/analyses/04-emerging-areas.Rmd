@@ -37,18 +37,19 @@ employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original
 ```
 
 # Emerging Employment Areas in Fairfax County
-Write introduction here.
-
+We aim to identify the emerging areas in Fairfax County for employment opportunities. 
 ## Data and Methods
-Describe data sources and what we did here.
+We used the address of the headquarter of the eleven companies from Fairfax County, that made into the 66th annual Fortune 1000 list, to locate where the emergent employers may be located.
+
+We also obtained the data on employers in Fairfax County, from Virginia Employment Commission, which was then used to determine the top 100 employers in the county and to check where are they located.
 
 ## Findings
-Give a brief summary of findings, then describe each output below.
-
+We plot the locations of the top 100 employers and the employers mentioned in Fortune 1000 list, against the quantile groups of total jobs in the country to see if these employers are successful to attract workers. All the three plots suggest that most of these employers are clustered in some areas. The number of workers employed by the top 100 employers varies between 400 and 8500.
 
 ### Where and Who are Fairfax County's Largest Employers?
+The top five employers in Fairfax County are Sodexo, Inova Fairfax Hospital, George Mason University, AT&T Store and GMU Community Relations, each employing 4000 or more workers. Among these largest five employers, three are located in Springfield, Falls Church, Oakton and two in Fairfax City.
 ```{r}
-pal <- colorQuantile("Reds", employers$estimate_of_employees, probs = seq(0, 1, length = 6), right = FALSE)
+pal <- colorQuantile(c("#60999A", "#D9E12B", "#E6CE3A", "#E6A01D", "#E57200"), employers$estimate_of_employees, probs = seq(0, 1, length = 6), right = FALSE)
 labels <- lapply(
   paste("<strong>Company name: </strong>",
          employers$business_name,
@@ -76,7 +77,7 @@ leaflet(data = employers,
 ```
 
 ### Do Fortune 1000 Companies Attract Workers?
-Describe how the map works, what it shows, main takeaways.
+This interactive map shows the location of the companies in Fairfax County that have been mentioned in the Fortune 1000 list. We can click the blue dots on the map to see the company names. The plot shows that number of jobs are higher in the areas where these emplyers are located which indicates that the employers attract the workers by creating job opportunities.
 ```{r}
 # Fortune 1000 HQ plot
 pal <- colorQuantile("Oranges", domain = lodespatial$perTotalJobs, probs = seq(0, 1, length = 6), right = FALSE)
@@ -101,7 +102,7 @@ leaflet(data = lodespatial,
 ```
 
 ### How Many Workers do the Top 100 Employers Attract?
-Describe how the map works, what it shows, main takeaways.
+This interactive map shows the location of top 100 employers in fairfax County. By hovering over the blue dots on the map we can see the company names, which sector they belong to and the number of workers for each company. The largest employer is Sodexo, which is a food-service management company located in Springfield, employs 8500 workers. In total 111,590 workers are employed by the top 100 employers in fairfax County. 
 ```{r}
 pal <- colorQuantile("Oranges", domain = lodespatial$perTotalJobs, probs = seq(0, 1, length = 6), right = FALSE)
 
