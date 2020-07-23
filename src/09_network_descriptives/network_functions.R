@@ -242,6 +242,105 @@ years <- 2010:2017
 
 types <- c("all", "private","federal")
 
+library(tidycensus)
+
+data_fairfax <-   get_acs(geography = "tract",
+                          variables = "B00001_001",
+                          state = "VA",
+                          county = 059, 
+                          geometry = TRUE)
+
+
+
+leaflet_creator <- function(types){
+  
+  library(leaflet)
+  library(RColorBrewer)
+  
+  for(type in types){
+    nodelist <- get(paste("nodelist_2015_S000_", type, sep = ""))
+    
+    fairfax_data <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+    fairfax_data <- st_transform(fairfax_data, 4326)
+    
+    
+    pal_out <- colorQuantile("Blues",5,  domain = fairfax_data$wtd_deg_cent_out)
+    pal_in <- colorQuantile("Oranges",5, domain = fairfax_data$wtd_deg_cent_in)
+    pal_btw <- colorQuantile("Purples",5,  domain = fairfax_data$btw_cent)
+    pal_eigen <- colorQuantile("Greens",5,  domain = fairfax_data$eigen_cent)
+    
+    
+    l_out <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%
+      addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+      addPolygons(fillColor = ~pal_out(wtd_deg_cent_out), fillOpacity = .8, stroke = FALSE) %>%
+      addLegend("bottomleft", 
+                pal = pal_out, 
+                values =  ~wtd_deg_cent_out,
+                title = "Weighted Degree Centrality: Out<br> By Quantile Group", 
+                opacity = 1, 
+                labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_out) {
+                  n = length(cuts)
+                  paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                })
+    
+    l_in <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%
+      addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+      addPolygons(fillColor = ~pal_in(wtd_deg_cent_in), fillOpacity = .8, stroke = FALSE) %>%
+      addLegend("bottomleft", 
+                pal = pal_in, 
+                values = ~wtd_deg_cent_in,
+                title = "Weighted Degree Centrality: In<br> By Quantile Group", 
+                opacity = 1,
+                labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_in) {
+                  n = length(cuts)
+                  paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                })
+    
+    l_btw <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%
+      addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+      addPolygons(fillColor = ~pal_btw(btw_cent), fillOpacity = .8, stroke = FALSE) %>%
+      addLegend("bottomleft", 
+                pal = pal_btw, 
+                values = ~btw_cent,
+                title = "Betweenness Centrality<br> By Quantile Group", 
+                opacity = 1, 
+                labFormat = function(type = "quantile", cuts = 10, p = btw_cent) {
+                  n = length(cuts)
+                  paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                })
+    
+    l_eigen <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%
+      addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
+      addPolygons(fillColor = ~pal_eigen(eigen_cent), fillOpacity = .8, stroke = FALSE) %>%
+      addLegend("bottomleft", 
+                pal = pal_eigen, 
+                values = ~eigen_cent,
+                title = "Eigen Centrality<br> By Quantile Group", 
+                opacity = 1, 
+                labFormat = function(type = "quantile", cuts = 10, p = eigen_cent) {
+                  n = length(cuts)
+                  paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                })
+    
+    
+    assign(paste("fairfax_2015_S000_", type, sep =  ""), fairfax_data, envir = .GlobalEnv)
+    
+    assign(paste("pal_in_2015_S000_", type, sep =  ""), pal_in,envir = .GlobalEnv)
+    assign(paste("pal_out_2015_S000_", type, sep =  ""), pal_out,envir = .GlobalEnv)
+    assign(paste("pal_btw_2015_S000_", type, sep =  ""), pal_btw,envir = .GlobalEnv)
+    assign(paste("pal_eigen_2015_S000_", type, sep =  ""), pal_eigen,envir = .GlobalEnv)
+    
+    assign(paste("l_out_2015_S000_", type, sep =  ""), l_out,envir = .GlobalEnv)
+    assign(paste("l_in_2015_S000_", type, sep =  ""), l_in,envir = .GlobalEnv)
+    assign(paste("l_btw_2015_S000_", type, sep =  ""), l_btw,envir = .GlobalEnv)
+    assign(paste("l_eigen_2015_S000_", type, sep =  ""), l_eigen, envir = .GlobalEnv)
+    
+  }
+}
+
+
+
+
 #network_stats(vars = "S000", types= types, years= 2015)
 
 

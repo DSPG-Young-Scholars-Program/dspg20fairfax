@@ -209,7 +209,47 @@ h1, h2, h3 {
 <p>The ACS data also provides information on the Fairfax County residents; we use the 2014/18 ACS five-year estimates. We visualize ACS data on worker commutes, classes, and industries at the tract-level using the leaflet package in RStudio.</p>
 <p><strong>Vulnerable Areas</strong></p>
 <p>To describe vulnerable areas in Fairfax County, we use ACS tract-level data and the VirginiaWorks' Initial Unemployment Claims datasets.</p>
-<p>Following a Brookings Report, we create a composite vulnerability index from the following ACS variables: percent of unemployed residents, percent of part-time workers, percent of residents with a high school diploma or less, median worker income, percent in vulnerable occupations, and percent in vulnerable industries. We map the results using leaflet.</p>
+<p>The vulnerability measure highlights tracts where workers are most susceptible to COVID-19 job loss. We used a Brookings report to identify the major factors contributing to covid-related economic hardship, due to the pandemic exacerbating these underlying vulnerabilities.</p>
+<p>We calculate vulnerability using information on percent:</p>
+<table style="width:42%;">
+<colgroup>
+<col width="16%"></col>
+<col width="25%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Description</th>
+<th>ACS Table Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unemployed</td>
+<td>B23025</td>
+</tr>
+<tr class="even">
+<td>Part-time Workers</td>
+<td>B23022</td>
+</tr>
+<tr class="odd">
+<td>HS or less for Employed Population 16+</td>
+<td>B23006</td>
+</tr>
+<tr class="even">
+<td>Median Income for Civilian Employed Population 16+</td>
+<td>B24011</td>
+</tr>
+<tr class="odd">
+<td>Employed in Occupations Impacted by COVID (Services)</td>
+<td>C24060</td>
+</tr>
+<tr class="even">
+<td>Employed in Industries Impacted by COVID (&quot;Arts, Entertainment, and Recreation, and Accommodation and Food Services&quot;; &quot;Retail Trade&quot;; &quot;Other Services Except Public Administration&quot;)</td>
+<td>C24050</td>
+</tr>
+</tbody>
+</table>
+<p>We map the results using leaflet. We compute quintile cut-offs for each indicator. Tract placement in a higher quintile indicates higher relative vulnerability; conversely, placement in a lower quintile indicates lower relative vulnerability.</p>
 <p>Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the zip code level. We ensure the data is mappable using data from <a href="https://simplemaps.com/data/us-zips">simplemaps</a>, and map the results at a zip code level using leaflet.</p>
 <p><strong>Emerging Areas</strong></p>
 <p>WAC and Fortune 1000</p>
@@ -220,7 +260,7 @@ h1, h2, h3 {
 <h5>Network Analysis</h5>
 <p>We employed network analysis to understand the relationships between where Fairfax County residents work and reside at the Census tract level. Networks are made up of nodes and edges. Nodes are the &quot;dots&quot;, and edges are the &quot;lines&quot;, or relationships between nodes. Weights are represented by the thickness of an edge, in otherwords, weights describe the strength of a connection from node to node. Finally, we use a directed graph, which means that the edges have a direction, and can be conceptualized as an arrow.</p>
 <p>The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We attain the main and aux OD files. The main files include jobs for which the residence and workplace are both in-state; the aux files include jobs for which the workplace is in-state while the residence is out-of-state. We combine both the main and aux files, and we aggregate the data by Census tract, and restrict the tracts to intra-Fairfax tracts only.The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. The federal jobs tables are only available through 2015.</p>
-<p>Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given tract and work in a given Census tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time. We define the direction FROM residence Census tract to workplace Census tract.</p>
+<p>Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given tract and work in a given tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time. We define the direction FROM residence Census tract to workplace Census tract.</p>
 <table style="width:50%;">
 <colgroup>
 <col width="22%"></col>
@@ -331,12 +371,12 @@ h1, h2, h3 {
 <tr class="odd">
 <td>Weighted Out-Degree Centrality</td>
 <td>Weighted number of ties directed away from the node</td>
-<td>Number of jobs for which individuals depart to get to their jobs in other tracts.</td>
+<td>Number of jobs for which individuals depart to get to their jobs in other tracts</td>
 </tr>
 <tr class="even">
 <td>Weighted In-Degree Centrality</td>
 <td>Weighted number of ties directed toward the node</td>
-<td>Number of jobs for which the tract is the work destination.</td>
+<td>Number of jobs for which the tract is the work destination</td>
 </tr>
 <tr class="odd">
 <td>Betwenness Centrality</td>

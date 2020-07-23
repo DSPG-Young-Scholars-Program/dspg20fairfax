@@ -54,7 +54,20 @@ __Vulnerable Areas__
 
 To describe vulnerable areas in Fairfax County, we use ACS tract-level data and the VirginiaWorks' Initial Unemployment Claims datasets.
 
-Following a Brookings Report, we create a composite vulnerability index from the following ACS variables: percent of unemployed residents, percent of part-time workers, percent of residents with a high school diploma or less, median worker income, percent in vulnerable occupations, and percent in vulnerable industries. We map the results using leaflet.
+The vulnerability measure highlights tracts where workers are most susceptible to COVID-19 job loss. We used a Brookings report to identify the major factors contributing to covid-related economic hardship, due to the pandemic exacerbating these underlying vulnerabilities.
+
+We calculate vulnerability using information on percent:
+
+Description | ACS Table Code
+-----------|-----------------
+Unemployed | B23025
+Part-time Workers | B23022
+HS or less for Employed Population 16+ | B23006
+Median Income for Civilian Employed Population 16+ |  B24011
+Employed in Occupations Impacted by COVID (Services) | C24060
+Employed in Industries Impacted by COVID ("Arts, Entertainment, and Recreation, and Accommodation and Food Services"; "Retail Trade"; "Other Services Except Public Administration") | C24050
+
+We map the results using leaflet. We compute quintile cut-offs for each indicator. Tract placement in a higher quintile indicates higher relative vulnerability; conversely, placement in a lower quintile indicates lower relative vulnerability.
 
 Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the zip code level. We ensure the data is mappable using data from [simplemaps](https://simplemaps.com/data/us-zips), and map the results at a zip code level using leaflet. 
 
@@ -74,7 +87,7 @@ We employed network analysis to understand the relationships between where Fairf
 
 The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We attain the main and aux OD files. The main files include jobs for which the residence and workplace are both in-state; the aux files include jobs for which the workplace is in-state while the residence is out-of-state. We combine both the main and aux files, and we aggregate the data by Census tract, and restrict the tracts to intra-Fairfax tracts only.The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. The federal jobs tables are only available through 2015.
 
-Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given  tract and work in a given Census tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time.
+Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given tract and work in a given tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time.
 We define the direction FROM residence Census tract to workplace Census tract.
 
 Variable | Description
@@ -106,8 +119,8 @@ The next step of the analysis is to view the node measures of centrality. This h
 
 Measure | Definition | Fairfax Application
 --------|------------|---------------------
-Weighted Out-Degree Centrality | Weighted number of ties directed away from the node | Number of jobs for which individuals depart to get to their jobs in other tracts.
-Weighted In-Degree Centrality | Weighted number of ties directed toward the node | Number of jobs for which the tract is the work destination.
+Weighted Out-Degree Centrality | Weighted number of ties directed away from the node | Number of jobs for which individuals depart to get to their jobs in other tracts
+Weighted In-Degree Centrality | Weighted number of ties directed toward the node | Number of jobs for which the tract is the work destination
 Betwenness Centrality | Measures if the node lies on the paths to other nodes | Measures if the tract lies on paths between other tracts
 Eigenvector Centrality | Measures importance of a node based on if neighboring nodes have many connections | Measures importance of a tract based on if neighboring tracts have many connections
 
