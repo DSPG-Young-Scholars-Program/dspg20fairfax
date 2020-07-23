@@ -18,10 +18,11 @@ library(ggthemes)
 library(RColorBrewer)
 library(ggplot2)
 library(tigris)
-
+library(readr)
 
 # Obtain the API key and set install=TRUE during the first time use, to use the same key automatically you run the program #
-#census_api_key("bf083ecaf2c15d0b10906c4948c5759589df1817", install=TRUE)
+readRenviron("~/.Renviron")
+Sys.getenv("CENSUS_API_KEY")
 
 var_ACS5 <- load_variables(2018, "acs5", cache = TRUE)
 vars <-c(
@@ -313,7 +314,8 @@ res_ACS_tract$res_pct_military_taxi <- ifelse(is.nan(res_ACS_tract$res_pct_milit
   
 res_ACS_tract$res_pct_military_worked_home <- ifelse(is.nan(res_ACS_tract$res_pct_military_worked_home), 0, res_ACS_tract$res_pct_military_worked_home)
 
-  
+# Write data
+write_rds(res_ACS_tract, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/res_ACS_data.Rds")
 
 View(res_ACS_tract)
 ```

@@ -1,0 +1,367 @@
+---
+title: "Areas Vulnerable to Covid-Related Job and Income Loss"
+author: "Teja & Sean"
+date: "6/30/2020"
+output: html_document
+---
+
+Data:
+```{r}
+library(dplyr)
+library(readr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+
+
+#
+# Select variables ---------------------------------------------------
+#
+
+readRenviron("~/.Renviron")
+Sys.getenv("CENSUS_API_KEY")
+
+vars <-c(
+  # unemployed (unemployed / in labor force)
+  "B23025_005", "B23025_002",
+
+  #part time: 1 minus (005+029 / 003+027, all workers)
+  "B23022_005", "B23022_029",
+  "B23022_003", "B23022_027", 
+
+  # median income for civilian employed population 16+
+  "B24011_001",
+
+  # HS or less for employed population 16+ (003 + 010 / all in labor force, 003+010+017+024)
+  "B23006_003", "B23006_010", "B23006_017", "B23006_024", 
+
+  # employed in occupations impacted by covid [services] (003 / 001)
+  "C24060_001", "C24060_003", 
+
+  # employed in industries impacted by covid ("arts, entertainment, and recreation, and accommodation and food   services"; "retail trade"; "other services except public administration")
+  "C24050_001",
+  "C24050_006", "C24050_012", "C24050_013"
+)
+
+
+#
+# Get data ---------------------------------------------------
+#
+
+# Virginia state code is 51 and Fairfax county code 059
+Fairfax <- get_acs(geography = "tract", variables = vars, state = "51", county = "059",
+                   year = 2018, survey = "acs5", cache_table = TRUE, output = "wide",
+                   geometry = TRUE, keep_geo_vars = TRUE)
+
+
+#
+# Calculate ---------------------------------------------------
+#
+
+ACS_data <- Fairfax %>% transmute(
+  STATEFP = STATEFP,
+  COUNTYFP = COUNTYFP,
+  TRACTCE = TRACTCE,
+  AFFGEOID = AFFGEOID,
+  GEOID = GEOID,
+  NAME.x = NAME.x,
+  LSAD = LSAD,
+  ALAND = ALAND,
+  AWATER = AWATER,
+  NAME.y = NAME.y,
+  geometry = geometry,
+  pct_unempl = (B23025_005E / B23025_002E) * 100,
+  pct_part = (1 - (B23022_005E + B23022_029E) / (B23022_003E + B23022_027E)) * 100,
+  pct_hsless = (B23006_003E + B23006_010E) / (B23006_003E + B23006_010E + B23006_017E + B23006_024E) * 100,
+  medinc = B24011_001E,
+  pct_occup = (C24060_003E / C24060_001E) * 100,
+  pct_ind = ((C24050_006E + C24050_012E + C24050_013E) / C24050_001E) * 100
+
+) %>% rename(NAME = NAME.y) %>% select(-NAME.x)
+
+# Ft Belvoir (3 tracts) has 0 unemployed, etc. and NA on median income.
+ACS_data <- ACS_data %>% mutate(pct_unempl= ifelse(is.nan(pct_unempl), 0, pct_unempl),
+                                pct_part= ifelse(is.nan(pct_part), 0, pct_part),
+                                pct_hsless= ifelse(is.nan(pct_hsless), 0, pct_hsless),
+                                medinc= ifelse(is.nan(medinc), NA, medinc),
+                                pct_occup= ifelse(is.nan(pct_occup), 0, pct_occup),
+                                pct_ind= ifelse(is.nan(pct_ind), NA, pct_ind))
+             
+#Calculating Quintile Ranks:
+quintile_calc <- function(indicator){
+  as.integer(cut(indicator, quantile(indicator, probs=0:5/5, na.rm = TRUE), include.lowest=TRUE))
+}
+
+ACS_data$quintile_pct_unempl <- quintile_calc(ACS_data$pct_unempl)
+ACS_data$quintile_pct_part <- quintile_calc(ACS_data$pct_part)
+ACS_data$quintile_pct_hsless <- quintile_calc(ACS_data$pct_hsless)
+ACS_data$quintile_medinc <- 6- quintile_calc(ACS_data$medinc)
+ACS_data$quintile_pct_occup <- quintile_calc(ACS_data$pct_occup)
+ACS_data$quintile_pct_ind <- quintile_calc(ACS_data$pct_ind)
+
+#SummaryScore
+ACS_data$SummaryScore <- rowSums(data.frame(ACS_data$quintile_pct_unempl,
+                                            ACS_data$quintile_pct_part,
+                                            ACS_data$quintile_pct_hsless,
+                                            ACS_data$quintile_medinc,
+                                            ACS_data$quintile_pct_occup,
+                                            ACS_data$quintile_pct_ind) == 4) + rowSums(data.frame(ACS_data$quintile_pct_unempl,
+                                                                                                                             ACS_data$quintile_pct_part,
+                                                                                                                             ACS_data$quintile_pct_hsless,
+                                                                                                                             ACS_data$quintile_medinc,
+                                                                                                                             ACS_data$quintile_pct_occup,
+                                                                                                                             ACS_data$quintile_pct_ind) == 5)
+
+# Fix projection
+ACS_data <- st_transform(ACS_data, 4326)
+
+# Write out
+write_rds(ACS_data, "./data/acs/acs_vuln.Rds")
+```
+
+```{r}
+#SummaryScore Leaflet
+pal <- colorFactor("Reds", domain = ACS_data$SummaryScore)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>Workers Unemployed:</strong>",
+              round(ACS_data$pct_unempl, 2),
+              "<br />",
+              "<strong>% Part-Time:</strong>",
+              round(ACS_data$pct_part, 2), 
+              "<br />",
+              "<strong>% High School or Less:</strong>",
+              round(ACS_data$pct_hsless, 2), 
+              "<br />",
+              "<strong>$ Median Worker Income:</strong>",
+              formatC(ACS_data$medinc, format = "f", big.mark = ",", digits = 0),
+              "<br />",
+              "<strong>% In Vulnerable Occupations:</strong>",
+              round(ACS_data$pct_occup, 2),
+              "<br />",
+              "<strong>% In Vulnerable Industries:</strong>",
+              round(ACS_data$pct_ind, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(SummaryScore),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~ACS_data$SummaryScore,
+            title = "Relative<br>Vulnerability", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+```{r}
+#Percent In Labor Force Unemployed
+
+pal <- colorQuantile("Reds", domain = ACS_data$pct_unempl, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>Workers Unemployed:</strong>",
+              round(ACS_data$pct_unempl, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_unempl),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_unempl,
+            title = "Percent Unemployed<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_unempl) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+```{r}
+# Percent In Labor Force Employed Less Than Year Round Full Time
+
+pal <- colorQuantile("Oranges", domain = ACS_data$pct_part, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>% Part-Time:</strong>",
+              round(ACS_data$pct_part, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_part),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_part,
+            title = "Percent Employed Part Time<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_part) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+```{r}
+# Percent in Labor Force with High School Education or Less
+
+pal <- colorQuantile("Greens", domain = ACS_data$pct_hsless, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>% High School or Less:</strong>",
+              round(ACS_data$pct_hsless, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_hsless),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_hsless,
+            title = "Percent Workers<br>with HS Education or Less<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_hsless) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+```{r}
+# Median Worker Income
+
+pal <- colorQuantile("Blues", domain = ACS_data$medinc, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<strong>$ Median Worker Income:</strong>",
+              formatC(ACS_data$medinc, format = "f", big.mark = ",", digits = 0)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(medinc),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~medinc,
+            title = "Median Worker Income<br><br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = medinc) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+```{r}
+# Percent Employed in Occupations Vulnerable to Covid-Related Job and Income Loss
+
+pal <- colorQuantile("Purples", domain = ACS_data$pct_occup, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>% In Vulnerable Occupations:</strong>",
+              round(ACS_data$pct_occup, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_occup),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_occup,
+            title = "Percent Employed in<br>Vulnerable Occupations<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_occup) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```
+
+```{r}
+# Percent Employed in Industries Vulnerable to Covid-Related Job and Income Loss
+
+pal <- colorQuantile("Purples", domain = ACS_data$pct_ind, probs = seq(0, 1, length = 6), right = FALSE)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              ACS_data$NAME,
+              "<br />",
+              "<strong>% In Vulnerable Industries:</strong>",
+              round(ACS_data$pct_ind, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = ACS_data, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addTiles() %>%
+  addPolygons(fillColor = ~pal(pct_ind),
+              fillOpacity = .8, 
+              stroke = FALSE, 
+              label = labels) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~pct_ind,
+            title = "Percent Employed in<br>Vulnerable Industries<br>by Quintile Group", 
+            opacity = 1,
+            na.label = "Not Available",
+            labFormat = function(type = "quantile", cuts = 5, p = pct_ind) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
+                  })
+```

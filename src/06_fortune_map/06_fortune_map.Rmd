@@ -11,16 +11,15 @@ library(dplyr)
 library(tidycensus)
 library(leaflet)
 library(sf)
+library(readr)
+wac <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
 
-wac <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
-
-va_xwalk <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor", "trct" = "factor"))
+va_xwalk <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor", "trct" = "factor"))
 
 fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
 
 # Note: C000 = total number of jobs
 fairfax_trct <- fairfax_wac %>% select(w_geocode, cty, trct, bgrp, C000) %>% group_by(trct) %>% summarize(totaljobs = sum(C000),perTotalJobs = (totaljobs/sum(fairfax_wac$C000))*100)
-
 ```
 
 
@@ -35,6 +34,9 @@ data_fairfax <-   get_acs(geography = "tract",
 data_fairfax_final <- merge(data_fairfax, fairfax_trct, by.x= "GEOID", by.y = "trct", all = TRUE)
 
 data_fairfax_final <- st_transform(data_fairfax_final, 4326)
+
+# Write
+write_rds(data_fairfax_final, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/lodes_spatial.Rds")
 
 ```
 

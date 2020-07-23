@@ -12,23 +12,27 @@ library(dplyr)
 library(ggplot2)
 library(ggrepel)
 library(stringr)
+library(readr)
 
 #Set Up Data
 #Fairfax County Code is: 51059
 
-wac <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
+wac <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_wac_S000_JT00_2017.csv", colClasses = c("w_geocode" = "factor"))
 
-va_xwalk <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor"))
+va_xwalk <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/va_xwalk.csv",  colClasses = c("tabblk2010" = "factor"))
 
 fairfax_wac <- merge(wac, va_xwalk[va_xwalk$cty == 51059, c("tabblk2010","cty", "trct", "bgrp")], by.x = "w_geocode", by.y = "tabblk2010")
 
 # assign readable column names
 
-readable_col <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/lodes_wac_cols.csv")
+readable_col <- read.csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/lodes_wac_cols.csv")
 
 colnames(fairfax_wac) <- c(
   readable_col$Explanation, 
   colnames(fairfax_wac)[!(colnames(fairfax_wac) %in% readable_col$Variable)])
+
+# Write out
+write_rds(fairfax_wac, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/fairfax_wac.Rds")
 
 # function to transform pie chart labels
 

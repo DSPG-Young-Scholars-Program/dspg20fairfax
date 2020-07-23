@@ -1,0 +1,214 @@
+---
+title: "ZIP Level Unemployment Claims & Occupations"
+author: "Sean Pietrowicz"
+date: "7/14/2020"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(htmltools)
+library(htmlwidgets)
+library(readxl)
+library(stringr)
+library(data.table)
+library(tigris)
+
+##Import Occupations Data
+
+occupations_byworkplace <- read_excel(
+  "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/jobseq/occupations_byworkplace.xlsx", skip = 2)[1:27,]
+occupations_byworkplace <- data.table(occupations_byworkplace)
+
+#Clean Headers & ZCTA Region Column
+
+header <- c(
+"Region",
+"FIPS",
+"Retail Salespersons (41-2030)",
+"First-Line Supervisors of Retail Sales Workers (41-1011)",
+"Cashiers (41-2010)",
+"Waiters and Waitresses (35-3030)",
+"Cooks (35-2010)",
+"Laborers and Material Movers (53-7060)",
+"Construction Laborers (47-2060)",
+"Carpenters (47-2030)",
+"Grounds Maintenance Workers (37-3000)",
+"Personal Care Aides (31-1122)",
+"Childcare Workers (39-9010)",
+"Assemblers and Fabricators (51-2000)",
+"Food Service Managers (11-9050)",
+"Food Preparation Workers (35-2020)",
+"Security Guards (33-9032)"
+)
+
+names(occupations_byworkplace) <- header
+occupations_byworkplace$ZCTA <- substring(occupations_byworkplace$Region, 5, 10)
+occupations_byworkplace$totalvulnerable <- rowSums(occupations_byworkplace[,3:17])
+
+##Import UIclaims by Zipcode
+
+uiclaims <- read.delim("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/uiclaims_initials.txt") %>%
+  filter(areatyname == "Zip Code")
+
+#Fix Dates
+
+uiclaims$startdate <- substr(uiclaims$startdate,1,nchar(uiclaims$startdate)-9)
+uiclaims$enddate <- substr(uiclaims$enddate,1,nchar(uiclaims$enddate)-9)
+
+# Filter to 2020 claims and initial claims only
+uiclaims <- uiclaims %>% filter(periodyear == 2020 & claimtype == 1)
+
+#Create Total Claims Column
+
+uiaggregate <- aggregate(cbind(claimants) ~ area, data = uiclaims, sum)
+uiheader <- c("ZCTA", "totalclaims")
+names(uiaggregate) <- uiheader
+
+#Link Total Claims to Vulnerable Claims and Create Percent Vulnerable Column (Zip)
+
+uiaggregate$ZCTA <- as.numeric(uiaggregate$ZCTA)
+occupations_byworkplace$ZCTA <- as.numeric(occupations_byworkplace$ZCTA)
+final_occupations <- left_join(occupations_byworkplace, uiaggregate, by = "ZCTA")
+final_occupations$ZCTA <- as.character(final_occupations$ZCTA)
+
+final_occupations$percentvulnerable <- final_occupations$totalvulnerable/final_occupations$totalclaims
+
+#Put Zip Codes into Mappable Format using uszips.csv from https://simplemaps.com/data/us-zips
+
+fairfax_zips <- read_csv("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/uszips.csv") %>%
+  filter(state_id == "VA") %>%
+  filter(county_name == "Fairfax")
+zip_vector <- fairfax_zips$zip
+
+###Certain Zip Codes in Occupation Data outside of Fairfax County?###
+
+final_occupations <- final_occupations %>%
+  filter(ZCTA %in% zip_vector)
+
+#Merge with Spatial Data
+
+options(tigris_use_cache = TRUE)
+char_zips <- zctas(cb = TRUE, final_occupations$ZCTA)
+
+final_occupations <- geo_join(char_zips, 
+                     final_occupations, 
+                     by_sp = "GEOID10", 
+                     by_df = "ZCTA",
+                     how = "left")
+
+#final_occupations <- sp.na.omit(final_occupations, margin = 1)
+
+```
+
+```{r}
+
+##First Leaflet: Total Vulnerable
+
+pal <- colorBin("Reds", domain = final_occupations$totalvulnerable, bins = 5)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              final_occupations$GEOID10,
+              "<br />",
+              "<strong>Total Vulnerable:</strong>",
+              round(final_occupations$totalvulnerable, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = final_occupations, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(totalvulnerable),
+              fillOpacity = .9, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~final_occupations$totalvulnerable,
+            title = "Total Employed in<br>Vulnerable Occupations", 
+            opacity = 1,
+            na.label = "Not Applicable")
+```
+
+```{r}
+
+##Second Leaflet: Total Claims
+
+pal <- colorBin("Reds", domain = final_occupations$totalclaims, bins = 5)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              final_occupations$GEOID10,
+              "<br />",
+              "<strong>Total Claims:</strong>",
+              round(final_occupations$totalclaims, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = final_occupations, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(totalclaims),
+              fillOpacity = .9, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~final_occupations$totalclaims,
+            title = "Number of<br>Claims", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+```{r}
+
+#Third Leaflet: Claims to vulnerable
+
+# Filtering out 22035, massive outlier. Only 1 claim.
+final_occupations@data <- final_occupations@data %>% filter(ZCTA5CE10 != 22035)
+
+pal <- colorBin("Reds", domain = final_occupations$percentvulnerable, bins = 4)
+
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              final_occupations$ZCTA,
+              "<br />",
+              "<strong>Percent Vulnerable:</strong>",
+              round(final_occupations$percentvulnerable, 4)),
+        htmltools::HTML
+      )
+      
+leaflet(data = final_occupations, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(percentvulnerable),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~final_occupations$percentvulnerable,
+            title = "Vulnerable Occupations<br>to Claims Proportion", 
+            opacity = 1,
+            na.label = "Not Available")
+```

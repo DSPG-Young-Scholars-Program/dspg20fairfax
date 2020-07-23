@@ -1,0 +1,136 @@
+---
+title: "Fairfax County 2020 Summer Project"
+output: html_document
+---
+
+```{css, echo=FALSE}
+/* this chunnk of code centers all of the headings */
+h1, h2, h3 {
+  text-align: center;
+}
+```
+
+### Data
+
+Key questions to address about data: 
+what is the dataset
+who produces/owns the dataset
+what year(s) are available and what year(s) we used
+who/what does the dataset capture (what is the unit of analysis)
+what level of geography does the data have
+why did we use the dataset
+what information from the dataset did we use
+
+[American Community Survey](https://www.census.gov/programs-surveys/acs/) 
+
+The American community Survey provides detailed sociodemographic and socioeconomic information about American households, provided by the US Census Bureau annually. The five-year estimates are available beginning in 2005/09 to present; we use the 2014/18 dataset for our analyses. The data are presented on multiple geography levels including block group, tract, county, and state; our research is interested in tract level information. We used the dataset to characterize the Fairfax County workforce, for example, to locate which tracts had a higher percentage of near retirement population or to create composite indicators identifying where workers are located who may be vulnerable to job loss.
+
+[LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/)
+
+[2019 Forbes 1000](https://www.someka.net/excel-template/fortune-1000-excel-list/) 
+
+[Virginia Employers](link here) 
+
+[Virginia Employment Commission Unemployment Insurance Claims](https://www.vec.virginia.gov/ui-claims-dashboard) 
+
+
+### Methods
+
+##### Exploratory Methods
+
+__Workforce Characterisitics__
+
+First, we characterized the workforce in Fairfax County at the tract-level. The LODES Workplace Area Characteristics (WAC) data presents the number of jobs totaled by work Census block for sociodemographic and socioeconomic variables, including age, earnings, job sector, race, ethnicity, educational attainment, sex, firm age, and firm size. We aggregate these variables to the tract-level and summarize using pie and bar charts in RStudio. 
+
+The American Community Survey (ACS) also provides information on the Fairfax County workforce. Specifically, we use the 2014/18 ACS five-year estimates to determine transportation means and ages of Fairfax County workers. We use the leaflet package for RStudio to plot these tract-level findings.
+
+__Residence Characterisitics__
+
+While the WAC data characterizes workers whose workplaces are located in Fairfax County, the LODES Residence Area Characteristics (RAC) data characterizes workers whose homes are located in Fairfax County. For the RAC data, the number of jobs are totaled by home Census block; we aggregate the data to tract-level. The RAC dataset reports the number of workers by age, earnings, job sector, race, ethnicity, educational attainment, and sex. We summarize these variables using pie and bar charts in RStudio. 
+
+The ACS data also provides information on the Fairfax County residents; we use the 2014/18 ACS five-year estimates. We visualize ACS data on worker commutes, classes, and industries at the tract-level using the leaflet package in RStudio. 
+
+__Vulnerable Areas__
+
+To describe vulnerable areas in Fairfax County, we use ACS tract-level data and the VirginiaWorks' Initial Unemployment Claims datasets.
+
+Following a Brookings Report, we create a composite vulnerability index from the following ACS variables: percent of unemployed residents, percent of part-time workers, percent of residents with a high school diploma or less, median worker income, percent in vulnerable occupations, and percent in vulnerable industries. We map the results using leaflet.
+
+Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the zip code level. We ensure the data is mappable using data from [simplemaps](https://simplemaps.com/data/us-zips), and map the results at a zip code level using leaflet. 
+
+__Emerging Areas__
+
+WAC and Fortune 1000
+
+
+__Tyson's Corner Case Study__
+
+Owen
+
+
+##### Network Analysis
+
+We employed network analysis to understand the relationships between where Fairfax County residents work and reside at the Census tract level. Networks are made up of nodes and edges. Nodes are the "dots", and edges are the "lines", or relationships between nodes. Weights are represented by the thickness of an edge, in otherwords, weights describe the strength of a connection from node to node. Finally, we use a directed graph, which means that the edges have a direction, and can be conceptualized as an arrow.  
+
+The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We aggregate the data by Census Tract, and restrict the Census tracts to intra-Fairfax tracts only.  
+
+Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given Census tract and work in a given Census tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time.
+We define the direction FROM residence Census tract to workplace Census tract.
+
+Variable | Description
+---------------|-------------------
+w_geocode_tract | Workplace Census Tract
+h_geocode_tract | Residence Census Tract
+S000 | Total number of jobs
+SA01 | Number of jobs of workers age 29 or younger
+SA02 | Number of jobs for workers age 30 to 54
+SA03 | Number of jobs for workers age 55 or older
+SE01 | Number of jobs with earnings $1250/month or less
+SE02 | Number of jobs with earnings \$1251/month to \$3333/month
+SE03 | Number of jobs with earnings greater than $3333/month
+SI01 | Number of jobs in Goods Producing industry sectors
+SI02 | Number of jobs in Trade, Transportation, and Utilities industry sectors
+SI03 | Number of jobs in All Other Services industry sectors
+createdate | Date on which data was created, formatted as YYYYMMDD
+
+__Descriptive Statistics__
+
+Our first step of network analysis is to produce network-level descriptive statistics. We ran an extensive set of descriptive statistic measures, so the key measures are defined below:
+
+The _order_ of a graph indicates the number of nodes (or vertices). In this case, the nodes are Census tracts.
+
+The _size_ of graph indicates the number of edges (or links). Relevant to OD data, the an edge represents a residence-workplace relationship between Census tracts.
+
+The _sum of weights_ provides for a count of jobs represented in the network
+
+The _average degree_ indicates the number of adjacent edges. An adjacent edge shares a common vertex. In relation to the OD, the degree function produces a count of links for each node, in this case, for each Census tract. The average degree is printed.
+
+_Average Betweenness_ is a measure of centrality, which counts the number of shortest paths (geodesic) going through a node. 
+
+The __diameter__ of a graph is the length of the longest shortest path (geodesic) passing through a node.  
+
+_Edge Density_ ratio of the number of edges and the number of possible edges. Density ranges from 0 (minimum) to 1 (maximum).
+
+Transitivity: The probability that the adjacent vertices of a vertex are connected
+
+
+__Measures of Centrality__
+
+Next, we look at measures of centrality at the node (tract) level. 
+
+_Weighted Out-Degree Centrality:_ These plots highlight census tracts from which individuals depart to get to their jobs in other tracts.
+
+_Weighted In-Degree Centrality:_ These plots highlight census tracts that are work destinations.
+
+_Betweenness Centrality:_ Betweenness centrality measures if a particular tract lies on paths between other tracts. 
+
+_Eigenvector Centrality:_ Also known as rank centrality, measures importance of a tract based on if neighboring connections are important, in other words, have lots of connections.
+
+
+
+<center>
+
+##### [Visualizations go about here.] 
+
+</center>
+

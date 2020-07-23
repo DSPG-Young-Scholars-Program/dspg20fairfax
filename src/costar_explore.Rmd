@@ -1,0 +1,131 @@
+---
+title: "Costar"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Working on sample costar data given to UVA DSPG by FairFax
+
+
+Loading in libraries
+```{r}
+library(data.table)
+library(dplyr)
+library(tidyverse)
+library(readxl)
+```
+
+Loading costar data into R
+```{r}
+costarSample = read_excel("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/original/costar/costar_tysons_sample.xlsx")
+# view(costarSample)
+```
+
+Recoding property
+```{r}
+costarSample[costarSample$PropertyType %like% "Office", ]$PropertyType <- "Office"
+costarSample[costarSample$PropertyType %like% "Retail", ]$PropertyType <- "Retail"
+costarSample[costarSample$PropertyType %like% "Hospitality", ]$PropertyType <- "Hospitality"
+costarSample[costarSample$PropertyType %like% "Land", ]$PropertyType <- "Land"
+costarSample[costarSample$PropertyType %like% "Multi-Family", ]$PropertyType <- "Multi-Family"
+unique(costarSample$PropertyType)
+```
+
+Grouping by PropertyType to show missingness for particular columns
+```{r}
+missingnessVars <- c("PropertyType", "Secondary Type", "Building Class", "For Sale Status", "Style", "Number Of Elevators", "Number Of Parking Spaces", "Number Of Stories", "Office Space" , "Percent Leased", "Vacancy %", "Avg Effective/Unit", "Parking Ratio", "Typical Floor Size", "Number Of Units", "Number Of Parking Spaces", "Tenancy", "Taxes Total", "Developer Name", "Leasing Company Name", "Owner Name", "Recorded Owner Name", "True Owner Name")
+
+missingness_sum <- costarSample %>%
+  filter(PropertyType == "Office" | PropertyType == "Retail") %>%
+  select(all_of(missingnessVars)) %>%
+  group_by(PropertyType) %>%
+  summarise_all(~sum(is.na(.))) %>%
+  mutate(PropertyType, sumNA = rowSums(.[-1]))
+
+missingness_perc <- costarSample %>%
+  filter(PropertyType == "Office" | PropertyType == "Retail") %>%
+  select(all_of(missingnessVars)) %>%
+  group_by(PropertyType) %>%
+  summarise_all(~mean(is.na(.)) * 100)
+
+# view(missingness_sum)
+# view(missingness_perc)
+```
+
+
+```{r}
+library(RColorBrewer)
+colors <- c(brewer.pal(6, "Dark2"), brewer.pal(7, "Set1"))
+```
+
+
+Leaflet Maps
+```{r}
+library(leaflet)
+library(RColorBrewer)
+library(disco)
+
+pal <- colorFactor(palette = disco(palette = "muted"), domain = costarSample$PropertyType)
+locByType <- leaflet(costarSample) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+#  addCircleMarkers(clusterOptions = markerClusterOptions(pa)) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(PropertyType), radius = 4) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~PropertyType,
+            title = "Property Type", 
+            opacity = 1)
+locByType
+
+pal <- colorFactor(c("black", "red"), domain = costarSample$`For Sale Status`)
+locForSale <- leaflet(costarSample) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = .75, color = ~pal(`For Sale Status`), 
+                   radius = ~ifelse(`For Sale Status` == "Y", 10, 4)) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`For Sale Status`,
+            labels =c("For Sale", "Not For Sale"),
+            title = "For Sale Status", 
+            opacity = 1)
+locForSale
+
+pal <- colorFactor(palette = disco(palette = "vibrant", n = 3), domain = costarSample$`Building Class`)
+locByBuildClass <- leaflet(costarSample) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Building Class`), radius = 4) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Building Class`,
+            title = "Building Class", 
+            opacity = 1)
+locByBuildClass
+
+pal <- colorNumeric(palette = disco(palette = "eclipse", direction = -1), domain = costarSample$`Number Of Elevators`)
+locByElev <- leaflet(costarSample[costarSample$`Number Of Elevators` > 0, ]) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Number Of Elevators`), radius = 5) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Number Of Elevators`,
+            title = "Elevators > 1", 
+            opacity = 1)
+locByElev
+
+pal <- colorFactor(palette = disco(palette = "vibrant", n = 3), domain = costarSample$`Affordable Type`)
+locByApt <- leaflet(costarSample[costarSample$PropertyType == "Multi-Family", ]) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(stroke = FALSE, fillOpacity = 1, color = ~pal(`Affordable Type`), 
+                   radius = 6) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~`Affordable Type`,
+            title = "Affordable Housing<br>Type", 
+            opacity = 1)
+locByApt
+```
