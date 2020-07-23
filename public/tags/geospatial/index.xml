@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>geospatial on UVA Biocomplexity Institute</title>
+    <link>/tags/geospatial/</link>
+    <description>Recent content in geospatial on UVA Biocomplexity Institute</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/tags/geospatial/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Workers in Fairfax County</title>
+      <link>/findings/01-workforce-in-ffx/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/01-workforce-in-ffx/</guid>
+      <description>NOTES FOR THIS DOCUMENT: * LODES PLOTS NEED TO HAVE THE COLOR SCHEME REVISED + LABELS CLEANED UP (SPACES ETC) * ADD CONTENT AS MARKED.
+Workforce in Fairfax County Write introduction here.
+Data and Methods Describe data sources and what we did here.
+ Workers in Fairfax County Give a brief summary of findings, then describe each output below.
+What is the sociodemographic composition of workers in Fairfax County?</description>
+    </item>
+    
+    <item>
+      <title>Fairfax County Residents&#39; Employment Characteristics</title>
+      <link>/findings/02-ffx-residents/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/02-ffx-residents/</guid>
+      <description>NOTES FOR THIS DOCUMENT: * ADD CONTENT AS MARKED.
+Fairfax County Residents&#39; Employment Characteristics Write introduction here.
+Data and Methods Describe data sources and what we did here.
+ Fairfax County Residents in Labor Force Give a brief summary of findings, then describe each output below.
+ Sociodemographic Characteristics Describe. Describe. Describe. Employment Characteristics  Which industry sectors employ Fairfax County residents?  Exploring Work Commutes, Worker Classes, and Industries Describe how the map works, what it shows, and main takeaways.</description>
+    </item>
+    
+    <item>
+      <title>Areas Vulnerable to Covid-Related Income and Job Loss</title>
+      <link>/findings/03-vulnerable-areas/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/03-vulnerable-areas/</guid>
+      <description>NOTES FOR THIS FILE: ADD EXPLANATIONS AS NOTED.
+# Read in data vulnerable &amp;lt;- read_rds(&amp;quot;/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds&amp;quot;) # Sean&amp;#39;s ACS 2014/18 vulnerable area indicators data uiaggregate &amp;lt;- read_rds( &amp;quot;/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds&amp;quot;) # Sean&amp;#39;s VWorks 2020 initial unemployment claims spatial data # Read in data #vulnerable &amp;lt;- read_rds(&amp;quot;/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/acs_vuln.Rds&amp;quot;) # Sean&amp;#39;s ACS 2014/18 vulnerable area indicators data #unemp &amp;lt;- read_rds(uiaggregate, &amp;quot;/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/vworks/uiagg_spatial.Rds&amp;quot;) # Sean&amp;#39;s VWorks 2020 initial unemployment claims spatial data Areas Vulnerable to Covid-Related Income and Job Loss Write introduction here.</description>
+    </item>
+    
+    <item>
+      <title>Emerging Employment Areas in Fairfax County</title>
+      <link>/findings/04-emerging-areas/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/04-emerging-areas/</guid>
+      <description>NOTES FOR THIS FILE: * COLOR SCHEME * ADD CONTENT AS NOTED
+Emerging Employment Areas in Fairfax County Write introduction here.
+Data and Methods Describe data sources and what we did here.
+ Findings Give a brief summary of findings, then describe each output below.
+Where and Who are Fairfax County&#39;s Largest Employers?  {&#34;x&#34;:{&#34;options&#34;:{&#34;minZoom&#34;:10,&#34;crs&#34;:{&#34;crsClass&#34;:&#34;L.CRS.EPSG3857&#34;,&#34;code&#34;:null,&#34;proj4def&#34;:null,&#34;projectedBounds&#34;:null,&#34;options&#34;:{}}},&#34;calls&#34;:[{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;CartoDB.Positron&#34;,null,null,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false}]},{&#34;method&#34;:&#34;addCircleMarkers&#34;,&#34;args&#34;:[[38.773418,38.857669,38.835099,38.876345,38.835099,38.923185,38.956144,38.856,38.950063,38.720935,38.86385,38.865442,38.923583,38.868865,38.931694,38.92235,38.909086,38.873123,38.931453,38.918646,38.876396,38.95659,38.847949,38.931453,38.895203,38.915417,38.95824,38.871995,38.768644,38.866381,38.871995,38.9245,38.85813,38.891736,38.834936,38.767003,38.85813,38.952966,38.754538,38.947253,38.887674,38.924454,38.952339,38.924553,38.913884,38.854231,38.952966,38.740423,38.768672,38.884937,38.932442,38.851143,38.881052,38.768495,38.909464,38.923494,38.93032,38.93266,38.919101,38.91541,38.922212,38.868685,38.922557,38.951893,38.876868,38.959377,38.710916,38.799758,38.76322,38.956274,38.930068,38.953084,38.74233,38.88768,38.919101,38.95032,38.928687,38.924934,38.876643,38.857992,38.853094,38.889834,38.924623,38.910967,38.893434,38.872435,38.848873,38.858303,38.92918,38.926429,38.951893,38.9315,38.720935,38.874979,38.863143,38.878052,38.74233,38.944077,38.9584,38.86195],[-77.185178,-77.22585,-77.31034,-77.306282,-77.31034,-77.422175,-77.388266,-77.337393,-77.36245,-77.164296,-77.379443,-77.234937,-77.231354,-77.224705,-77.225719,-77.229705,-77.44856,-77.229777,-77.218448,-77.233235,-77.437813,-77.399006,-77.374232,-77.218448,-77.44856,-77.223453,-77.367547,-77.264656,-77.138628,-77.168605,-77.264656,-77.235783,-77.382218,-77.432437,-77.312832,-77.200786,-77.382218,-77.39421,-77.081969,-77.333836,-77.380177,-77.217792,-77.426149,-77.212828,-77.228028,-77.361427,-77.39421,-77.078353,-77.160324,-77.430812,-77.233084,-77.348806,-77.233244,-77.156523,-77.440782,-77.25813,-77.216742,-77.266571,-77.219167,-77.221228,-77.205955,-77.224899,-77.221844,-77.400985,-77.222457,-77.359995,-77.08573,-77.193243,-77.146245,-77.412122,-77.216786,-77.40117,-77.161958,-77.439136,-77.219167,-77.390096,-77.216425,-77.222662,-77.208159,-77.384239,-77.359724,-77.450853,-77.235578,-77.250255,-77.425265,-77.159855,-77.372903,-77.383534,-77.24502,-77.246081,-77.400985,-77.245694,-77.164296,-77.22601,-77.336296,-77.2226,-77.161958,-77.313768,-77.358645,-77.214879],3.5,null,null,{&#34;interactive&#34;:true,&#34;className&#34;:&#34;&#34;,&#34;stroke&#34;:false,&#34;color&#34;:[&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;],&#34;weight&#34;:5,&#34;opacity&#34;:0.5,&#34;fill&#34;:true,&#34;fillColor&#34;:[&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#A50F15&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#DE2D26&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FB6A4A&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FCAE91&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;,&#34;#FEE5D9&#34;],&#34;fillOpacity&#34;:1},null,null,null,null,[&#34;Company name:  Sodexo 6 digit title:  Other Direct Selling Establishments Number of employees:  8500&#34;</description>
+    </item>
+    
+    <item>
+      <title>Job Flows Into Fairfax County</title>
+      <link>/findings/06-inflows/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/06-inflows/</guid>
+      <description> NOTES FOR THIS FILE: * COLOR SCHEME * ADD CONTENT AS NOTED
+References Citations here.
+ </description>
+    </item>
+    
+    <item>
+      <title>Tysons Corner Case Study</title>
+      <link>/findings/05-tysons-case/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/findings/05-tysons-case/</guid>
+      <description> NOTES FOR THIS FILE: * COLOR SCHEME * ADD CONTENT AS NOTED
+Analyses coming soon...
+References Citations here.
+ </description>
+    </item>
+    
+  </channel>
+</rss>

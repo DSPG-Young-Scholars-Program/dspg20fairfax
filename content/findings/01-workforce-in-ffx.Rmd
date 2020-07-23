@@ -1,0 +1,167 @@
+---
+title: "Workers in Fairfax County"
+output: html_document
+description: "Project description here"
+tags: ["R", "geospatial"]
+weight: 1
+draft: false
+---
+
+NOTES FOR THIS DOCUMENT:
+* LODES PLOTS NEED TO HAVE THE COLOR SCHEME REVISED + LABELS CLEANED UP (SPACES ETC)
+* ADD CONTENT AS MARKED.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning = F, message = F, echo = F}
+library(tidyverse)
+library(viridis)
+library(sf)
+library(RColorBrewer)
+library(leaflet)
+library(ggrepel)
+library(stringr)
+```
+
+```{r warning = F, message = F, echo = F}
+# Get data
+work <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
+wac <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
+#work <- read_rds("./data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
+#wac <- read_rds("./data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
+```
+
+```{r, warning = F, message = F, echo = F}
+# Function to transform pie chart labels
+pie_lab_transform <- function(data){
+  data <- data %>% 
+  arrange(desc(data)) %>%
+  mutate(prop = value / sum(value) *100) %>%
+  mutate(ypos = cumsum(prop)- 0.5*prop )
+}
+```
+
+# Workforce in Fairfax County
+Write introduction here.
+
+## Data and Methods
+Describe data sources and what we did here.
+
+## Workers in Fairfax County
+Give a brief summary of findings, then describe each output below.
+
+### What is the sociodemographic composition of workers in Fairfax County?
+Describe.
+```{r, echo = F}
+race <- data.frame(race = names(colSums(wac[, 29:34])), value = colSums(wac[,29:34]), row.names = NULL)
+race <- pie_lab_transform(race)
+
+for(i in  c("Race:", ",Alone", "Alone", "10")){
+  race$race <- gsub(i, "", race$race)
+}
+
+ggplot(race, aes(x = prop, y = reorder(race, prop), fill = race)) +
+  geom_bar(stat = "identity")+
+  theme_minimal() +
+  labs(title = "Fairfax County Jobs by Race", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+  theme(legend.position="none") 
+```
+
+Describe.
+```{r, echo = F}
+ethnicity <- data.frame(ethnicity = names(colSums(wac[,35:36])), value = colSums(wac[, 35:36]), row.names = NULL)
+ethnicity <- pie_lab_transform(ethnicity)
+
+for(i in  c("Ethnicity:", "10")){
+  ethnicity$ethnicity <- gsub(i, "", ethnicity$ethnicity)
+}
+
+ggplot(ethnicity, aes(x="", y = prop, fill = ethnicity)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position = "none") +
+  geom_text(aes(y = ypos, label = paste(ethnicity, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Ethnicity", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+Describe.
+```{r, echo = F}
+sex <- data.frame(sex = names(colSums(wac[,41:42])), value = colSums(wac[, 41:42]), row.names = NULL)
+sex <- pie_lab_transform(sex)
+
+for(i in  c("Sex:", "10")){
+  sex$sex <- gsub(i, "", sex$sex)
+}
+
+ggplot(sex, aes(x="", y=prop, fill=sex)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(sex, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Sex", subtitle = "LODES Workforce Characteristics, 2017")
+
+```
+
+### How educated are workers in Fairfax County?
+Describe.
+```{r, echo = F}
+education <- data.frame(education=names(colSums(wac[,37:40])), value=colSums(wac[, 37:40]), row.names = NULL)
+education <- pie_lab_transform(education)
+
+for(i in  c("EducationalAttainment:", "10,11")){
+  education$education <- gsub(i, "", education$education)
+}
+
+ggplot(education, aes(x="", y=prop, fill=education)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = paste(education, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Education", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+### How much do workers in Fairfax County earn?
+Describe main takeaways.
+```{r, echo = F}
+earnings <- data.frame(earnings = names(colSums(wac[, 6:8])), value = colSums(wac[, 6:8]), row.names = NULL)
+earnings$earnings <- gsub("earnings", "", earnings$earnings)
+earnings <- pie_lab_transform(earnings)
+
+ggplot(earnings, aes(x = "", y = prop, fill = earnings)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "none") +
+  geom_text(aes(y = ypos, label = paste(earnings, "\n", paste(round(prop, 2), "%"))), color = "white", size = 3) +
+  labs(title = "Fairfax County Jobs by Earnings", subtitle = "LODES Workforce Characteristics, 2017")
+```
+
+### Which industry sectors employ workers in Fairfax County?
+```{r, echo = F}
+naic <- data.frame(naic = names(colSums(wac[,9:28])), value = colSums(wac[, 9:28]), row.names = NULL)
+
+naic$naic <- unlist(str_extract_all(naic$naic,  "(?<=\\().+?(?=\\))"))
+naic$naic <- gsub("and", "&", naic$naic)
+naic <- pie_lab_transform(naic)
+
+ggplot(naic, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
+  geom_bar(stat= "identity") +
+  theme_minimal() +
+  labs(title = "Fairfax County Jobs by NAIC Sector Code", subtitle = "LODES Workforce Characteristics, 2017", y = "", x = "%")+
+  theme(legend.position="none") 
+```
+
+### Where are young and older adult workers? How do workers get to their workplaces?
+Describe how the map works, what it shows, and main takeaways.
+```{r warning = F, message = F, echo = F}
+# Map: Age groups
+# App goes here. See at https://teja.shinyapps.io/app_wrk
+```
+
+# References
+Cite references here. Use a consistent format.

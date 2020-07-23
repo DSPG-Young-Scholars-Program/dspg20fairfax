@@ -5,7 +5,7 @@ library(shinythemes)
 library(sf)
 
 # Load data
-resdata <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/res_ACS_data.Rds")
+resdata <- read_rds("res_ACS_data.Rds")
 resdata <- st_transform(resdata, 4269)
 
 vars_travel <- c("Percent workers driving alone", 
@@ -36,45 +36,37 @@ vars_ind <- c("Percent employed in construction",
 
 # UI
 ui <- fluidPage(theme = shinytheme("cosmo"),
+                tags$head(tags$style('.selectize-dropdown {z-index: 10000}')),
                 tabsetPanel(
                   tabPanel("Commuting", 
                            fluidRow(style = "margin: 17px",
-                             br(),
-                             h4(strong('Employed Fairfax County Residents\' Means of Commuting by Residence Census Tract')),
-                             p()
-                             ),
-                           sidebarPanel(
-                             selectInput('whichvar_travel', 'Select Variable:', vars_travel),
-                             tags$b('Source:'),
-                             p('American Community Survey, 2014/18')),
-                           mainPanel(
-                             leafletOutput('plot_travel'))
+                                    h4(strong('Employed Fairfax County Residents\' Means of Commuting by Residence Census Tract')),
+                                    p(),
+                                    selectInput('whichvar_travel', 'Select Variable:', vars_travel, width = '100%'),
+                                    p(),
+                                    leafletOutput('plot_travel'),
+                                    p('Source: American Community Survey, 2014/18')
+                           )
                   ), 
                   tabPanel("Work Class", 
                            fluidRow(style = "margin: 17px",
-                             br(),
-                             h4(strong('Employed Fairfax County Residents\' Work Class by Residence Census Tract')),
-                             p()
-                           ),
-                           sidebarPanel(
-                             selectInput('whichvar_class', 'Select Variable:', vars_class),
-                             tags$b('Source:'),
-                             p('American Community Survey, 2014/18')),
-                           mainPanel(
-                             leafletOutput('plot_class'))
+                                    h4(strong('Employed Fairfax County Residents\' Work Class by Residence Census Tract')),
+                                    p(),
+                                    selectInput('whichvar_class', 'Select Variable:', vars_class, width = '100%'),
+                                    p(),
+                                    leafletOutput('plot_class'),
+                                    p('Source: American Community Survey, 2014/18')
+                           )
                   ), 
                   tabPanel("Industry", 
                            fluidRow(style = "margin: 17px",
-                             br(),
-                             h4(strong('Employed Fairfax County Residents\' Work Industry by Residence Census Tract')),
-                             p()
-                           ),
-                           sidebarPanel(
-                             selectInput('whichvar_ind', 'Select Variable:', vars_ind),
-                             tags$b('Source:'),
-                             p('American Community Survey, 2014/18')),
-                           mainPanel(
-                             leafletOutput('plot_ind'))
+                                    h4(strong('Employed Fairfax County Residents\' Work Industry by Residence Census Tract')),
+                                    p(),
+                                    selectInput('whichvar_ind', 'Select Variable:', vars_ind, width = '100%'),
+                                    p(),
+                                    leafletOutput('plot_ind'),
+                                    p('Source: American Community Survey, 2014/18')
+                           )
                   )
                 )
 )
@@ -156,7 +148,7 @@ server <- function(input, output, session) {
                 title = "Percent by<br>Quintile Group", 
                 opacity = 1,
                 na.label = "Not Available",
-                labFormat = function(type = "quantile", cuts = 5, p = plotvar_travel) {
+                labFormat = function(type = "quantile", cuts = 5, p = plotvar_class) {
                   n = length(cuts)
                   paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                 })
