@@ -270,19 +270,25 @@ Doing VA Counties now:
 ```{r}
 #by VA county
 flows_in_VA_cnty <- flows_in[flows_in$h_state == "51", ] %>%
-  group_by(h_county, w_county) %>%
+  group_by(h_stcty, w_stcty) %>%
   summarise(S000 = sum(S000)) %>%
   ungroup() %>%
   arrange(-S000)
 #join with names of h_county
-essential <- va_xw %>%
-  select(h_county, ctyname)
-flows_in_VA_cnty <- inner_join(x = flows_in_VA_cnty, y = unique(essential), by = "h_county")
 
-va_cnty_flow_lines <- st_as_sf(od2line(flows_in_VA_cnty[1:10, ], counties("VA")[, 2:17]))
+essential <- va_xw %>%
+  select(cty, ctyname)
+essential$cty <- as.character(essential$cty)
+flows_in_VA_cnty <- inner_join(x = flows_in_VA_cnty, y = unique(essential), by = c("h_stcty" = "cty"))
+
+va_cnty <- counties("VA")
+va_cnty_flow_lines <- st_as_sf(od2line(flows_in_VA_cnty[1:10, ], va_cnty, 
+                                       origin_code = "h_stcty", dest_code = "w_stcty", 
+                                 zone_code = "GEOID"))
+
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
-top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_county, S000, geometry)) +
+top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_stcty, S000, geometry)) +
   tm_lines(lwd = 3.5, col = "S000", title.col = "Number of Jobs", style = "quantile",
            palette = c("#60999A", "#E57200"),
            popup.vars = c("Number of Jobs" = "S000")) +
