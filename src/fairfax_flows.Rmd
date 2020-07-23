@@ -26,10 +26,17 @@ library(tigris)
 
 Reading in data tables
 ```{r}
+<<<<<<< HEAD
+jobs_all <- read_csv("../data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_fed <- read_csv("../data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_priv <- read_csv("../data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+va_xw <- read_csv("../data/original/va_xwalk.csv")
+=======
 jobs_all <- read_csv("~/Git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 jobs_fed <- read_csv("~/Git/dspg20fairfax/data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 jobs_priv <- read_csv("~/Git/dspg20fairfax/data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 va_xw <- read_csv("~/Git/dspg20fairfax/data/original/va_xwalk.csv")
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 ```
 
 
@@ -39,28 +46,43 @@ jobs_all$h_state <- substr(jobs_all$h_geocode_tract, 1, 2)
 jobs_all$h_county <- substr(jobs_all$h_geocode_tract, 3, 5)
 jobs_all$h_tract <- substr(jobs_all$h_geocode_tract, 6, 11)
 jobs_all$h_stcty <- substr(jobs_all$h_geocode_tract, 1, 5)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 jobs_fed$h_state <- substr(jobs_fed$h_geocode_tract, 1, 2)
 jobs_fed$h_county <- substr(jobs_fed$h_geocode_tract, 3, 5)
 jobs_fed$h_tract <- substr(jobs_fed$h_geocode_tract, 6, 11)
 jobs_fed$h_stcty <- substr(jobs_fed$h_geocode_tract, 1, 5)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 jobs_priv$h_state <- substr(jobs_priv$h_geocode_tract, 1, 2)
 jobs_priv$h_county <- substr(jobs_priv$h_geocode_tract, 3, 5)
 jobs_priv$h_tract <- substr(jobs_priv$h_geocode_tract, 6, 11)
 jobs_priv$h_stcty <- substr(jobs_priv$h_geocode_tract, 1, 5)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 # Now parsing workplace GEOIDs
 jobs_all$w_state <- substr(jobs_all$w_geocode_tract, 1, 2)
 jobs_all$w_county <- substr(jobs_all$w_geocode_tract, 3, 5)
 jobs_all$w_tract <- substr(jobs_all$w_geocode_tract, 6, 11)
 jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 jobs_fed$w_state <- substr(jobs_fed$w_geocode_tract, 1, 2)
 jobs_fed$w_county <- substr(jobs_fed$w_geocode_tract, 3, 5)
 jobs_fed$w_tract <- substr(jobs_fed$w_geocode_tract, 6, 11)
 jobs_fed$w_stcty <- substr(jobs_fed$w_geocode_tract, 1, 5)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 jobs_priv$w_state <- substr(jobs_priv$w_geocode_tract, 1, 2)
 jobs_priv$w_county <- substr(jobs_priv$w_geocode_tract, 3, 5)
 jobs_priv$w_tract <- substr(jobs_priv$w_geocode_tract, 6, 11)
@@ -72,10 +94,18 @@ What % of jobs flow from outside of Fairfax County?
 # for jobs all (059 is Fairfax code)
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
+<<<<<<< HEAD
+
 bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
 
 percents <- data.frame("type" = c("% Jobs in Fairfax flowing from outside", "% Jobs in Fairfax flowing from within"), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
 percents
+
+#this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
+flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
+=======
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
+bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
 pie <- ggplot(percents, aes("", y = shares, fill = type)) +
   geom_bar(stat="identity", width=1) + 
   geom_text(aes(label = paste0(round(shares), "%")), position = position_stack(vjust = 0.5))
@@ -139,6 +169,18 @@ agg_states_trimmed %>%
 Building same dataframe as flows_in but with County Name, State column added for relevant rows
 Takes a long time to run
 ```{r}
+<<<<<<< HEAD
+nc_xw <- read_csv("../data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+dc_xw <- read_csv("../data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+pa_xw <- read_csv("../data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+wv_xw <- read_csv("../data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+md_xw <- read_csv("../data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+oh_xw <- read_csv("../data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+ny_xw <- read_csv("../data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+fl_xw <- read_csv("../data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+nj_xw <- read_csv("../data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+sc_xw <- read_csv("../data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+=======
 nc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
 dc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
 pa_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
@@ -149,6 +191,7 @@ ny_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_ty
 fl_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
 nj_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
 sc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 ```
 
 
@@ -157,7 +200,10 @@ sc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_ty
 essential <- nc_xw %>%
   select(cty, ctyname)
 nc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #dc done
 essential <- dc_xw %>%
   select(cty, ctyname)
@@ -172,32 +218,50 @@ pa_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "
 essential <- wv_xw %>%
   select(cty, ctyname)
 wv_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #md done
 essential <- md_xw %>%
   select(cty, ctyname)
 md_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #oh done
 essential <- oh_xw %>%
   select(cty, ctyname)
 oh_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #ny done
 essential <- ny_xw %>%
   select(cty, ctyname)
 ny_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #fl done
 essential <- fl_xw %>%
   select(cty, ctyname)
 fl_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #nj done
 essential <- nj_xw %>%
   select(cty, ctyname)
 nj_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 #sc done
 essential <- sc_xw %>%
   select(cty, ctyname)
@@ -221,6 +285,10 @@ agg_cnty_other_trimmed %>%
   ylab("County Name")
 ```
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 68752671e15e49c85f99a1e9b77228ea19505a56
 Mapping Flows (have to load in all top 10 states)
 ```{r}
 va_points <- tracts("VA", class = "sf")
@@ -315,5 +383,11 @@ top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w
   tm_basemap("OpenStreetMap.HOT") +
   tm_view(set.zoom.limits = c(7, 18), basemaps.alpha = 0.5)
 top10other_cnty_flowsmap
+```
+
+```{r}
+flows_from_other
+all_points[, 2:12]
+od2line(flows_from_other, all_points[, 2:12])
 ```
 
