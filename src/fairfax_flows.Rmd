@@ -304,7 +304,7 @@ flows_from_other <- top_ten_with_names %>%
   summarise(S000 = sum(S000)) %>%
   ungroup() %>%
   arrange(-S000)
-
+all_points <- rbind(va_points, md_points, dc_points, wv_points, pa_points, nc_points, ny_points, ny_points, oh_points, sc_points, fl_points)
 all_points$h_stcty <- paste(all_points$STATEFP, all_points$COUNTYFP, sep = "")
 
 other_cnty_flow_lines <- od2line(flows_from_other[1:10, ], all_points,
