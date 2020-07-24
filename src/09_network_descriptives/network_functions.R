@@ -264,10 +264,10 @@ leaflet_creator <- function(types){
     fairfax_data <- st_transform(fairfax_data, 4326)
     
     
-    pal_out <- colorQuantile("Blues",5,  domain = fairfax_data$wtd_deg_cent_out)
-    pal_in <- colorQuantile("Oranges",5, domain = fairfax_data$wtd_deg_cent_in)
-    pal_btw <- colorQuantile("Purples",5,  domain = fairfax_data$btw_cent)
-    pal_eigen <- colorQuantile("Greens",5,  domain = fairfax_data$eigen_cent)
+    pal_out <- colorQuantile(palette = c("#DEEBF7", "#232d4b"),5,  domain = fairfax_data$wtd_deg_cent_out)
+    pal_in <- colorQuantile(palette = c("#E5F5F9", '#0e879c'),5, domain = fairfax_data$wtd_deg_cent_in)
+    pal_btw <- colorQuantile(palette = c("#FAF6DB", "#E6CE3A"),5,  domain = fairfax_data$btw_cent)
+    pal_eigen <- colorQuantile(palette = c("#FEE6CE", "#E6A01D"),5,  domain = fairfax_data$eigen_cent)
     
     
     l_out <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%

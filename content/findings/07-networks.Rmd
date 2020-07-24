@@ -40,22 +40,18 @@ Measure | Interpretation
 Weighted Out-Degree Centrality | These plots highlight tracts from which individuals depart to get to their jobs in other tracts.
 Weighted In-Degree Centrality | These plots highlight tracts that are work destinations.
 Betweenness Centrality | The plots highlight tracts that serve as bridges for workers from disparate tracts to flow through.
-Eigenvector Centrality | The plots highlight tracts that are more important based on they are connected to other well-connected tracts
+Eigenvector Centrality | The plots highlight tracts that are more important based on they are connected to other well-connected tracts.
 
-i guess it just means that those high-traveled areas take on more travel flow and infrastructure stress than all other areas. not really that intersting.
 
 ## Findings
 
-the findings are a little tougher. i think the in and out-degree are relatively straight-forward. we see workers from the county shift from west to east which tells us about (travel flows at certain times of days) as well as which areas of the county are going to be most busy at certain times of days and how this could impact infrastructure, etc.
+The maps below show the centrality measures for all jobs in Fairfax County. The top, left-hand plot shows weighted out-degree centrality by quantile group. We see that many tracts on the western side of Fairfax County are darker, meaning that more individuals are leaving those tracts to commute to work. Looking at the top, right-hand map, we see in-degree centrality, which highlights workplace destinations. Many tracts on the eastern side of Fairfax County are highlighted, meaning the more individuals work in those tracts. Taken together, the maps have implications on travel flow during peak commute hours. 
 
-the betweenness seems to reflect "flow between" areas which the county could market to emerging industries or other shops as areas that could be easily accessible for workers that are traveling to and from home and work. one could argue that the betweenness centrality of certain tracts could be an indicator of emerging areas for new businesses to setup shop. you might need to take a closer look at this, but when i look at this map from our gentrification work it looks to map closely on to the betweenness centrality map you created it. thus, this would validate that network analysis helps provide some capacity of predicting emerging economic geographies and, in turn, further indicates that infrastructure will need to be built to reflect these emerging trends.
+The bottom left map displays betweenness centrality. Betweenness centrality shows tracts that serve as bridges for workers commuting to and from work. The betweenness centrality of certain tracts could be an indicator of emerging areas for new businesses. In comparison to SDAD's prior Fairfax County gentrification research, the betweenness measures closely align with the measures of gentrification. This further indicates that network analysis helps provide some capacity of predicting emerging economic geographies and, in turn, further indicates that infrastructure will need to be built to reflect these emerging trends.
 
+The bottom, right map shows eigenvector centrality, which highlights tracts based on connections to other well-connected tracts. In the context of Fairfax County, these tracts would see relatively higher travel, which could see more stress to infrastructure. 
 
-The plots below show the centrality measures for all jobs in Fairfax County. The top, left-hand plot shows weighted out-degree centrality by quantile group.
-
-> Interpreting Quantiles: The map visualizes values on the selected indicator at tract level. Counties with darker map colors have higher values on the selected indicator. Conversely, counties with lighter colors have lower values on the selected indicator. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values.
-
-
+_Interpreting Quantiles: The map visualizes values on the selected indicator at tract level. Counties with darker map colors have higher values on the selected indicator. Conversely, counties with lighter colors have lower values on the selected indicator. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
 
 ##### All JOBS
 
@@ -67,7 +63,13 @@ fluidRow(column(6, l_btw_2015_S000_all),
          column(6, l_eigen_2015_S000_all))
 ```
 
-### Federal Jobs
+We repeat the analysis, but restrict the data to federal jobs only. For the top left map, which shows weighted out-degree centrality, we see that as before, many workers live in the western area of Fairfax County. The in-degree centrality map looks noticeably different. A major takeaway from this map is that there are key tracts were many federal jobs are located. For example, the darkest tract in the western area of Fairfax County, near Reston, is the home to the US Geological Survey office, and Bureau of Indian Affairs, Division of Acquisitions. The northern-most, darkest tract in the western area of Fairfax County, located in Bailey's Crossroads, is home to one of the US Fish & Wildlife Services National Headquarters.
+
+Betwenness centrality, as shown in the bottom left map, shows tracts that serve as bridges for federal workers commuting to and from work. Many of the highlighted tracts are located at key intersections, including the Leesburg Pike (Route 7)/Dulles Access Road (Route 267) intersection and the 95/395/495 intersection. 
+
+The federal jobs eigenvector map (bottom right) also shows the importance of major intersections. Darker tracts would see relatively higher travel, which could see more stress to infrastructure. We see darker tracts near Leesburg Pike (Route 7)/Dulles Access Road (Route 267) intersection and the 95/395/495 intersection. 
+
+### FEDERAL JOBS
 
 ```{r, echo = F}
 type = "federal"
@@ -91,10 +93,12 @@ nodelist$color_eigen <- ordered(nodelist$color_eigen, levels = c("[0]", "(0-.01)
 fairfax_data <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent", "color_in", "color_btw","color_eigen")], by.x= "GEOID", by.y = "tract", all = TRUE)
   
 fairfax_data <- st_transform(fairfax_data, 4326)
-pal_out <- colorQuantile("Blues",5,  domain = fairfax_data$wtd_deg_cent_out)
-pal_in <- colorFactor(brewer.pal(n = 4, name = "Oranges"), fairfax_data$color_in)
-pal_btw <- colorFactor(brewer.pal(n = 4, name = "Purples"), fairfax_data$color_btw)
-pal_eigen <- colorFactor(brewer.pal(n = 4, name = "Greens"), fairfax_data$color_eigen)
+
+pal_out <- colorQuantile(palette = c("#DEEBF7", "#232d4b"),5,  domain = fairfax_data$wtd_deg_cent_out)
+pal_in <- colorFactor(palette = c("#E5F5F9", "#0e879c"), fairfax_data$color_in)
+pal_btw <- colorFactor(palette = c("#FAF6DB", "#E6CE3A"), fairfax_data$color_btw)
+pal_eigen <- colorFactor(palette = c("#FEE6CE", "#E6A01D"), fairfax_data$color_eigen)
+
 l_out_2015_S000_federal <- leaflet(data = fairfax_data,options = leafletOptions(minZoom = 10))%>%
   addTiles("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png") %>%
   addPolygons(fillColor = ~pal_out(wtd_deg_cent_out), fillOpacity = .8, stroke = FALSE) %>%
@@ -139,7 +143,9 @@ fluidRow(column(6, l_btw_2015_S000_federal),
          column(6, l_eigen_2015_S000_federal))
 ```
 
-### Private Jobs
+### PRIVATE JOBS
+
+The private jobs networks reflect the all jobs networks. 
 
 ```{r, echo = F}
 leaflet_creator("private")
