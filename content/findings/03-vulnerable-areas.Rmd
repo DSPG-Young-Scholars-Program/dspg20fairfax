@@ -30,13 +30,16 @@ uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/
 ```
 
 # Areas Vulnerable to Covid-Related Income and Job Loss
-Write introduction here.
+This mapping details a composite of economic indicators: percents unemployed, part-time, workers with high-school educated or less, low-income, and workers in industries and occupations especially vulnerable to Covid-19. Darker areas on these plots mark census tracts most susceptible to covid-19 related job loss. Each census tract of Fairfax county was measured against these various indicators, with the resulting relative scores divided into quintiles. If a tract scored in the fourth or fifth quintile in one of these categories, that counted as one "unit" on this relative vulnerability scale.
 
 ## Data and Methods
-Describe data sources and what we did here.
+In order to best measure vulnerability to covid, we used a [Brookings report](https://www.brookings.edu/research/who-are-the-workers-already-impacted-by-the-covid-19-recession/) to identify the major factors contributing to Covid-related economic hardship, then employed American Community Survey (ACS) data to analyze these same vulnerability metrics for each census tract in Fairfax County. 
+
+The relative scores of these indicators for each census tract were then placed into quintiles, with higher scores indicating a heightened relative risk to Covid job and income loss, since the pandemic exacerbates these underlying vulnerabilities. The frequency that each tract scored in the 4th or 5th quintile is then mapped onto an interactive Leaflet plot, where one can observe these summary scores along with separate plots for each individual indicator.
 
 ## Findings
-Give a brief summary of findings, then describe each output below (explain summary map and individual indicators with their maps, why we selected them, and main takeaways for each map).
+
+Covid-19 vulnerability is not uniform across the county, with certain census tracts more reliant on workers and business that have been adversely affected by the pandemic. One can view an interactive mapping of each individual economic risk factor below, as well as our composite indicator.
 
 ### Initial Unemployment Filings
 ```{r}
@@ -71,6 +74,8 @@ leaflet(data = uiaggregate,
             opacity = 1,
             na.label = "Not Available")
 ```
+This plot displays the number of unemployment claims filed in Fairfax county by zip code, with darker areas marking a greater number of unemployment claims. Unemployment claims can serve as a useful indicator of economic vulnerability, since it helps illustrate the extent of joblessness in a particular area.
+
 
 ### Relative Vulnerability
 ```{r}
@@ -120,6 +125,8 @@ leaflet(data = vulnerable,
             opacity = 1,
             na.label = "Not Available")
 ```
+This plot displays our composite vulnerability indicator, which details how many times each census tract scored in the 4th or 5th quintile. This translates to a measure of which areas are particularly vulnerable across multiple factors linked to Covid-related employment and income loss. 
+
 
 #### Which Areas Already Experience High Unemployment Rates?
 ```{r}
@@ -153,6 +160,8 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+High unemployment rates indicate the presence of underyling economic difficulties that Covid-19's impacts could further inflame. Areas with an already large economically vulnerable population may be more at risk to income and job losses as well as require greater resources to ameliorate these struggles.  
+
 
 #### Where are Part-Time Workers?
 ```{r}
@@ -186,6 +195,8 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+Part-time workers are definied as individual who work 34 hours per week or fewer. Part-time workers have been especially vulnerable to layoffs during the pandemic-- thus, areas with a greater share of workers employed part-time are at greater risk of economic strife.
+
 
 #### Where are Workers with High School Education or Less?
 ```{r}
@@ -219,6 +230,7 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+Workers with high school education or less may face greater difficulty in transitioning into less vulnerable industries relative to workers with more extensive educational backgrounds. The ability to adapt one's skills to pandemic-caused overhauls in industry is an important factor in measuring an area's means to cope with the economic changes forced by Covid-19.
 
 #### Where are Low-Income Workers?
 ```{r}
@@ -251,6 +263,7 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+This mapping displays quintile groups based on median income. Darker areas represent areas with low median incomes relative to the county. Areas with lower incomes are less shielded from pandemic-inflicted job and income loss.
 
 #### Where are Workers in Occupations Vulnerable to Covid-Related Job and Income Loss?
 ```{r}
@@ -284,6 +297,8 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+Our anaylsis defines occupations vulnerable to Covid-related job loss as "Arts, design, entertainment, sports, and media occupations"; "Food preparation and serving related occupations"; "Building and grounds cleaning and maintenance occupations"; "Personal care and service occupations"; "Sales and related occupations"; and "Transportation occupations." The relative percentage of each census tract's workforce employed in these areas indicate a higher population of people working in especially vulnerable job sectors.
+
 
 #### Where are Workers in Industries Vulnerable to Covid-Related Job and Income Loss?
 ```{r}
@@ -317,6 +332,7 @@ leaflet(data = vulnerable,
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
 ```
+Vulnerable industries include food services and drinking places; general merchandise stores; personal and laundry services; amusement, gambling, and recreation; motor vehicle and parts dealers; miscellaneous store retailers; accommodation; child day care services; building material and garden supply stores; and other industries. High economic reliance within a census tract on these specific types of businesses serves as a potential marker for greater economic hardship due to the pandemic.
 
 # References
 Citations here.
