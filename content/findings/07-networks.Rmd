@@ -32,8 +32,8 @@ We employ network analysis to understand the flow of Fairfax County workers from
 The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination files for our networks, and restrict the geography to intra-Fairfax County tracts only. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs.
 
 
-
 ### Interpretation of Centrality Measures
+In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, nodes are tracts. The table below presents our main centrality measures. The interpretation contextualizes centrality measures within the Fairfax County job flows theme.
 
 Measure | Interpretation
 ---------|--------------------------------
@@ -51,7 +51,7 @@ The bottom left map displays betweenness centrality. Betweenness centrality show
 
 The bottom, right map shows eigenvector centrality, which highlights tracts based on connections to other well-connected tracts. In the context of Fairfax County, these tracts would see relatively higher travel, which could see more stress to infrastructure. 
 
-_Interpreting Quantiles: The map visualizes values on the selected indicator at tract level. Counties with darker map colors have higher values on the selected indicator. Conversely, counties with lighter colors have lower values on the selected indicator. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
+_Interpreting Quantiles: The maps visualize measure of centrality values at tract level. Counties with darker map colors have higher measures of centrality. Conversely, counties with lighter colors have lower measure of centrality. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
 
 ##### All JOBS
 
