@@ -1,0 +1,376 @@
+---
+title: "09_network_descriptives_intra_fairfax"
+author: "Sarah McDonald"
+date: "6/29/2020"
+#output: html_document
+output: md_document
+always_allow_html: true
+---
+
+Load packages
+```{r, warning=F, message=F}
+library(dplyr)
+library(igraph)
+library(lubridate)
+```
+
+Load data frame and filter for residence AND workplace within Fairfax County. 
+
+```{r}
+data <- read.csv("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobsall.csv")
+
+# focus on within county first
+data <- data %>% 
+  filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))
+```
+
+# Edge List
+
+Create edge list, which defines the "from" and "to" relationships of the Fairfax workforce. We define "from" as residence and "to" as workplace. For this script, we will define the weight as S000, which is the total number of jobs, in other words,the total number of jobs for which a worker lives in the "from" Census tract and commutes to the workplace in the "to" Census tract (check interpretation). 
+
+```{r, warning=F, message =F}
+edgelist <- data %>% 
+  select(h_geocode_tract, w_geocode_tract, S000) %>% 
+  rename(from = h_geocode_tract, to = w_geocode_tract, weight = S000) %>% 
+  group_by(from, to) %>% 
+  summarize(weight = sum(weight)) %>% 
+  arrange(-weight)
+```
+
+Next, we create the __igraph__ network object. Simple graphs are graphs which do not contain loop and multiple edges. 
+The function below keeps the loops, which would indicate working and living in the same tract, but removes multiple edges, because we will start wth a simple, directed graph.
+
+
+```{r}
+network <- simplify(graph.data.frame(edgelist, directed = TRUE), 
+                         remove.loops = FALSE, 
+                         edge.attr.comb = igraph_opt("edge.attr.comb"))
+is_weighted(network)
+is_directed(network)
+
+
+#D: directed
+#N: Named
+#W: Weighted
+
+print(network)
+```
+
+
+### Summary Statistics
+
+Next, we will work through summary statistics of our network with descriptions of each, in the context of the origin-destination data.
+
+```{r}
+network_stats <- data.frame(var="S000") 
+```
+
+##### Counts
+The _order_ of a graph indicates the number of nodes (or vertices). In this case, the nodes are Census tracts.
+
+```{r}
+network_stats$node_count <- gorder(network)  
+print(network_stats$node_count )
+```
+
+The _size_ of graph indicates the number of edges (or links). Relevant to OD data, the an edge represents a residence-workplace relationship between Census tracts.
+
+```{r}
+network_stats$edge_count <- gsize(network)  
+print(network_stats$edge_count)
+```
+
+We can also add up the sum of weights for a count of jobs represented in the graph.
+
+```{r}
+network_stats$jobs_count <- sum(edgelist$weight)
+print(network_stats$jobs_count)
+```
+
+The __degree__ indicates the number of adjacent edges. An adjacent edge shares a common vertex. In relation to the OD, the degree function produces a count of links for each node, in this case, for each Census tract. The average degree is printed.
+```{r}
+network_stats$mean_deg_total <- mean(igraph::degree(network))
+network_stats$mean_deg_out <- mean(igraph::degree(network, mode = "out"))
+network_stats$mean_deg_in <- mean(igraph::degree(network, mode = "in"))
+
+#mean(sna::degree(intergraph::asNetwork(network), cmode="freeman"))
+#mean(sna::degree(intergraph::asNetwork(network), cmode="indegree"))
+#mean(sna::degree(intergraph::asNetwork(network), cmode="outdegree"))
+
+knitr::kable(network_stats[, c("mean_deg_total", "mean_deg_out", "mean_deg_in")])
+
+hist(igraph::degree(network), breaks = seq(0,425, 25), main="Histogram of Node Degree")
+```
+
+__Betweenness__ is a measure of centrality, which counts the number of shortest paths (geodesic) going through a node. 
+
+```{r}
+network_stats$mean_btw <- mean(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4))
+
+print(network_stats$mean_btw)
+
+hist(round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4), main = "Histogram of Betweenness", breaks = seq(0, 500, 25))
+```
+
+##### Isolates, Dyads, and Triads 
+
+Isolates are non-connected nodes, which means either the workplace or residence did not have a corresponding relationship.
+```{r}
+network_stats$isolates <- sum(igraph::degree(simplify(network))==0)
+```
+
+Triads
+```{r}
+network_stats$triads_003 <- igraph::triad.census(network)[1] # empty graph, no connections
+network_stats$triads_012 <- igraph::triad.census(network)[2]
+network_stats$triads_102 <- igraph::triad.census(network)[3] #graph with a mutual connection between two vertices.
+network_stats$triads_021D <- igraph::triad.census(network)[4]
+network_stats$triads_021U <- igraph::triad.census(network)[5]
+network_stats$triads_021C <- igraph::triad.census(network)[6]
+network_stats$triads_111D <- igraph::triad.census(network)[7]
+network_stats$triads_111U <- igraph::triad.census(network)[8]
+network_stats$triads_030T <- igraph::triad.census(network)[9]
+network_stats$triads_030C <- igraph::triad.census(network)[10]
+network_stats$triads_201 <- igraph::triad.census(network)[11] #graph with two mutual connection between two vertices.
+network_stats$triads_120D <- igraph::triad.census(network)[12]
+network_stats$triads_120U <- igraph::triad.census(network)[13]
+network_stats$triads_120C <- igraph::triad.census(network)[14]
+network_stats$triads_210 <- igraph::triad.census(network)[15]
+network_stats$triads_300 <- igraph::triad.census(network)[16] # complete graph
+
+knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^triads_", colnames(network_stats))])][1:8])
+knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^triads_", colnames(network_stats))])][9:16])
+```
+
+Dyads 
+
+Mutual Dyads are the count of pairs with mutual connections.
+Asymmetric Dyads are the count of pairs with non-mutual connections.
+Null Dyads are the count of pairs with no connections.
+
+```{r}
+network_stats$dyad_mut <- igraph::dyad_census(network)$mut
+network_stats$dyad_asym <- igraph::dyad_census(network)$asym
+network_stats$dyad_null <- igraph::dyad_census(network)$null
+
+knitr::kable(network_stats[, c(colnames(network_stats)[grepl("^dyad_", colnames(network_stats))])])
+```
+
+
+##### Density and Transitivity
+
+The __diameter__ of a graph is the length of the longest shortest path (geodesic) passing through a node.  
+```{r}
+network_stats$diameter <- diameter(network,directed=TRUE, 
+                                   unconnected=if (network_stats$isolates == 0) {FALSE} else {TRUE})
+```
+
+
+Mean Distance: The average length of all the shortest paths from or to the nodes in the network.
+```{r}
+network_stats$mean_distance <- mean_distance(network, directed = TRUE, 
+                                   unconnected = if (network_stats$isolates == 0) {FALSE} else {TRUE})
+
+```
+
+
+Edge Density: ratio of the number of edges and the number of possible edges. Density ranges from 0 (minimum) to 1 (maximum).
+```{r}
+network_stats$density <- edge_density(network, loops=TRUE) 
+print(network_stats$density)
+```
+
+Transitivity: The probability that the adjacent vertices of a vertex are connected
+```{r}
+network_stats$transitivity_global <- transitivity(network, weights = TRUE, type = "global")
+network_stats$transitivity_local_avg <- mean(transitivity(network, weights = TRUE, type = "local"))
+#network_stats$transitivity_barrat <- transitivity(network, weights = TRUE, type = "weighted") # weighted (this does not work)
+
+knitr::kable(network_stats[, c("transitivity_global", "transitivity_local_avg")])
+```
+
+
+### Community Detection
+Louvain Method: The multi-level modularity optimization algorithm 
+```{r}
+# this doesn't work for directed networks
+louvain <- igraph::cluster_louvain(as.undirected(network))
+network_stats$louvain <- modularity(louvain)
+network_stats$louvain_scaled <- modularity(louvain) / gorder(network)
+network_stats$louvain_logged <- modularity(louvain) / log(gorder(network))
+
+knitr::kable(network_stats[, c("louvain","louvain_scaled", "louvain_logged")])
+```
+
+Fast and Greedy: searches for a dense sub-graph
+
+```{r}
+# does not work for directed graphs
+fstgrdy <- cluster_fast_greedy(as.undirected(network))
+network_stats$fstgrdy <- modularity(fstgrdy)
+network_stats$fstgrdy_scaled <- modularity(fstgrdy) / gorder(network)
+network_stats$fstgrdy_logged <- modularity(fstgrdy) / log(gorder(network))
+
+knitr::kable(network_stats[, c("fstgrdy","fstgrdy_scaled", "fstgrdy_logged")])
+```
+
+### Centrality
+
+Degree Centrality: Centralize a graph according to the degrees of vertices
+Closenses Centrality: Centralize a graph according to the closeness of vertices
+Betweenness Centrality: Centralize a graph according to the betweenness of vertices
+Eigenvector Centrality: Centralize a graph according to the eigenvector centrality of vertices
+
+```{r}
+network_stats$centr_deg_total <- round(centr_degree(network, mode = "all")$centralization, 3)
+network_stats$centr_deg_out <- round(centr_degree(network, mode = "out")$centralization, 3)
+network_stats$centr_deg_in <- round(centr_degree(network, mode = "in")$centralization, 3)
+
+network_stats$centr_clo_total <- round(centr_clo(network, mode = "all")$centralization, 3)
+network_stats$centr_clo_out <- round(centr_clo(network, mode = "out")$centralization, 3)
+network_stats$centr_clo_in <- round(centr_clo(network, mode = "in")$centralization, 3)
+
+network_stats$centr_betw_total <- round(centr_betw(network, directed = TRUE)$centralization, 3)
+
+network_stats$centr_eigen_total <- round(centr_eigen(network, directed = TRUE)$centralization, 3)
+
+```
+
+### Decomposition Statistics
+```{r}
+decomposition_stats <- table(sapply(decompose.graph(network), vcount))
+```
+
+
+# Nodelist
+
+```{r}
+nodelist <- data.frame(id = c(1:(igraph::vcount(network))), tract = igraph::V(network)$name)
+```
+
+### degree, weighted degree, k core and modularity 
+
+
+Degree Centrality and Weighted Degree Centrality (All/Out/In):
+```{r}
+nodelist$deg_cent_total <- igraph::degree(network, mode = "all")
+nodelist$deg_cent_out <- igraph::degree(network, mode = "out")
+nodelist$deg_cent_in <- igraph::degree(network, mode = "in")
+
+nodelist$wtd_deg_cent_total <- igraph::strength(network, mode = "all")
+nodelist$wtd_deg_cent_out <- igraph::strength(network, mode = "out")
+nodelist$wtd_deg_cent_in <- igraph::strength(network, mode = "in")
+
+```
+
+Betweeness Centrality:
+```{r}
+nodelist$btw_cent <- round(sna::betweenness(intergraph::asNetwork(network), cmode="directed"), 4)
+```
+
+Closeness Centrality (All/In/Out): 
+```{r}
+nodelist$close_cent_total <- igraph::centr_clo(network, mode = "all")$res 
+nodelist$close_cent_out <- igraph::centr_clo(network, mode = "out")$res  
+nodelist$close_cent_in <- igraph::centr_clo(network, mode = "in")$res 
+```
+
+Eigenvector Centrality: 
+```{r}
+nodelist$eigen_cent <- igraph::eigen_centrality(network, directed = TRUE)$vector
+```
+
+### Membership
+
+```{r}
+components <- components(network)
+fstgrdy <- fastgreedy.community(as.undirected(network))
+louvain <- cluster_louvain(as.undirected(network))
+
+nodelist$component <- components$membership
+nodelist$louvain_comm <- louvain$membership
+nodelist$fstgrdy_comm <- fstgrdy$membership
+```
+
+## Other Node-Level Measures 
+
+```{r}
+nodelist$page_rank <- page_rank(network, directed=TRUE, weights=NULL)$vector
+nodelist$alpha_cent <- alpha_centrality(network, weights=NULL)
+nodelist$power_cent <- power_centrality(network, rescale=TRUE)
+nodelist$subgraph_cent <- subgraph_centrality(network,diag=TRUE)
+nodelist$auth_score <- authority_score(network, scale = TRUE, weights = NULL)$vector
+nodelist$hub_score <- hub_score(network, scale = TRUE, weights = NULL)$vector
+nodelist$local_trans <- transitivity(network, type = "local", weights = NULL)
+nodelist$in_ecc_cent <- eccentricity(network, mode = "in")
+nodelist$out_ecc_cent <- eccentricity(network, mode = "out")
+nodelist$load_cent <- sna::loadcent(get.adjacency(network,sparse=F),
+                                    gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+nodelist$info_cent <- sna::infocent(get.adjacency(network,sparse=F),
+                                    gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+nodelist$stress_cent <- sna::stresscent(get.adjacency(network,sparse=F),
+                                        gmode="digraph",diag=TRUE,cmode="directed",rescale=TRUE)
+nodelist$gilschmidt <- sna::gilschmidt(get.adjacency(network,sparse=F),
+                                       gmode = "digraph", diag = TRUE, normalize=TRUE)
+nodelist$hyper_index <- netrankr::hyperbolic_index(network)
+nodelist$comm_bet <- centiserve::communibet(network, normalized = TRUE)
+nodelist$decay_in <- centiserve::decay(network, mode="in", weights=NULL)
+nodelist$decay_out <- centiserve::decay(network, mode="out", weights=NULL)
+nodelist$diffus_indeg <- centiserve::diffusion.degree(network,mode="in",loops=TRUE)
+nodelist$diffus_outdeg <- centiserve::diffusion.degree(network,mode="out",loops=TRUE)     
+nodelist$entropy_in <- 1/centiserve::entropy(network,mode="in",weights=NULL)
+nodelist$entropy_out <- 1/centiserve::entropy(network,mode="out",weights=NULL)
+nodelist$geokpath_in <- centiserve::geokpath(network,mode="in",weights=NULL)
+nodelist$geokpath_out <- centiserve::geokpath(network,mode="out",weights=NULL)
+nodelist$laplacian_in <- centiserve::laplacian(network,mode="in",loops=TRUE)
+nodelist$laplacian_out <- centiserve::laplacian(network,mode="out",loops=TRUE)
+nodelist$leverage_in <- centiserve::leverage(network,mode="in",loops=TRUE)  
+nodelist$leverage_out <- centiserve::leverage(network,mode="out",loops=TRUE)  
+nodelist$lin_cent_in <- centiserve::lincent(network,mode="in",weights=NULL)
+nodelist$lin_cent_out <- centiserve::lincent(network,mode="out",weights=NULL)
+nodelist$lobby_in <- centiserve::lobby(network,mode="in",loops=TRUE) 
+nodelist$lobby_out <- centiserve::lobby(network,mode="out",loops=TRUE) 
+nodelist$markov_cent <- centiserve::markovcent(network) 
+nodelist$bottleneck_in <- centiserve::bottleneck(network, mode="in")
+nodelist$bottleneck_out <- centiserve::bottleneck(network, mode="out")
+nodelist$radiality_in <- centiserve::radiality(network, mode="in",weights=NULL)   
+nodelist$radiality_out <- centiserve::radiality(network, mode="out",weights=NULL)
+nodelist$k_core_in <- coreness(network, mode="in")
+nodelist$k_core_out <- coreness(network, mode="out")
+nodelist$mnc_in <- centiserve::mnc(network, mode="in")
+nodelist$mnc_out <- centiserve::mnc(network, mode="out")
+nodelist$dmnc_in <- centiserve::dmnc(network, mode="in")
+nodelist$dmnc_out <- centiserve::dmnc(network, mode="out")
+nodelist$epc <- centiserve::epc(network) 
+nodelist$topocoefficient <- 1/centiserve::topocoefficient(network)
+```
+
+
+### Sources
+http://www.people.vcu.edu/~gasmerom/MAT131/graphs.html#:~:text=Two%20vertices%20are%20said%20to,edge%20(arc)%20connecting%20them.&text=Adjacent%20edges%20are%20edges%20that%20share%20a%20common%20vertex.&text=The%20degree%20of%20a%20vertex,edges%20incident%20with%20that%20vertex.&text=A%20graph%20is%20said%20to,are%20joined%20by%20a%20path.
+
+https://github.com/uva-bi-sdad/oss-2020/blob/master/src/github-network-analysis/02_international-collaboration/03_country-networks/03_ctry-nets-cum-analysis.Rmd
+
+https://www.jessesadler.com/post/network-analysis-with-r/
+
+https://kateto.net/wp-content/uploads/2018/03/R%20for%20Networks%20Workshop%20-%20Ognyanova%20-%202018.pdf
+
+https://kateto.net/network-visualization
+
+https://ebookcentral-proquest-com.proxy01.its.virginia.edu/lib/uva/reader.action?docID=4199226&ppg=185
+
+https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.4.pdf
+
+https://igraph.org/r/doc/igraph.pdf
+
+
+
+
+
+
+
+
+
+
+
+
