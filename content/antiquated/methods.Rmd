@@ -88,11 +88,12 @@ We used CoStar data provided by Fairfax County to understand properties in Tyson
 
 ##### Network Analysis
 
-Finally, we employed network analysis to understand the relationships between where Fairfax County residents work and reside at the Census tract level using the LEHD Origin-Destination Employment Statistics (LODES) data. The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We attain the main and aux OD files. The main files include jobs for which the residence and workplace are both in-state; the aux files include jobs for which the workplace is in-state while the residence is out-of-state. We combine both the main and aux files, and we aggregate the data by Census tract. 
+We employed network analysis to understand the relationships between where Fairfax County residents work and reside at the Census tract level. Networks are made up of nodes and edges. Nodes are the "dots", and edges are the "lines", or relationships between nodes. Weights are represented by the thickness of an edge, in otherwords, weights describe the strength of a connection from node to node. Finally, we use a directed graph, which means that the edges have a direction, and can be conceptualized as an arrow.  
 
-Our data profiling of residents deriving from outside of Fairfax County revealed that some workers live in states well outside of driving distance. This created a challenge that makes it hard to determine whether workers work for businesses with headquarters in Fairfax but work elsewhere or whether they do work in Fairfax only part of the time. For these reasons, we decided to only focus on flows deriving from within Fairfax County. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. The federal jobs tables are only available through 2015.
+The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We attain the main and aux OD files. The main files include jobs for which the residence and workplace are both in-state; the aux files include jobs for which the workplace is in-state while the residence is out-of-state. We combine both the main and aux files, and we aggregate the data by Census tract. Our data profiling of residents deriving from outside of Fairfax County revealed that some workers live in states well outside of driving distance. This created a challenge that makes it hard to determine whether workers work for businesses with headquarters in Fairfax but work elsewhere or whether they do work in Fairfax only part of the time. For these reasons, we decided to only focus on flows deriving from within Fairfax County. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. The federal jobs tables are only available through 2015.
 
-Generally, networks are comprised of nodes and edges that represent entities and the relationships between them (such as job flows). In our project, node correspond to Census tracts in Fairfax County while the edges represent job flows. Moreover, each edge has a weight (corresponding to the number of jobs flowing between two tracts) and a direction (signifying the direction that workers flow from the residential tract to the tract that they work in). Building off of this framework, we were able to construct three distinct networks where we mapped the networked flows of (1) all jobs, (2) federal jobs, (3) private jobs, and (4) jobs within the service industry within Fairfax County, VA. 
+Following the network framework, in our project, the nodes are Census tracts, and the edges are counts of workers who live in a given tract and work in a given tract. The strength is defined by the number of jobs, and is further specified into the categories below. We only use one of the weight variables at a time.
+We define the direction FROM residence Census tract to workplace Census tract.
 
 Variable | Description
 ---------------|-------------------
@@ -103,7 +104,23 @@ SI01 | Number of jobs in Goods Producing industry sectors
 SI02 | Number of jobs in Trade, Transportation, and Utilities industry sectors
 SI03 | Number of jobs in All Other Services industry sectors
 
-For the network analysis, we used the LODES data to construct an edgelist to examine how workers living within Fairfax County travel from tracts where they live to tracts where they work. Our first step of analysis is to produce network-level descriptive statistics, so that we understand the basic structural components of the graph as a whole. We ran an extensive set of descriptive statistic measures using the igraph package for RStudio. The key descriptive statistics include the number of nodes, edges, diameter, distance, density, transitivity, and the average degree and betweenness centrality. While these global descriptives help us better understand changes at the County level, we also ran node-level centrality measures to better contextualize the most influential areas within Fairfax County. More specifically, we use leaflet maps to visualize the four measures of centrality defined below: 
+__Descriptive Statistics__
+
+For the network analysis, we used the LODES data to construct an edgelist to examine how workers living within Fairfax County travel from tracts where they live to tracts where they work. Our first step of analysis is to produce network-level descriptive statistics, so that we understand the basic structural components of the graph as a whole. We ran an extensive set of descriptive statistic measures using the igraph package for RStudio. The key descriptive statistics and applications are defined below: 
+
+Measure | Definition | Fairfax Application
+--------|------------|---------------------
+Order | Number of nodes | Number of tracts
+Size | Number of edges | Residence-workplace relationship between tracts
+Average Degree | Average number of adjacent edges | Average count of residence-workplace relationships for each Census tract
+Average Betweenness | Average number of shortest paths going through a node |
+Diameter | Greatest distance between two nodes |   
+Edge density | Ratio of the number of edges to the the number of possible edges | Measures sparseness or density of residence-workplace relationships
+Transitivity | The probability that the adjacent nodes are connected |
+
+__Measures of Centrality__
+
+The next step of the analysis is to view the node measures of centrality. While we eventually plan to conduct some machine learning on a broader collection of network centrality measures, our short-term goal was just to see which Census tracts are most important when analyzing them as a network. We use leaflet maps to visualize the four measures of centrality defined below: 
 
 Measure | Definition | Fairfax Application
 --------|------------|---------------------
@@ -111,4 +128,11 @@ Weighted Out-Degree Centrality | Weighted number of ties directed away from the 
 Weighted In-Degree Centrality | Weighted number of ties directed toward the node | Number of jobs for which the tract is the work destination
 Betwenness Centrality | Measures if the node lies on the paths to other nodes | Measures if the tract lies on paths between other tracts
 Eigenvector Centrality | Measures importance of a node based on if neighboring nodes have many connections | Measures importance of a tract based on if neighboring tracts have many connections
+
+
+<center>
+
+##### [Visualizations go about here.] 
+
+</center>
 

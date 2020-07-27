@@ -19,6 +19,7 @@ library(shiny)
 library(fabricatr)
 library(RColorBrewer)
 
+#source("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/src/09_network_descriptives/network_functions.R")
 source("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/09_network_descriptives/network_functions.R")
 network_stats(vars = "S000", years = 2015, types = types)
 ```
