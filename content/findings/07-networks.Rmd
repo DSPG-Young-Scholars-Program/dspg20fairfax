@@ -29,11 +29,12 @@ We employ network analysis to understand the flow of Fairfax County workers from
 
 ## Data and Methods
 
-The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination files for our networks, and restrict the geography to intra-Fairfax County tracts only. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs.
+The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination files for our networks, and restrict the geography to intra-Fairfax County tracts only. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. While the LODES data provides flows for all workers that live or work in Fairfax County, we decided to reduce the network’s data for the DSPG project to only include those that live in Fairfax County. Our data profiling of residents deriving from outside of Fairfax County revealed that some workers live in states well outside of driving distance. This created a challenge that makes it hard to determine whether workers work for businesses with headquarters in Fairfax but work elsewhere or whether they do work in Fairfax only part of the time. For these reasons, we decided to only focus on flows deriving from within Fairfax County.
 
 
 ### Interpretation of Centrality Measures
-In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, nodes are tracts. The table below presents our main centrality measures. The interpretation contextualizes centrality measures within the Fairfax County job flows theme.
+
+In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, nodes are tracts. The table below presents our main centrality measures. The interpretation contextualizes centrality measures within the Fairfax County job flows theme. While we eventually plan to conduct some machine learning on a broader collection of network centrality measures, our short-term goal was just to see which Census tracts are most important when analyzing them as a network. 
 
 Measure | Interpretation
 ---------|--------------------------------
