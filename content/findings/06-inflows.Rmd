@@ -26,9 +26,9 @@ library(tigris)
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
 # Read in data
-jobs_all <- read_csv("~/Git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 
-va_xw <- read_csv("~/Git/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
 ```
 
 ```{r warning = F, message = F, echo = F} 
@@ -75,20 +75,17 @@ fl_points <- tracts("FL", class = "sf")
 ```
 
 # Job Flows Into Fairfax County
-Write introduction here.
+Knowing that there would be the possibility of network analysis for jobs flows in and out of Fairfax County, this analysis and mapping helps inform where to focus our efforts by mapping the flows for 10 counties within Virginia that have the most workers in Fairfax, 10 states that have the most workers in Fairfax, and 10 counties outside Virginia that have the most workers in Fairfax.  This helps narrow our frame of possible networks to explore.
 
 ## Data and Methods
-Describe data sources and what we did here.
-Mention packages used and what they do. 
-For the maps, here and when you are describing the maps, mention we are only showing top 10 and that the lines are to shape centroids.
+The main driving data source we used here was LODES Origin Destination data, filtering it down to just those who work in Fairfax County and live elsewhere.  We also used state crosswalk data to convert GEOIDs to county and state names.  Finally, we used tract sf objects in order to get the geometry of the origins of these workers.  We used many packages when working with the data, mainly dyplr, tidyverse, readr, sf, tigris, and stplnr.  When visualizing and mapping the data we used ggplot, leaflet, and tmap.  The map visualization showcase the top 10 flows into Fairfax County from the centroids of states or counties.  
 
 ## Findings
-Give a brief summary of findings, then describe each output below.
+From within Virginia, Loudoun County and Prince William County are the counties that have the greatest number of workers living there that work in Fairfax County.  From other states, Maryland has the greatest number of workers living there that are working in Fairfax County.  From counties in other states, Montgomery County, Prince George's County, and the District of Columbia are the top 3 areas that have the greatest number of workers living there that work in Fairfax County.
 
 # What Percent of Jobs Flow to Fairfax County from Outside of the County?
-Describe
+Filtering all jobs in Virginia by those with residence geography outside of Fairfax but workplace geography inside of Fairfax, we were able to get all jobs that are flowing into the county.  59% of all jobs in Fairfax County come from people who do not live there, giving us an indication that exploring networks is a viable path to take.
 ```{r}
-# for jobs all (059 is Fairfax code)
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
 bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
@@ -164,7 +161,7 @@ sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "
 ```
 
 # Of the Job Flows into Fairfax County from Outside the County, what Percent are from Other Virginia Counties?
-Describe
+Of the jobs flowing into Fairfax County from outside the county, about 56% are from other counties in the state.  Particularly coming from Loudoun County and Prince William County.
 ```{r}
 perc_flows_other_counties_VA <- mean(flows_in$h_state == "51") *100
 perc_flows_other_counties_VA
@@ -189,7 +186,7 @@ agg_cnty_VA_trimmed %>%
 ```
 
 # Map of Major Flows to Fairfax County from Other Virginia Counties
-Describe
+Visualizing these flows on a map we can see geographically the space these networks span and the importance that Fairfax County employment has not only on their own community but on many other communities further away.
 ```{r}
 #by VA county
 flows_in_VA_cnty <- flows_in[flows_in$h_state == "51", ] %>%
@@ -220,7 +217,8 @@ top10VA_cnty_flowsmap
 ```
 
 # Of the Job Flows into Fairfax County from Outside the County, What Percent are from Other States?
-Describe
+Of the jobs flowing into Fairfax County from outside the county, about 43% are from other states.  Particularly coming from Maryland and Washington DC.  Fairfax County is close to state boarders so this is expected and worth exploring.
+
 ```{r}
 percent_flows_other_states <- mean(flows_in$h_state != "51") * 100
 percent_flows_other_states
@@ -241,7 +239,7 @@ agg_states_trimmed %>%
 ```
 
 # Map of Major Flows to Fairfax County from Other States
-Describe
+When visualizing the flows on a map we can see some interesting things.  Particularly states like Florida and South Carolina.  These states send in relatively few jobs and are located a large distance from Fairfax County.  For these flows, the outliers we are taking with a grain of salt, perhaps their main office is in Fairfax but they live and work in Florida/South Carolina.  The data does not tell us this, but we are likely going to focus our network efforts on adjacent states because they make more sense and also send in the majority of jobs.
 ```{r}
 flows_in_state <- flows_in[flows_in$h_state != "51", ] %>%
   group_by(h_state, w_state) %>%
@@ -267,7 +265,9 @@ top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S0
 top10states_flowsmap
 ```
 
-# Of the Job Flows into Fairfax County from Outside the County, what are Their Origins by County in Other States?
+# Of the Job Flows into Fairfax County from Outside the County, what are their origins by County in other states?
+Of the jobs flowing into Fairfax County from outside the county, many come from counties in Maryland, Washington DC, and West Virginia. Particularly from Montgomery County, MD, Price George's County, MD, and Washington DC.
+
 ```{r}
 top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
 agg_cnty_other_with_names <- top_ten_with_names %>%
@@ -286,7 +286,10 @@ agg_cnty_other_trimmed %>%
 ```
 
 # Map of Major Flows to Fairfax County by County Origin in Other States
+This map is similar to the map of flows from other states to Fairfax County, but it provides further granularity.  The top 10 counties from other states, though, come from far fewer states and are much closer, allowing us to methodically narrow our frame for network analysis.
 ```{r}
+top_ten_with_names$h_stcty <- substr(top_ten_with_names$h_geocode_tract, 1, 5)
+top_ten_with_names$w_stcty <- substr(top_ten_with_names$w_geocode_tract, 1, 5)
 flows_from_other <- top_ten_with_names %>%
   group_by(h_stcty, w_stcty, ctyname) %>%
   summarise(S000 = sum(S000)) %>%

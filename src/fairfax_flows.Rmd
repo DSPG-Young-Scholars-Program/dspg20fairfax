@@ -299,6 +299,9 @@ top10VA_cnty_flowsmap
 
 Doing counties outside of VA now:
 ```{r}
+top_ten_with_names$h_stcty <- substr(top_ten_with_names$h_geocode_tract, 1, 5)
+top_ten_with_names$w_stcty <- substr(top_ten_with_names$w_geocode_tract, 1, 5)
+
 flows_from_other <- top_ten_with_names %>%
   group_by(h_stcty, w_stcty, ctyname) %>%
   summarise(S000 = sum(S000)) %>%
