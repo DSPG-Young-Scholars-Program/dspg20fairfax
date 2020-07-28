@@ -44,16 +44,20 @@ pie_lab_transform <- function(data){
 ```
 
 # Workforce in Fairfax County
-In order to tackle characterizing the Fairfax County workforce, we pulled in relevant ACS and LODES data for all who are employed in Fairfax County; both workplace and resident’s census tracts.  As this project focuses on employment and labor force sectors, understanding the current labor force is crucial for moving forward and analyzing how it will change as job sectors change.
+This analysis provides a characteriziation of the Fairfax County workforce. We retrieved two datasets to calculate worker sociodemographic and socioeconomic charactersitics at workplace census tract and county level. As this project focuses on employment and labor force sectors, understanding the current labor force was crucial for our subsequent analyses.
 
 ## Data and Methods
-When conducting our analysis and explorations we used both ACS and LODES data.  The American Community Survey (ACS) is a reoccurring survey by the U.S. Census Bureau. The tables it contains include information such as ancestry, citizenship, educational attainment, income, language proficiency, migration, disability, employment, and housing characteristics.  For our project we were particularly focused on the demographic, behavior, and employment information. We also used LODES workforce characteristics data to conduct further demographic analysis, breaking down workforce by race, gender, educational attainment and more in order to successfully characterize the workforce.
+We used two datasets to better understand the population of individuals with job locations in Fairfax County.
+
+LEHD Origin-Destination Employment Statistics (LODES) data provide worker race, ethnicity, education, gender, and industry data at census block group level. We retrieve these characteristics using the latest available data from 2017, and summarize them at the workplace county level to provide an overview of Fairfax County's workforce. 
+
+We supplement LODES data with information from the American Community Survey (ACS). ACS is a reoccurring survey conducted by the U.S. Census Bureau. ACS provides summary tables with population and housing characteristics. We used data from 2014/18, the latest available 5-year estimates, to retrieve information not found in LODES -- detailed age and means of commuting to work -- by workplace census tract.
 
 ## Workers in Fairfax County
-Overall, we have found that in Fairfax County employs many white-collar professional workers.  The highest employed sector is the Professional, Scientific & Technical services.  Following this, 45% of the workforce has received a bachelor's degree and more than 60% receive a salary of greater than $3,000 / month.
+Overall, we find that Fairfax County employs primarily educated white-collar professional workers. Most workers employed in Fairfax County have jobs in professional, scientific, and technical services sectors. Almost half of the workforce obtained a bachelor's degree or more, and over half receive a salary of greater than $3,000 per month. The following plots provide additional information about the characteristics of workers employed in Fairfax County.
 
 ### What is the sociodemographic composition of workers in Fairfax County?
-Fairfax County has a majority white workforce at greater than 60%, followed by Black, then Asian (both less than 20%).  There is also a small Hispanic population at about 12% of workers, and the gender breakdown is 47.7% female, 52.3% male.
+The majority, or over 60% of workers in Fairfax County are white, followed by workers of Black and then Asian race (both representing less than 20% of all workers). The county has a small share of workers of Hispanic ethnicity, with approximately 12% of workers identifying as Hispanic. The county workforce is gender-balanced with approximately 48% female and 53% male workers.
 
 ```{r, echo = F}
 race <- data.frame(race = names(colSums(wac[, 29:34])), value = colSums(wac[,29:34]), row.names = NULL)
@@ -73,7 +77,8 @@ ggplot(race, aes(x = prop, y = reorder(race, prop), fill = race)) +
   theme(legend.position="none") 
 ```
 
-For all workers in Fairfax county, breaking them out by ethnicity we see that the vast majority are not Hispanic or Latino, with only 12.13% identifying as such.  When considering employment changes due to the COVID-19 pandemic, it is important to take into consideration how much of the population will likely be disproportionately impacted.  Underrepresented minorities have less access to jobs and jobs security, which can leave them in a precarious state during the uncertainty the pandemic is bringing.  Using this plot and the plot above, we can begin to understand who and where the effects of employment changes be most felt.
+The following plot shows that the vast majority of workers in Fairfax County are not Hispanic or Latino, with only 12.13% identifying as such. However, when considering employment changes due to the pandemic, it is important to consider how this population will likely be disproportionately impacted. Underrepresented minorities have less access to jobs and jobs security, which can leave them in a precarious position during pandemic uncertainty. Using this plot and the plot above, we can begin to understand how many workers are at particular risk for economic hardship.
+
 ```{r, echo = F}
 ethnicity <- data.frame(ethnicity = names(colSums(wac[,35:36])), value = colSums(wac[, 35:36]), row.names = NULL)
 ethnicity <- pie_lab_transform(ethnicity)
@@ -92,7 +97,8 @@ ggplot(ethnicity, aes(x="", y = prop, fill = ethnicity)) +
   labs(title = "Fairfax County Jobs by Ethnicity", subtitle = "LODES Workforce Characteristics, 2017")
 ```
 
-The workforce breakdown by sex, is relatively even and representative of the national breakdown.  This is of interest for framing our thinking around how will who is currently participating in the workforce change over time.
+The workforce breakdown by gender is relatively even and representative of the national breakdown.
+
 ```{r, echo = F}
 sex <- data.frame(sex = names(colSums(wac[,41:42])), value = colSums(wac[, 41:42]), row.names = NULL)
 sex <- pie_lab_transform(sex)
@@ -113,7 +119,8 @@ ggplot(sex, aes(x="", y=prop, fill=sex)) +
 ```
 
 ### How educated are workers in Fairfax County?
-With 45% of workers receiving a bachelor’s degree or higher, we can say the workforce is highly educated.  This type of breakdown is crucial in creating a sense for landscape of the employment opportunities in Fairfax.  Highly education workers likely work in more white-collar occupations which have a much easier time transitioning to working from home than the retail or hospitality industries.
+With 45% of workers having received a Bachelor’s degree or higher, we can say the workforce in Fairfax County is highly educated. This information is crucial for understanding employment opportunities in Fairfax. Highly education workers likely work in more white-collar occupations which have a much easier time transitioning to working from home than the retail or hospitality industries.
+
 ```{r, echo = F}
 education <- data.frame(education=names(colSums(wac[,37:40])), value=colSums(wac[, 37:40]), row.names = NULL)
 education <- pie_lab_transform(education)
@@ -137,12 +144,12 @@ ggplot(education, aes(x="", y=prop, fill=education)) +
 ```
 
 ### How much do workers in Fairfax County earn?
-From this, we can take away that the workforce in Fairfax County is that the majority of workers earn in the top category of more than 3,333 / month.  This number however, is below the national average of worker's salaries per month of 3,828/month.  Nonetheless, we can understand that the opportunities to earn in Fairfax County are large, part of which may be due to the highly educated workforce.
+The majority of workers earn in the top category of over \$3,333 per month. Compared to the national average of worker salaries of $3,828 per month, this suggests that most workers in Fairfax County receive salaries close to or above the national average. This information is congruent with our finding that most Fairfax County workers are highly educated. 
+
 ```{r, echo = F}
 earnings <- data.frame(earnings = names(colSums(wac[, 6:8])), value = colSums(wac[, 6:8]), row.names = NULL)
 earnings$earnings <- gsub("earnings", "", earnings$earnings)
 earnings <- pie_lab_transform(earnings)
-
 
 earnings$earnings <- c("Greater than $3,333", "$1,251 to $3,333", "$1,250 or less")
 ggplot(earnings, aes(x = "", y = prop, fill = earnings)) +
@@ -156,7 +163,8 @@ ggplot(earnings, aes(x = "", y = prop, fill = earnings)) +
 ```
 
 ### Which industry sectors employ workers in Fairfax County?
-This bar chart shows the share of sectors the labor force occupies.  The sector with highest worker density is the Professional, Scientific & Technical services.  This continues the idea that the Fairfax County workforce is generally highly educated, has opportunity to earn, and the majority of employment opportunities will not be impacted by the pandemic.  That is not to say that there will not be pandemic effect; the Healthcare Service and Retail sector are the second and third most employed industries.  There will likely be permanent changes and effects to these sectors, and many workers may have to reskill and find themselves in a new industry.
+This bar chart shows the number of jobs in Fairfax County by industry sectors. The sector that employs the most workers are professional, scientific, and technical services. This continues the idea that the Fairfax County workforce is generally highly educated and has opportunity to earn. Further, the majority of employment opportunities in this highly represented sector are unlikely to experience significant impacts from the pandemic. However, this does not suggest that the county will not experience any impacts; the second and third most-represented sectors are healthcare services and retail. Workers employed in healthcare and retail are more likely at risk for furloughs, unemployment, and income loss.
+
 ```{r, echo = F}
 naic <- data.frame(naic = names(colSums(wac[,9:28])), value = colSums(wac[, 9:28]), row.names = NULL)
 
@@ -182,11 +190,10 @@ ggplot(naic, aes(x = as.numeric(prop), y = reorder(naic,prop), fill = prop)) +
 ```
 
 ### How do workers get to their workplaces? Where are young and older adult workers?
-These maps contain more socio-demographic statistics, demographic information, and workforce characteristics. On the first tab, using the workplace-tract level data (meaning data for people who work in the county regardless of where they live), we have broken down transportation to work by type. All of these variables are highly interesting.  Looking at areas where single person transit is important because these places will experience little effects of the efforts to get to work in a "socially distant" way.  Looking at areas where people carpooled and used public transit are also interesting because as we become more conscious of those we share close space with (and public transit shutdowns), it is important to know the areas which will be most affected.  On the other tab, we show census tracts by percent of workers in certain age brackets.  Looking at “Percent of workers age 60-64”, we can begin to understand the pockets of Fairfax County which may experience decline in employment due to early retirement by the aging work force.  Having this granularity will allow us to parse out workforce changes based on retirement vs pandemic effects.
-```{r warning = F, message = F, echo = F}
-# Map: Age groups
-# App goes here. See at https://teja.shinyapps.io/app_wrk
-```
+The following maps provide more detail about the workforce in Fairfax County at workplace census tract level. The first tab provides maps of percent workers by means of transportation to work. Census tracts that workers primarily reach by driving will likely experience fewer covid-related disruptions, since workers can travel to their work locations in a "socially distant" way. Conversely, areas where people primarily carpooled or used public transit may be more vulnerable to return-to-work disruptions, and may have to navigate public transit restrictions, limitations, or shutdowns.
 
-# References
-Cite references here. Use a consistent format.
+The second tab shows workplace census tracts by percent of workers in certain age brackets. For example, the map of percent workers age 60 to 64 highlights areas of Fairfax County in which a higher proportion of workers is likely to retire in the near term.
+```{r, echo=FALSE, fig.fullwidth=TRUE}
+# Maps
+knitr::include_app('https://teja.shinyapps.io/app_wrk')
+```
