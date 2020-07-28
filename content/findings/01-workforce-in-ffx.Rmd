@@ -7,10 +7,6 @@ weight: 1
 draft: false
 ---
 
-NOTES FOR THIS DOCUMENT:
-* LODES PLOTS NEED TO HAVE THE COLOR SCHEME REVISED + LABELS CLEANED UP (SPACES ETC)
-* ADD CONTENT AS MARKED.
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

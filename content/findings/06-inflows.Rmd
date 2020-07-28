@@ -7,10 +7,6 @@ draft: false
 output: html_document
 ---
 
-NOTES FOR THIS FILE:
-* COLOR SCHEME
-* ADD CONTENT AS NOTED
-
 ```{r warning = F, message = F, results = 'hide', echo = F}
 library(dplyr)
 library(ggplot2)

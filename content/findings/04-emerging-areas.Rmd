@@ -7,10 +7,6 @@ draft: false
 output: html_document
 ---
 
-NOTES FOR THIS FILE:
-* COLOR SCHEME
-* ADD CONTENT AS NOTED
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

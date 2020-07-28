@@ -7,9 +7,6 @@ weight: 2
 draft: false
 ---
 
-NOTES FOR THIS DOCUMENT:
-* ADD CONTENT AS MARKED.
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -156,9 +153,10 @@ ggplot(naic, aes(x = prop, y = reorder(naic,prop), fill = naic)) +
 We produce an interactive map, using the ACS data, to visualize the means of commute to work, worker classes and different industries the resident workers are employed in. By clicking on the tabs and then selecting a variable you can access the map for that particular variable and by hovering over each map you can see the percentage of residents under different categories for each tract in the county.
 
 You can explore the means of commute to work for the Fairfax County workforce by residence census tract using the app below. For example, you can see that residents in the cities like Springfield, Mount Vernon depend more on public tans port compared to other cities in the county. Also, people in Springfield and Dranesville commute 30 minutes or more to get to their workplaces. The work class maps shows that Springfield and Dranesville have comparatively lower percentage of private jobs and a high proportion of government jobs. The industry maps show that jobs in professional, scientific and management sectors are mainly concentrated around Providence, whereas, healthcare and social assistance industry and educational services are concentrated mainly in Springfield, Mount vernon and Dranesville. Sully and Mount Vernon have a prominent arts, entertainment and recreation service sector.
-```{r warning = F, message = F, echo = F}
-# Shiny app goes here, I just need to integrate it.
-# See the app at https://teja.shinyapps.io/app_res/
+
+```{r, echo=FALSE, fig.fullwidth=TRUE}
+# Maps
+knitr::include_app('https://teja.shinyapps.io/app_res/')
 ```
 
 # References
