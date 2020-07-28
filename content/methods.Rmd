@@ -12,34 +12,33 @@ h1, h2, h3 {
 
 ### Data
 
-Key questions to address about data: 
-what is the dataset
-who produces/owns the dataset
-what year(s) are available and what year(s) we used
-who/what does the dataset capture (what is the unit of analysis)
-what level of geography does the data have
-why did we use the dataset
-what information from the dataset did we use
-
 [American Community Survey](https://www.census.gov/programs-surveys/acs/) 
 
 The American community Survey provides detailed sociodemographic and socioeconomic information about American households, provided by the US Census Bureau annually. The five-year estimates are available beginning in 2005/09 to present; we use the 2014/18 dataset for our analyses. The data are presented on multiple geography levels including block group, tract, county, and state; our research is interested in tract level information. We used the dataset to characterize the Fairfax County workforce, for example, to locate which tracts had a higher percentage of near retirement population or to create composite indicators identifying where workers are located who may be vulnerable to job loss.
 
 [LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/)
 
-SEAN
+Longitudinal Employer-Household Dynamics (LEHD) provides data that characterizes workforce dynamics and is comprised of administrative data through the US Census. For each census tract, LODES compiles the number of jobs located in the given region. LODES compiles three different datasets, ranging from 2002 to 2017:  
+
+* Origin-Destination (OD) data-- jobs totals are associated with both a home Census Block and work Census Block 
+
+* Residence Area Characteristic (RAC) data-- jobs are totaled by home Census Block 
+
+* Workplace Area Characteristic (WAC) data-- jobs are totaled by work Census Block 
+
+LODES data includes additional characteristics of these jobs, such as job sector and worker demographics. Because LODES delineates between jobs by workplace versus residence areas, one can use these datasets to track differences in workplace dynamics, such as on aggregate whether individuals’ workplaces are close to their homes. We used this dataset to map origin tracts for people traveling from outside of Fairfax County to Fairfax County, to determine areas especially vulnerable to pandemic-related job losses using LODES occupation sector information, and to map job locations relative to Fortune 500 companies. 
 
 [2019 Forbes 1000](https://www.someka.net/excel-template/fortune-1000-excel-list/) 
 
-SEAN
+The 2019 Fortune 1000 contains addresses of the top 1000 largest corporations in the United States, as supplied by Fortune magazine for 2019. This dataset contains the city and address of these companies, which we used to geocode their locations onto a map of Fairfax county. Using this information, we overlaid these pinned company headquarter locations above a choropleth map of employment information to display how the presence of these company headquarters might influence the local economy and serve as magnets for Fairfax county jobs. 
 
 [Virginia Employers](link here) 
 
-SEAN
+Virginia Employers data from the Virginia Employment Commission contains a list of over 38,000 employers in the state of Virginia along with business descriptions, average salaries, number of employees and the latitude and longitude for each entry in the dataset. We used this data to map the top hundred largest employers in Fairfax county and determine potential economically emerging areas. 
 
 [Virginia Employment Commission Unemployment Insurance Claims](https://www.vec.virginia.gov/ui-claims-dashboard) 
 
-SEAN
+The Virginia Employment Commission’s Economic Information Services Division supplies a dataset that provides the number of unemployment insurance (UI) claims by zip code since 2003. We used the 2020 dataset to determine the total number of UI claims by zip code within Fairfax county and compared these estimates to the total numbers of workers in occupations vulnerable to Covid-related job loss to further characterize the pandemic’s impact on Fairfax county. 
 
 ### Methods
 
