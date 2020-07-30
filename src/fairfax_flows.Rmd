@@ -112,7 +112,8 @@ agg_cnty_VA_trimmed %>%
   geom_bar(stat="identity", fill = "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax\n from other counties in Virginia") +
   xlab("Number of Jobs") + 
-  ylab("County Name")
+  ylab("County Name") +
+  theme_minimal()
 ```
 
 
@@ -132,7 +133,8 @@ agg_states_trimmed %>%
   geom_bar(stat="identity", fill= "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax from other states") +
   xlab("Number of Jobs") + 
-  ylab("State")
+  ylab("State") +
+  theme_minimal()
 ```
 
 
@@ -218,7 +220,8 @@ agg_cnty_other_trimmed %>%
   geom_bar(stat="identity", fill= "#E57200") +
   ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states") +
   xlab("Number of Jobs") + 
-  ylab("County Name")
+  ylab("County Name") +
+  theme_minimal()
 ```
 
 Mapping Flows (have to load in all top 10 states)
