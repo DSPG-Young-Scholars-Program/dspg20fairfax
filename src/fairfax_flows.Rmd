@@ -29,7 +29,7 @@ Reading in data tables
 jobs_all <- read_csv("~/Git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 jobs_fed <- read_csv("~/Git/dspg20fairfax/data/od/jobs_federal.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 jobs_priv <- read_csv("~/Git/dspg20fairfax/data/od/jobs_priv.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-va_xw <- read_csv("~/Gsit/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv("~/Git/dspg20fairfax/data/original/va_xwalk.csv")
 ```
 
 
@@ -221,7 +221,7 @@ agg_cnty_other_trimmed %>%
   ggtitle("Number of Jobs flowing into Fairfax from other\n counties in other states") +
   xlab("Number of Jobs") + 
   ylab("County Name") +
-  + theme_minimal()
+  theme_minimal()
 ```
 
 Mapping Flows (have to load in all top 10 states)
