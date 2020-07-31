@@ -10,15 +10,15 @@ h1, h2, h3 {
 }
 ```
 
-### Data
+## Data
 
 [American Community Survey](https://www.census.gov/programs-surveys/acs/) 
 
-The American community Survey provides detailed sociodemographic and socioeconomic information about American households, provided by the US Census Bureau annually. The five-year estimates are available beginning in 2005/09 to present; we use the 2014/18 dataset for our analyses. The data are presented on multiple geography levels including block group, tract, county, and state; our research is interested in tract level information. We used the dataset to characterize the Fairfax County workforce, for example, to locate which tracts had a higher percentage of near retirement population or to create composite indicators identifying where workers are located who may be vulnerable to job loss.
+The American Community Survey (ACS) provides detailed sociodemographic and socioeconomic information about American households, provided by the US Census Bureau annually. The five-year estimates are available beginning in 2005/09 to present; we use the 2014/18 dataset for our analyses. The data are presented on multiple geography levels including block group, tract, county, and state; our research is interested in tract level information. We used the dataset to characterize the Fairfax County workforce, for example, to locate which tracts had a higher percentage of near retirement population or to create composite indicators identifying where workers are located who may be vulnerable to job loss.
 
 [LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/)
 
-Longitudinal Employer-Household Dynamics (LEHD) provides data that characterizes workforce dynamics and is comprised of administrative data through the US Census. For each census tract, LODES compiles the number of jobs located in the given region. LODES compiles three different datasets, ranging from 2002 to 2017:  
+Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) provides data that characterizes workforce dynamics and is comprised of administrative data through the US Census. For each census tract, LODES compiles the number of jobs located in the given region. LODES compiles three different datasets, ranging from 2002 to 2017:  
 
 * Origin-Destination (OD) data-- jobs totals are associated with both a home Census Block and work Census Block 
 
@@ -26,43 +26,40 @@ Longitudinal Employer-Household Dynamics (LEHD) provides data that characterizes
 
 * Workplace Area Characteristic (WAC) data-- jobs are totaled by work Census Block 
 
-LODES data includes additional characteristics of these jobs, such as job sector and worker demographics. Because LODES delineates between jobs by workplace versus residence areas, one can use these datasets to track differences in workplace dynamics, such as on aggregate whether individuals’ workplaces are close to their homes. We used this dataset to map origin tracts for people traveling from outside of Fairfax County to Fairfax County, to determine areas especially vulnerable to pandemic-related job losses using LODES occupation sector information, and to map job locations relative to Fortune 500 companies. 
+LODES data includes additional characteristics of these jobs, such as job sector and worker demographics. Because LODES totals jobs by workplace and by residence areas, one can use these datasets to track differences in workplace dynamics, such as on aggregate whether individuals’ workplaces are close to their homes. We used this dataset to map origin tracts for people traveling from outside of Fairfax County to Fairfax County, to determine areas especially vulnerable to pandemic-related job losses using LODES occupation sector information, and to map job locations relative to Fortune 500 company headquarters locations.
 
 [2019 Forbes 1000](https://www.someka.net/excel-template/fortune-1000-excel-list/) 
 
-The 2019 Fortune 1000 contains addresses of the top 1000 largest corporations in the United States, as supplied by Fortune magazine for 2019. This dataset contains the city and address of these companies, which we used to geocode their locations onto a map of Fairfax county. Using this information, we overlaid these pinned company headquarter locations above a choropleth map of employment information to display how the presence of these company headquarters might influence the local economy and serve as magnets for Fairfax county jobs. 
+The 2019 Fortune 1000 contains addresses of the top 1000 largest corporations in the United States, as supplied by Fortune Magazine. This dataset contains the city and address of these companies, which we used to geocode their locations and construct a map of Fairfax sites. Using this information, we overlaid company headquarters locations above a choropleth map of employment data to show how the presence of these company headquarters might influence the local economy and serve as magnets for Fairfax County jobs. 
 
 [Virginia Employers](link here) 
 
-Virginia Employers data from the Virginia Employment Commission contains a list of over 38,000 employers in the state of Virginia along with business descriptions, average salaries, number of employees and the latitude and longitude for each entry in the dataset. We used this data to map the top hundred largest employers in Fairfax county and determine potential economically emerging areas. 
+Virginia Employers data from the Virginia Employment Commission contains a list of over 38,000 employers in the state of Virginia along with business descriptions, average salaries, number of employees and the latitude and longitude for each entry in the dataset. We used this data to map the top hundred largest employers in Fairfax County in our exploration of emerging areas. 
 
 [Virginia Employment Commission Unemployment Insurance Claims](https://www.vec.virginia.gov/ui-claims-dashboard) 
 
-The Virginia Employment Commission’s Economic Information Services Division supplies a dataset that provides the number of unemployment insurance (UI) claims by zip code since 2003. We used the 2020 dataset to determine the total number of UI claims by zip code within Fairfax county and compared these estimates to the total numbers of workers in occupations vulnerable to Covid-related job loss to further characterize the pandemic’s impact on Fairfax county. 
+The Virginia Employment Commission’s Economic Information Services Division supplies a dataset that has provided the number of unemployment insurance (UI) claims by ZIP code since 2003. We used the 2020 dataset to determine the total number of initial unemployment claims by ZIP code within Fairfax County and compared these estimates to the total numbers of workers in occupations vulnerable to covid-related job loss to examine the pandemic’s potential impact on Fairfax County workers. 
 
-### Methods
+## Methods
 
-##### Exploratory Methods
+### Exploratory Methods
 
-__Workforce Characterisitics__
+__Characteristics of the Workforce in Fairfax County__
+First, we characterized the workforce in Fairfax County at the census tract-level. The LODES Workplace Area Characteristics (WAC) data presents the number of jobs totaled by work census block group with sociodemographic and socioeconomic variables, including age, earnings, job sector, race, ethnicity, educational attainment, and gender. We aggregate these variables to the tract level and summarize using pie and bar charts using R.
 
-First, we characterized the workforce in Fairfax County at the tract-level. The LODES Workplace Area Characteristics (WAC) data presents the number of jobs totaled by work Census block for sociodemographic and socioeconomic variables, including age, earnings, job sector, race, ethnicity, educational attainment, sex, firm age, and firm size. We aggregate these variables to the tract-level and summarize using pie and bar charts in RStudio. 
+The ACS also provides information on the Fairfax County workforce. We use the 2014/18 ACS five-year estimates to determine transportation means and ages of Fairfax County workers. We use the leaflet package for R to plot these census tract-level findings.
 
-The American Community Survey (ACS) also provides information on the Fairfax County workforce. Specifically, we use the 2014/18 ACS five-year estimates to determine transportation means and ages of Fairfax County workers. We use the leaflet package for RStudio to plot these tract-level findings.
+__Characteristics of Employed Fairfax County Residents__
+While the WAC data characterizes workers whose workplaces are located in Fairfax County, the LODES Residence Area Characteristics (RAC) data characterizes workers whose homes are located in Fairfax County. For the RAC data, the number of jobs are totaled by residence census block group; we aggregate the data to tract level. The RAC dataset reports the number of workers by age, earnings, job sector, race, ethnicity, educational attainment, and gender. We summarize these variables using pie and bar charts in R.
 
-__Residence Characterisitics__
+The ACS data also provides information on the Fairfax County residents' jobs. We use the 2014/18 ACS five-year estimates to visualize information on residents' work commutes, work classes, and industries at the tract-level using the leaflet package in R.
 
-While the WAC data characterizes workers whose workplaces are located in Fairfax County, the LODES Residence Area Characteristics (RAC) data characterizes workers whose homes are located in Fairfax County. For the RAC data, the number of jobs are totaled by home Census block; we aggregate the data to tract-level. The RAC dataset reports the number of workers by age, earnings, job sector, race, ethnicity, educational attainment, and sex. We summarize these variables using pie and bar charts in RStudio. 
+__Areas Vulnerable to Covid-Related Job and Income Loss__
+To describe vulnerable areas in Fairfax County, we use ACS tract-level data and the VirginiaWorks Initial Unemployment Claims datasets.
 
-The ACS data also provides information on the Fairfax County residents; we use the 2014/18 ACS five-year estimates. We visualize ACS data on worker commutes, classes, and industries at the tract-level using the leaflet package in RStudio. 
+We used a Brookings Institution report to select a set of key factors associated with pandemic-related economic hardship—existing unemployment rate, percent part-time workers, percent workers with high school education or less, median worker income, percent employed in most pandemic-impacted occupations, and percent employed in most pandemic-impacted industries—and created a composite indicator of relative vulnerability to covid-related job and income loss. We calculated quintile cut-offs for each indicator, with tracts that placed in higher quintiles exhibiting higher relative risk for worker covid-related job and income loss. We summed the number of times that a given tract placed in the 4th or 5th quintile to arrive at the final relative vulnerability scores. We map the results using leaflet for R.
 
-__Vulnerable Areas__
-
-To describe vulnerable areas in Fairfax County, we use ACS tract-level data and the VirginiaWorks' Initial Unemployment Claims datasets.
-
-The vulnerability measure highlights tracts where workers are most susceptible to COVID-19 job loss. We used a Brookings report to identify the major factors contributing to covid-related economic hardship, due to the pandemic exacerbating these underlying vulnerabilities.
-
-We calculate vulnerability using the following information as a percentage:
+The table below lists our ACS variable sources.
 
 Description | ACS Table Code
 -----------|-----------------
@@ -73,41 +70,28 @@ Median Income for Civilian Employed Population 16+ |  B24011
 Employed in Occupations Impacted by COVID (Services) | C24060
 Employed in Industries Impacted by COVID ("Arts, Entertainment, and Recreation, and Accommodation and Food Services"; "Retail Trade"; "Other Services Except Public Administration") | C24050
 
-We map the results using leaflet. We compute quintile cut-offs for each indicator. Tract placement in a higher quintile indicates higher relative vulnerability; conversely, placement in a lower quintile indicates lower relative vulnerability.
-
-Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the zip code level. We ensure the data is mappable using data from [simplemaps](https://simplemaps.com/data/us-zips), and map the results at a zip code level using leaflet. 
+Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the ZIP code level. We map initial unemployment claims in Fairfax County for 2020 at ZIP code level using leaflet. 
 
 __Emerging Areas__
 
-To explore emerging areas, create a map that displays the LODES Workplace Area Characteristics (WAC) and Fortune 1000 companies. Specifically, we checked the [Virginia Business Newsletter](https://www.virginiabusiness.com/article/35-virginia-companies-make-2020-fortune-1000-list/) for the companies in Fairfax County that made the Fortune 1000 list. Next, we Google-searched the businesses for their addresses, and used the package tidygeocoder in RStudio to geocode each headquarter. Next we mapped the WAC data on the tract-level using leaflet, which indicates workplace destination tracts. Markers were mapped using the geocoded latitude/longitude data for the Fortune 1000 companies. This map visualizes where large employers may be located.
+To explore potentially emerging areas, we create a map that displays the LODES Workplace Area Characteristics (WAC) with Fortune 1000 companies headquarters and the locations of the top 100 employers by size. Thirty-five companies with headquarters in Fairfax County appeared in the 66th annual Fortune 1000 list, and 11 of them also made into the Fortune 500 list. We searched for addresses of the 35 Fairfax County companies' headquarters and geocoded headquarters locations. We used LODES data to calculate the total number of jobs in each Fairfax County census tract. We used the latest available data from 2017 and aggregateD job information from workplace census block group to workplace tract level. We used data on the total number of jobs in a given census tract as a base map, and overlaid the locations of Fortune 1000 companies and the top 100 largest employers in Fairfax County.
 
-__Tyson's Corner Case Study__
+<!-- __Tyson's Corner Case Study__ -->
+<!-- We used CoStar data provided by Fairfax County to understand properties in Tyson's Corner. In the future, we will be able to use features in the costar property data like property square footage vs number of employees or number of elevators vs number of employees to begin to answer some of the  questions that the stakeholders have about what the future of the workplace may look like in Fairfax County. -->
 
-We used CoStar data provided by Fairfax County to understand properties in Tyson's Corner. In the future, we will be able to use features in the costar property data like property square footage vs number of employees or number of elevators vs number of employees to begin to answer some of the  questions that the stakeholders have about what the future of the workplace may look like in Fairfax County.
+## Network Analysis
+We employed network analysis to understand the relationships between where Fairfax County residents work and reside at the census tract level using LODES data. The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) 2010-2017 files for our networks. The OD datasets indicate where individuals work and reside by census block group. We retrieved the main and auxiliary OD files and aggregated by tract. The main files include jobs for which the residence and workplace are both in-state; the auxiliary files include jobs for which the workplace is in-state while the residence is out-of-state. We combined both the main and auxiliary files, and aggregated the data to census tract level.
 
-##### Network Analysis
+While the LODES data provides OD flows for all workers that live or work in Fairfax County, we decided to reduce the network’s data for the DSPG project to only include those that live in Fairfax County. Before constructing networks, we explored the origins of workers who come to work in Fairfax County. We found that of all workers in the county, 41% are also county residents, and 59% arrive from outside the county. This analysis also revealed that some workers who come to work in Fairfax County live in states well outside of driving distance. This created a challenge, as it is difficult to determine whether workers work for businesses with headquarters in Fairfax but work physically located elsewhere, or whether they do work in Fairfax but perhaps only part of the time. For this reason, we decided to only focus our current analysis on flows from within Fairfax County.  
 
-Finally, we employed network analysis to understand the relationships between where Fairfax County residents work and reside at the Census tract level using the LEHD Origin-Destination Employment Statistics (LODES) data. The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination (OD) files for our networks. These datasets are available for 2002-2017, but we only use the 2010-2017 datasets. The OD datasets indicate where individuals work and reside by Census Block Code. We attain the main and aux OD files. The main files include jobs for which the residence and workplace are both in-state; the aux files include jobs for which the workplace is in-state while the residence is out-of-state. We combine both the main and aux files, and we aggregate the data by Census tract. 
+Networks are comprised of nodes and edges that represent entities and the relationships between them. In our case, nodes correspond to census tracts, and edges represent job flows or the links between them, created by workers’ residence and workplace connections. Each edge or connection also has a weight, which corresponds to the number of jobs flowing between two tracts, and a direction, which signifies the direction that workers flow in, from their residence tract to their workplace tract. Network centrality measures help explain how relations between tracts change based on the relative importance of those tracts within the overall county network. Using this network analysis framework, we were able to construct three distinct networks and map the networked flows of all jobs, federal jobs, private jobs, and jobs by industry within Fairfax County. 
 
-Our data profiling of residents deriving from outside of Fairfax County revealed that some workers live in states well outside of driving distance. This created a challenge that makes it hard to determine whether workers work for businesses with headquarters in Fairfax but work elsewhere or whether they do work in Fairfax only part of the time. For these reasons, we decided to only focus on flows deriving from within Fairfax County. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. The federal jobs tables are only available through 2015.
-
-Generally, networks are comprised of nodes and edges that represent entities and the relationships between them (such as job flows). In our project, node correspond to Census tracts in Fairfax County while the edges represent job flows. Moreover, each edge has a weight (corresponding to the number of jobs flowing between two tracts) and a direction (signifying the direction that workers flow from the residential tract to the tract that they work in). Building off of this framework, we were able to construct three distinct networks where we mapped the networked flows of (1) all jobs, (2) federal jobs, (3) private jobs, and (4) jobs within the service industry within Fairfax County, VA. 
-
-Variable | Description
----------------|-------------------
-w_geocode_tract | Workplace Census Tract
-h_geocode_tract | Residence Census Tract
-S000 | Total number of jobs 
-SI01 | Number of jobs in Goods Producing industry sectors
-SI02 | Number of jobs in Trade, Transportation, and Utilities industry sectors
-SI03 | Number of jobs in All Other Services industry sectors
-
-For the network analysis, we used the LODES data to construct an edgelist to examine how workers living within Fairfax County travel from tracts where they live to tracts where they work. Our first step of analysis is to produce network-level descriptive statistics, so that we understand the basic structural components of the graph as a whole. We ran an extensive set of descriptive statistic measures using the igraph package for RStudio. The key descriptive statistics include the number of nodes, edges, diameter, distance, density, transitivity, and the average degree and betweenness centrality. While these global descriptives help us better understand changes at the County level, we also ran node-level centrality measures to better contextualize the most influential areas within Fairfax County. More specifically, we use leaflet maps to visualize the four measures of centrality defined below: 
+We first constructed an edgelist to examine how workers living within Fairfax County travel from tracts where they live to tracts where they work. We produced network-level descriptive statistics to understand the basic structural components of the network graph as a whole. We ran an extensive set of descriptive statistic measures using the igraph package for R. The key descriptive statistics produced include the number of nodes, edges, diameter, distance, density, transitivity, and the average degree and betweenness centrality. While these global descriptives help us better understand changes at the County level, we also examined node-level centrality measures to identify the most influential areas within Fairfax County. We used leaflet maps to visualize the four measures of centrality defined below: 
 
 Measure | Definition | Fairfax Application
 --------|------------|---------------------
-Weighted Out-Degree Centrality | Weighted number of ties directed away from the node | Number of jobs for which individuals depart to get to their jobs in other tracts
-Weighted In-Degree Centrality | Weighted number of ties directed toward the node | Number of jobs for which the tract is the work destination
-Betwenness Centrality | Measures if the node lies on the paths to other nodes | Measures if the tract lies on paths between other tracts
-Eigenvector Centrality | Measures importance of a node based on if neighboring nodes have many connections | Measures importance of a tract based on if neighboring tracts have many connections
+Weighted Out-Degree Centrality | Weighted number of ties directed away from the node. | Number of jobs for which individuals depart to get to their jobs in other tracts.
+Weighted In-Degree Centrality | Weighted number of ties directed toward the node. | Number of jobs for which the tract is the work destination.
+Betwenness Centrality | Measures if the node lies on the paths to other nodes. | Measures if the tract lies on paths between other tracts.
+Eigenvector Centrality | Measures importance of a node based on if neighboring nodes have many connections. | Measures importance of a tract based on if neighboring tracts have many connections.
 
