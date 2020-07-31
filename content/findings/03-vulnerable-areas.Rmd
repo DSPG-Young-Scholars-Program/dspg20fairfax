@@ -27,10 +27,10 @@ uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/
 ```
 
 # Areas Vulnerable to Covid-Related Income and Job Loss
-This section examines relative vulnerability to covid-related income and job loss in Fairfax County, VA a census tract-level. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings. 
+This section examines relative vulnerability to covid-related income and job loss in Fairfax County, VA a census tract-level. Identifying vulnerable areas is important to our Fairfax County sponsors as it can help anticipate and prepare for post-pandemic changes. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings, as well as highlight areas in the county that might benefit most from employment assistance.
 
 ## Data and Methods
-### Unemployment Claims
+# Unemployment Claims
 We used Virginia Employment Commission's Initial Unemployment Claims data to explore unemployment filings in Fairfax County. We calculated the number of all initial unemployment claims filed in Fairfax County ZIP codes from January through May 2020. We map the ZIP code-level totals in an interactive plot.
 
 # Relative Vulnerability 
@@ -78,7 +78,7 @@ leaflet(data = uiaggregate,
 ```
 
 ### Relative Vulnerability
-Covid-related job and income loss vulnerability is not uniform across tracts in the county. Certain census tracts have more resident workers that may be more adversely affected by the pandemic. The plot below highlights tracts depending on their relative vulnerability level.
+Covid-related job and income loss vulnerability is not uniform across tracts in the county; certain census tracts have more resident workers that may be more adversely affected by the pandemic. The following plot highlights tracts depending on their relative vulnerability level, showing that many tracts in the south-east part of the county have higher relative vulnerability—higher percentages of part-time workers or workers with low education, higher percentages of residents employed in vulnerable industries and occupations—and may be more likely to experience high rates of job loss and economic hardship due to the pandemic.
 
 ```{r}
 #Summary score leaflet
@@ -127,6 +127,8 @@ leaflet(data = vulnerable,
             opacity = 1,
             na.label = "Not Available")
 ```
+
+The following census tract-level maps visualize individual indicators that we used to calculate our relative vulnerability measure.
 
 #### Which Areas Already Experience High Unemployment Rates?
 Existing high unemployment rates indicate economic hardship that preceded covid-19, but that the pandemic could amplify. The following plot displays the percent of individuals in the labor force that are unemployed.

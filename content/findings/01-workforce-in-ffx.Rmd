@@ -40,7 +40,7 @@ pie_lab_transform <- function(data){
 ```
 
 # Workforce in Fairfax County
-This analysis provides a characteriziation of the Fairfax County workforce. We retrieved two datasets to calculate worker sociodemographic and socioeconomic charactersitics at workplace census tract and county level. As this project focuses on employment and labor force sectors, understanding the current labor force was crucial for our subsequent analyses.
+This analysis provides a characterization of the Fairfax County workforce. We retrieved two datasets to calculate worker sociodemographic and socioeconomic charactersitics at workplace census tract and county level. As this project focuses on employment and labor force sectors, understanding the current labor force was crucial for our subsequent analyses.
 
 ## Data and Methods
 We used two datasets to better understand the population of individuals with job locations in Fairfax County.

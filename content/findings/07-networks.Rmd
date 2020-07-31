@@ -24,8 +24,8 @@ source("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/src/09_network_descriptives/networ
 network_stats(vars = "S000", years = 2015, types = types)
 ```
 
-# Fairfax County Networks
-We employ network analysis to understand the flow of Fairfax County workers from their residence to the workplace at the census tract-level. 
+# Using Network Analysis to Understand Fairfax County Job Flows
+We employed network analysis to understand the relationships between where Fairfax County residents work and reside. This is important to our sponsors because changes in commuting dynamics due to the pandemic have implications on transportation, housing, and infrastructure policy. 
 
 ## Data
 The LODES data is based on administrative records provided by the US Census Bureau, and contains information on jobs by worker sociodemographic characteristics, jobs by firm characteristics, and jobs by origin and destination census block groups. The Workforce Area Characteristics files provide job numbers by workplace location block group, the Residence Area Characteristics data totals jobs by residence block group, and the the Origin-Destination (OD) files indicate where individuals work and reside at block group level. 
@@ -35,8 +35,9 @@ We used LODES data from 2010 to 2017 to conduct our network analyses. We retriev
 While the LODES data provides OD flows for all workers that live or work in Fairfax County, we decided to reduce the network’s data for the DSPG project to only include those that live in Fairfax County. Before constructing networks, we explored the origins of workers who come to work in Fairfax County. We found that of all workers in the county, 41% are also county residents, and 59% arrive from outside the county. This analysis also revealed that some workers who come to work in Fairfax County live in states well outside of driving distance. This created a challenge, as it is difficult to determine whether workers work for businesses with headquarters in Fairfax but work physically located elsewhere, or whether they do work in Fairfax but perhaps only part of the time. For this reason, we decided to only focus our current analysis on flows from within Fairfax County.  
 
 ## Methods
-In our analyses, network centrality measures help explain how relations between tracts change based on the relative importance of those tracts within the overall county network. 
-In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, our nodes are census tracts. The table below presents our main centrality measures. The associated interpretation contextualizes centrality measures within the Fairfax County job flows exploration. While we plan to conduct further analyses on a broader collection of network centrality measures, our short-term goal was to examine which census tracts are most important when analyzing them as a network. 
+Networks are comprised of nodes and edges that represent entities and the relationships between them. In our case, nodes correspond to census tracts, and edges represent job flows or the links between them, created by workers’ residence and workplace connections. Each edge or connection also has a weight, which corresponds to the number of jobs flowing between two tracts, and a direction, which signifies the direction that workers flow in, from their residence tract to their workplace tract. Network centrality measures help explain how relations between tracts change based on the relative importance of those tracts within the overall county network. Using this network analysis framework, we were able to construct three distinct networks and map the networked flows of all jobs, federal jobs, private jobs, and jobs by industry within Fairfax County. 
+
+The table below presents our main centrality measures. The associated interpretation contextualizes centrality measures within the Fairfax County job flows exploration. While we plan to conduct further analyses on a broader collection of network centrality measures, our short-term goal was to examine which census tracts are most important when analyzing them as a network. 
 
 Measure | Interpretation
 ---------|--------------------------------
