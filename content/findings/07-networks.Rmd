@@ -25,17 +25,18 @@ network_stats(vars = "S000", years = 2015, types = types)
 ```
 
 # Fairfax County Networks
+We employ network analysis to understand the flow of Fairfax County workers from their residence to the workplace at the census tract-level. 
 
-We employ network analysis to understand the flow of Fairfax County workers from their residence to the workplace at the Census tract-level. 
+## Data
+The LODES data is based on administrative records provided by the US Census Bureau, and contains information on jobs by worker sociodemographic characteristics, jobs by firm characteristics, and jobs by origin and destination census block groups. The Workforce Area Characteristics files provide job numbers by workplace location block group, the Residence Area Characteristics data totals jobs by residence block group, and the the Origin-Destination (OD) files indicate where individuals work and reside at block group level. 
 
-## Data and Methods
+We used LODES data from 2010 to 2017 to conduct our network analyses. We retrieved the main and auxiliary OD files and aggregated by tract. The main files include jobs for which the residence and workplace are both in-state; the auxiliary files include jobs for which the workplace is in-state while the residence is out-of-state. We produced networks for three types of job aggregations available in LODES: for all jobs in the county, for federal jobs, and for private jobs. 
 
-The LODES data is produced by the US Census Bureau in order to better understand where workers reside and work. There are three main datasets of the LODES data; we use the Origin-Destination files for our networks, and restrict the geography to intra-Fairfax County tracts only. The LODES OD data is produced for three aggregations: total jobs, federal jobs, and private jobs. While the LODES data provides flows for all workers that live or work in Fairfax County, we decided to reduce the network’s data for the DSPG project to only include those that live in Fairfax County. Our data profiling of residents deriving from outside of Fairfax County revealed that some workers live in states well outside of driving distance. This created a challenge that makes it hard to determine whether workers work for businesses with headquarters in Fairfax but work elsewhere or whether they do work in Fairfax only part of the time. For these reasons, we decided to only focus on flows deriving from within Fairfax County.
+While the LODES data provides OD flows for all workers that live or work in Fairfax County, we decided to reduce the network’s data for the DSPG project to only include those that live in Fairfax County. Before constructing networks, we explored the origins of workers who come to work in Fairfax County. We found that of all workers in the county, 41% are also county residents, and 59% arrive from outside the county. This analysis also revealed that some workers who come to work in Fairfax County live in states well outside of driving distance. This created a challenge, as it is difficult to determine whether workers work for businesses with headquarters in Fairfax but work physically located elsewhere, or whether they do work in Fairfax but perhaps only part of the time. For this reason, we decided to only focus our current analysis on flows from within Fairfax County.  
 
-
-### Interpretation of Centrality Measures
-
-In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, nodes are tracts. The table below presents our main centrality measures. The interpretation contextualizes centrality measures within the Fairfax County job flows theme. While we eventually plan to conduct some machine learning on a broader collection of network centrality measures, our short-term goal was just to see which Census tracts are most important when analyzing them as a network. 
+## Methods
+In our analyses, network centrality measures help explain how relations between tracts change based on the relative importance of those tracts within the overall county network. 
+In network theory, measures of centrality show the importance of nodes by certain criteria. In this project, our nodes are census tracts. The table below presents our main centrality measures. The associated interpretation contextualizes centrality measures within the Fairfax County job flows exploration. While we plan to conduct further analyses on a broader collection of network centrality measures, our short-term goal was to examine which census tracts are most important when analyzing them as a network. 
 
 Measure | Interpretation
 ---------|--------------------------------
@@ -44,18 +45,12 @@ Weighted In-Degree Centrality | These plots highlight tracts that are work desti
 Betweenness Centrality | The plots highlight tracts that serve as bridges for workers from disparate tracts to flow through.
 Eigenvector Centrality | The plots highlight tracts that are more important based on they are connected to other well-connected tracts.
 
+## Findings: All Jobs in Fairfax County
+The maps below show the centrality measures for all jobs in Fairfax County. The top-left figure shows the weighted out-degree centrality, which highlights where workers are departing. The darker tracts on the western side of the county are those from which more individuals are leaving to commute to work. In contrast, the top right-hand corner highlights the in-degree centrality or where Fairfax County workers travel to work. Many tracts on the eastern side of Fairfax County are highlighted, indicating that more individuals work in those tracts. Taken together, the maps begin to suggest patterns of travel flow during peak commute hours and have potential implications for transportation policy.  
 
-## Findings
+The bottom-left figure maps tract-level betweenness centrality. Betweenness centrality shows tracts that serve as “bridges” for workers commuting to and from work. The betweenness centrality of tracts could be an indicator of emerging areas for new businesses. In this way, network analysis can further our identification of emerging areas and, in turn, can suggest where infrastructure will need to be built or provided to support these trends. Finally, the bottom-right figure shows eigenvector centrality, which highlights tracts based on connections to other well-connected tracts. In the context of Fairfax County, these tracts would see relatively higher travel, which could add stress to travel infrastructure. 
 
-The maps below show the centrality measures for all jobs in Fairfax County. The top, left-hand plot shows weighted out-degree centrality by quantile group. We see that many tracts on the western side of Fairfax County are darker, meaning that more individuals are leaving those tracts to commute to work. Looking at the top, right-hand map, we see in-degree centrality, which highlights workplace destinations. Many tracts on the eastern side of Fairfax County are highlighted, meaning the more individuals work in those tracts. Taken together, the maps have implications on travel flow during peak commute hours. 
-
-The bottom left map displays betweenness centrality. Betweenness centrality shows tracts that serve as bridges for workers commuting to and from work. The betweenness centrality of certain tracts could be an indicator of emerging areas for new businesses. In comparison to SDAD's prior Fairfax County gentrification research, the betweenness measures closely align with the measures of gentrification. This further indicates that network analysis helps provide some capacity of predicting emerging economic geographies and, in turn, further indicates that infrastructure will need to be built to reflect these emerging trends.
-
-The bottom, right map shows eigenvector centrality, which highlights tracts based on connections to other well-connected tracts. In the context of Fairfax County, these tracts would see relatively higher travel, which could see more stress to infrastructure. 
-
-_Interpreting Quantiles: The maps visualize measure of centrality values at tract level. Counties with darker map colors have higher measures of centrality. Conversely, counties with lighter colors have lower measure of centrality. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
-
-##### All JOBS
+_Interpreting Quintiles: The maps visualize centrality measure values at census tract level. Tracts with darker map colors have higher values on centrality measures. Conversely, tracts with lighter colors have lower measure of centrality. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
 
 ```{r, echo = F}
 leaflet_creator("all")
@@ -65,13 +60,12 @@ fluidRow(column(6, l_btw_2015_S000_all),
          column(6, l_eigen_2015_S000_all))
 ```
 
-We repeat the analysis, but restrict the data to federal jobs only. For the top left map, which shows weighted out-degree centrality, we see that as before, many workers live in the western area of Fairfax County. The in-degree centrality map looks noticeably different. A major takeaway from this map is that there are key tracts were many federal jobs are located. For example, the darkest tract in the western area of Fairfax County, near Reston, is the home to the US Geological Survey office, and Bureau of Indian Affairs, Division of Acquisitions. The northern-most, darkest tract in the western area of Fairfax County, located in Bailey's Crossroads, is home to one of the US Fish & Wildlife Services National Headquarters.
+## Findings: Federal Jobs in Fairfax County
+We repeat the analysis described above, but restrict the data to federal jobs only. The top-left map, showing weighted out-degree centrality, indicates that many workers live in the western area of Fairfax County. The in-degree centrality map looks noticeably different. A major takeaway from this map is that there are key tracts were many federal jobs are located. For example, the darkest tract in the western area of Fairfax County, near Reston, is the home to the US Geological Survey office and to the Bureau of Indian Affairs, Division of Acquisitions. The northern-most, darkest tract in the western area of Fairfax County, located in Bailey's Crossroads, is home to one of the US Fish & Wildlife Services National Headquarters.
 
-Betwenness centrality, as shown in the bottom left map, shows tracts that serve as bridges for federal workers commuting to and from work. Many of the highlighted tracts are located at key intersections, including the Leesburg Pike (Route 7)/Dulles Access Road (Route 267) intersection and the 95/395/495 intersection. 
+The betwenness centrality map, shown in the bottom left, shows tracts that serve as bridges for federal workers commuting to and from work. Many of the highlighted tracts are located at key traffic intersections, including the Leesburg Pike (Route 7) and Dulles Access Road (Route 267) intersection, and the 95/395/495 intersection. 
 
-The federal jobs eigenvector map (bottom right) also shows the importance of major intersections. Darker tracts would see relatively higher travel, which could see more stress to infrastructure. We see darker tracts near Leesburg Pike (Route 7)/Dulles Access Road (Route 267) intersection and the 95/395/495 intersection. 
-
-### FEDERAL JOBS
+The federal jobs eigenvector map on the bottom-right also shows the importance of major intersections. Darker tracts would see relatively higher travel, which could inflict more stress on infrastructure, for example at the Leesburg Pike (Route 7) and Dulles Access Road (Route 267) intersection and the 95/395/495 intersection. 
 
 ```{r, echo = F}
 type = "federal"
@@ -145,7 +139,7 @@ fluidRow(column(6, l_btw_2015_S000_federal),
          column(6, l_eigen_2015_S000_federal))
 ```
 
-### PRIVATE JOBS
+## Findings: Private Jobs in Fairfax County
 
 The private jobs networks reflect the all jobs networks. 
 
@@ -156,7 +150,3 @@ fluidRow(column(6, l_out_2015_S000_private),
 fluidRow(column(6, l_btw_2015_S000_private), 
          column(6, l_eigen_2015_S000_private))
 ```
-
-
-# References
-Citations here.
