@@ -52,7 +52,7 @@ a:link, a:visited {
 }
 
 #bigbody main a {
-    color: var(--accent) !important;
+    color: #0E879C !important;
 }
 
 #bigfooter a:link, a:visited {
@@ -87,7 +87,7 @@ a:link, a:visited {
 }
 
 .item-tag {
-    background-color: #60999A;
+    background-color: #232D4B;
     margin:1px;
 }
 

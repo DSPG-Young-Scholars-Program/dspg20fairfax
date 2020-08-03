@@ -1,11 +1,18 @@
 ---
 title: "Emerging Employment Areas in Fairfax County"
-description: "Project description here"
-tags: ["R", "geospatial"]
+description: "This page focuses on on emerging employment areas."
+tags: ["geospatial", "interactive map"]
 weight: 4
 draft: false
 output: html_document
 ---
+
+```{css, echo=FALSE}
+/* this chunnk of code centers all of the headings */
+h1, h2, h3, h4 {
+  text-align: center;
+}
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -28,27 +35,30 @@ fortune_geo <- read_sf("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/fortune/f
 #lodespatial <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
 #fortune_geo <- read_sf("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
 
-employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+employers <- read_excel('/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+#employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
   select_all(~gsub("\\s+|\\.", "_", .)) %>% 
   select_all(tolower) %>% 
   arrange(desc(estimate_of_employees)) %>% 
   slice_head(n = 100) # Susweta's top 100 largest employers
 ```
 
-# Emerging Employment Areas in Fairfax County
+### Approach
+
 One of our project objectives was to identify areas in Fairfax County with current and emerging employment and business opportunities. Identification of areas with business and employment opportunities can help county authorities formulate policies supporting the growth of these areas, as well as to lean from these areas to improve other parts of the county that currently do not attract many business initiatives.
 
-## Data and Methods
-Our first data source was the 2019 list of Fortune 1000 companies. The Fortune 1000 list is assembled by Fortune Magazine and ranks 1000 of the largest US companies by publicly available revenue amount. The list also includes attributes like revenue change from last year, profits, profit change from last year, assets, market value, number of employees, and previous year's rank for a company. Thirty-five companies with headquarters in Fairfax County appeared in the 66th annual Fortune 1000 list, and 11 of them also made into the Fortune 500 list. We searched for addresses of the 35 Fairfax County companies' headquarters and geocoded headquarters locations.
+Our first data source was the [2019 Forbes 1000 List](https://www.someka.net/excel-template/fortune-1000-excel-list/). The Fortune 1000 list is assembled by Fortune Magazine and ranks 1000 of the largest US companies by publicly available revenue amount. The list also includes attributes like revenue change from last year, profits, profit change from last year, assets, market value, number of employees, and previous year's rank for a company. Thirty-five companies with headquarters in Fairfax County appeared in the 66th annual Fortune 1000 list, and 11 of them also made into the Fortune 500 list. We searched for addresses of the 35 Fairfax County companies' headquarters and geocoded headquarters locations.
 
-We also obtained data on all employers in Fairfax County from the Virginia Employment Commission. Data on all employers in the state are publicly available and include information on business name, geographic area, and industry details. We used the latest available data from 2020 to identify the top 100 employers in the county (as determined by the estimated number of employees) and where they are located.
+We also obtained data on all employers in Fairfax County from the [Virginia Employment Commission](link here) . Data on all employers in the state are publicly available and include information on business name, geographic area, and industry details. We used the latest available data from 2020 to identify the top 100 employers in the county (as determined by the estimated number of employees) and where they are located.
 
-Finally, we retrieve LEHD Origin-Destination Employment Statistics (LODES) data to calculate the total number of jobs in each Fairfax County census tract. We use the latest available data from 2017 and aggregate job information from workplace census block group to workplace tract level. We use data on the total number of jobs in a given census tract as a base map, and overlay the locations of Fortune 1000 companies and the top 100 largest employers in Fairfax County.
+Finally, we retrieve [LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/) data to calculate the total number of jobs in each Fairfax County census tract. We use the latest available data from 2017 and aggregate job information from workplace census block group to workplace tract level. We use data on the total number of jobs in a given census tract as a base map, and overlay the locations of Fortune 1000 companies and the top 100 largest employers in Fairfax County.
 
-## Findings
+### Findings
+
 We plot the locations of the top 100 employers and the Fortune 1000 employers against census tract-level quintile-grouped percent of total county jobs to explore how successful these employers are at attracting workers. Our plots suggest that most of these employers geographically cluster. The number of workers employed by the top 100 employers varies between 400 and 8500.
 
 ### Where and Who are Fairfax County's Largest Employers?
+
 The top five employers in Fairfax County are Sodexo, Inova Fairfax Hospital, George Mason University, AT&T Store and GMU Community Relations, each employing 4000 or more workers. Among these largest five employers, three are located in Springfield, Falls Church, Oakton and two in Fairfax City. The remaining largest employers cluster around Tysons Corner, Fair Oaks, Merrifield, Chantilly, and Reston.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -81,6 +91,7 @@ leaflet(data = employers,
 ```
 
 ### Do Fortune 1000 Companies Attract Workers?
+
 This interactive map shows the location of companies in Fairfax County included in the Fortune 1000 list. Clicking the blue dots on the map displays company names. The plot indicates that these employers are clustered around Tyson Corner and Reston, which is consistent with our findings from the top 100 employers location in Fairfax County. The plot also shows that total number of jobs is higher in census tracts where these emplyers are located, indicating that these employers attract workers by creating significant job opportunities in the county. 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -107,6 +118,7 @@ leaflet(data = lodespatial,
 ```
 
 ### How Many Workers do the Top 100 Employers Attract?
+
 This map displays the locations for the top 100 employers in Fairfax County, as determined by the estimated number of employees. Hovering over the blue dots on the map shows company name, industry sector, and the estimated number of workers for each company. The largest employer is Sodexo, a food-service management company located in Springfield, which employs 8500 workers. In total, 111,590 workers are employed by the top 100 employers in Fairfax County. As expected, Census tracts contain a higher number of job opportunities where these top 100 largest employers are clustered. We also notice that cities like Springfield, Mt. Vernon, and Dranesville, which have few or none of these largest employers, have the lowest number of jobs among the cities in the county.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -144,6 +156,6 @@ leaflet(data = lodespatial,
                   })
 ```
 
-# References
+### References
 https://www.virginiabusiness.com/article/35-virginia-companies-make-2020-fortune-1000-list/
 https://virginiaworks.com/

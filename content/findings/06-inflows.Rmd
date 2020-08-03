@@ -1,11 +1,18 @@
 ---
-title: "Job Flows Into Fairfax County"
-description: "Project description here"
-tags: ["R", "geospatial"]
-weight: 5
+title: "Examining Job Flows From Outside of Fairfax County"
+description: "This page explores where workers frequently travel from outside of Fairfax."
+tags: ["eda", "geospatial", "job flows", "interactive map"]
+weight: 6
 draft: false
 output: html_document
 ---
+
+```{css, echo=FALSE}
+/* this chunnk of code centers all of the headings */
+h1, h2, h3, h4 {
+  text-align: center;
+}
+```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
 library(dplyr)
@@ -22,9 +29,12 @@ library(tigris)
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
 # Read in data
-jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+#jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_all <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobsall.csv", 
+                     col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 
-va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
+#va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/va_xwalk.csv")
 ```
 
 ```{r warning = F, message = F, echo = F} 
@@ -43,16 +53,27 @@ jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
 # Reading in for mapping later
-nc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
-dc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
-pa_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
-wv_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
-md_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
-oh_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
-ny_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
-fl_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
-nj_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
-sc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+#nc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+#dc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+#pa_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+#wv_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+#md_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+#oh_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+#ny_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+#fl_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+#nj_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+#sc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+# Reading in for mapping later
+nc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+dc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+pa_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+wv_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+md_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+oh_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+ny_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+fl_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+nj_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+sc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
@@ -70,41 +91,44 @@ sc_points <- tracts("SC", class = "sf")
 fl_points <- tracts("FL", class = "sf")
 ```
 
-# Job Flows Into Fairfax County
+### Approach 
+
 To prepare for an analysis of Fairfax County job flows, we wanted to better understand the geographic origins of workers who reside in other localities but work in Fairfax County. We examined flows to Fairfax County from within Virginia, from other states, and from counties in other states to identify localities that send the highest number of workers to Fairfax County. We also mapped these flows for the top 10 originating geographies in each category. This analysis can help our stakeholder understand transit flows into the county, and it informs our subsequent job flow network analyses.
 
-## Data and Methods
 We used the 2017 Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) Origin Destination (OD) data to conduct our analyses. The LODES data is based on administrative records provided by the US Census Bureau, and contains information on jobs by worker sociodemographic characteristics, jobs by firm characteristics, and jobs by origin and destination census block groups. The LODES OD files indicate where individuals work and reside at census block level. The OD main files include jobs for which the residence and workplace are both in-state; the auxiliary files include jobs for which the workplace is in-state while the residence is out-of-state. We retrieved the main and auxiliary OD files and aggregated data to census tract level. We filtered the data to jobs located in Fairfax County with worker residence outside the county. 
 
 We employed state geography crosswalk data to convert geographic identifiers to descriptive county and state names. We used the sf, dyplr, readr,  tigris, and stplnr R packages in working with the data. To visualize our findings, we used used ggplot, leaflet, and tmap.
 
-## Findings
+### Major Findings
+
 Among counties in Virginia, Loudoun County and Prince William County are the counties that send the greatest number of workers to Fairfax County. From other states, Maryland has the greatest number of residents that work in Fairfax County. From counties in other states, Montgomery County, MD, Prince George's County, MD, and the District of Columbia are the three areas with greatest number of workers living there that work in Fairfax County. We visualize these origins on the following plots.
 
-# What Percent of Jobs Flow to Fairfax County from Outside of the County?
+### What Percent of Jobs Flow into Fairfax <br/> From Outside of the County?
+
 To determine what proportion of employees in Fairfax County do not also live in the county, we filtered all jobs in Fairfax County for those with a residence geography outside of the county but workplace geography inside of the county. Over half, or 59% of all jobs in Fairfax County are held by employees who do not live in the county.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
 flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
 bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
 
 percents <- data.frame("type" = c("From outside Fairfax County", "From within Fairfax County"), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
-percents
+#percents
 pie <- ggplot(percents, aes("", y = shares, fill = type)) +
   geom_bar(stat="identity", width=1) + 
   geom_text(aes(label = paste0(round(shares), "%")), position = position_stack(vjust = 0.5))
  
 pie <- pie  +
   coord_polar("y", start=0) +
-  scale_fill_manual(values=c("#D1E0BF", "#0E879C")) +
+  scale_fill_manual(values=c("#0E879C", "#E6A01D")) +
   labs(x = NULL, y = NULL, fill = NULL, title = "Geographic Origin of Jobs Flows Into Fairfax County") +
-  theme_classic() +
-  theme(axis.line = element_blank(),
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5),
+         axis.line = element_blank(),
+         legend.position="bottom", 
+        legend.direction="vertical",
           axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          plot.title = element_text(hjust = 0.5))
-pie
+          axis.ticks = element_blank()); pie
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
@@ -159,12 +183,13 @@ essential <- sc_xw %>%
 sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 ```
 
-# Of the Job Flows into Fairfax County from Outside the County, what Percent are from Other Virginia Counties?
+### What Percentage of Jobs Come from Other Counties in Virginia?
+
 Of the jobs flowing into Fairfax County from outside the county but still within Virginia, approximately 56% are from other counties in the state.  Most employees come to Fairfax County from Loudoun County and Prince William County.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 perc_flows_other_counties_VA <- mean(flows_in$h_state == "51") *100
-perc_flows_other_counties_VA
+#perc_flows_other_counties_VA
 agg_cnty_VA <- flows_in[flows_in$h_state == "51", ] %>%
   group_by(h_county) %>%
   summarise(S000 = sum(S000)) %>%
@@ -178,16 +203,19 @@ agg_cnty_VA_trimmed <- agg_cnty_VA_with_names[order(-agg_cnty_VA_with_names$S000
 agg_cnty_VA_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill = "#E57200") +
+  geom_bar(stat="identity", fill = "#0E879C") +
   ggtitle("Number of Jobs Flowing into Fairfax\n from Other Virginia Counties") +
+  theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("Origin County Name") +
-  scale_x_continuous(labels = scales::comma)
+  scale_x_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 ```
 
 Visualizing the top 10 flows on a map highlights the distances that these networks span and the importance that employment in Fairfax County has not only on their own residents, but for residents in of neighboring areas and communities farther away.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 #by VA county
 flows_in_VA_cnty <- flows_in[flows_in$h_state == "51", ] %>%
   group_by(h_stcty, w_stcty) %>%
@@ -201,6 +229,8 @@ essential$cty <- as.character(essential$cty)
 flows_in_VA_cnty <- inner_join(x = flows_in_VA_cnty, y = unique(essential), by = c("h_stcty" = "cty"))
 
 va_cnty <- counties("VA")
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 va_cnty_flow_lines <- st_as_sf(od2line(flows_in_VA_cnty[1:10, ], va_cnty, 
                                        origin_code = "h_stcty", dest_code = "w_stcty", 
                                  zone_code = "GEOID"))
@@ -209,19 +239,20 @@ tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_stcty, S000, geometry)) +
   tm_lines(lwd = 3.5, col = "S000", title.col = "Number of Jobs", style = "quantile",
-           palette = c("#60999A", "#E57200"),
+           palette = c("#0E879C", "#232D4B"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
   tm_view(set.zoom.limits = c(8, 18), basemaps.alpha = 0.5)
 top10VA_cnty_flowsmap
 ```
 
-# Of the Job Flows into Fairfax County from Outside the County, What Percent are from Other States?
+### What Percentage of Jobs Come from Other States?
+
 Of the jobs flowing into Fairfax County from outside the county, about 43% from states other than Virginia. Unsurprisingly, many workers come to Fairfax County from Maryland and Washington, DC.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 percent_flows_other_states <- mean(flows_in$h_state != "51") * 100
-percent_flows_other_states
+#percent_flows_other_states
 agg_states_no_names <- flows_in[flows_in$h_state != "51", ] %>%
   group_by(h_state) %>%
   summarise(S000 = sum(S000)) %>%
@@ -231,16 +262,19 @@ agg_states_trimmed$State <- c("Maryland", "District of Columbia", "West Virginia
 agg_states_trimmed %>%
   mutate(ctyname = fct_reorder(State, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill= "#E57200") +
+  geom_bar(stat="identity", fill= "#E6A01D") +
   ggtitle("Number of Jobs flowing into Fairfax from other states") +
+  theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("State") +
-  scale_x_continuous(labels = scales::comma)
+  scale_x_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
 ```
 
 Visualizing the top 10 out-of-state flows highlights unexpected job flows, particularly from Florida and South Carolina. These states send in relatively few jobs and are geographically distant to Fairfax County. We consider these flows as outliers and interpret them cautiously; perhaps the main office for these jobs is in Fairfax, but workers are not frequently on location and work the majority of time from Florida or South Carolina, respectively. We are unable to make conclusions about the nature of these flows from the data.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include =FALSE}
 flows_in_state <- flows_in[flows_in$h_state != "51", ] %>%
   group_by(h_state, w_state) %>%
   summarise(S000 = sum(S000)) %>%
@@ -251,6 +285,8 @@ flows_in_state <- flows_in_state[1:10, ]
 flows_in_state$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 
 states_flow_lines <-st_as_sf(od2line(flows_in_state, states()[3:10]))
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S000, geometry)) +
@@ -258,17 +294,18 @@ top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S0
            col = "S000", 
            title.col = "Number of Jobs", 
            style = "quantile",
-           palette = c("#60999A", "#E57200"),
+           palette = c("#E6A01D", "#E57200"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
   tm_view(set.zoom.limits = c(5, 18), basemaps.alpha = 0.5)
 top10states_flowsmap
 ```
 
-# Of the Job Flows into Fairfax County from Outside the County, What are Their Origins by County in Other States?
+### Where are the Major Counties <br/> Outside of Fairfax that Workers Reside In? 
+
 Of the jobs flowing into Fairfax County from other states, most come from counties in Maryland, Washington DC, and West Virginia. 
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
 agg_cnty_other_with_names <- top_ten_with_names %>%
   group_by(ctyname) %>%
@@ -278,16 +315,19 @@ agg_cnty_other_trimmed <- agg_cnty_other_with_names[order(-agg_cnty_other_with_n
 agg_cnty_other_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
-  geom_bar(stat="identity", fill= "#E57200") +
-  ggtitle("Number of Jobs Flowing into Fairfax from Other\n Counties in Other States") +
+  geom_bar(stat="identity", fill= "#0E879C") +
+  ggtitle("Number of Jobs Flowing into Fairfax from\nOther Counties in Other States") +
+  theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("County Name") +
-  scale_x_continuous(labels = scales::comma)
+  scale_x_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) 
 ```
 
 The following map, visualizing the top 10 out-of-state flows by county, is similar to the map of flows from other states to Fairfax County. However, it provides additional geographic granularity. The top 10 counties sending workers to Fairfax County from other states are geographically relatively close.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 top_ten_with_names$h_stcty <- substr(top_ten_with_names$h_geocode_tract, 1, 5)
 top_ten_with_names$w_stcty <- substr(top_ten_with_names$w_geocode_tract, 1, 5)
 flows_from_other <- top_ten_with_names %>%
@@ -302,12 +342,12 @@ other_cnty_flow_lines <- od2line(flows_from_other[1:10, ], all_points,
                                  origin_code = "h_stcty", dest_code = "w_stcty", 
                                  zone_code = "h_stcty")
 other_cnty_flow_lines <- st_as_sf(other_cnty_flow_lines)
-other_cnty_flow_lines
+#other_cnty_flow_lines
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
 top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w_stcty, S000, geometry)) +
   tm_lines(lwd = 3.5, col = "S000", title.col = "Number of Jobs", style = "quantile",
-           palette = c("#60999A", "#E57200"),
+           palette = c("#0E879C", "#232D4B"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
   tm_view(set.zoom.limits = c(8, 18), basemaps.alpha = 0.5)

@@ -1,5 +1,5 @@
 ---
-title: "Fairfax County 2020 Summer Project"
+#title: "Fairfax County 2020 Summer Project"
 output: html_document
 ---
 
@@ -18,11 +18,11 @@ h1, h2, h3 {
 
 <center>
 
-![](/teja.jpg) ![](/teja.jpg) ![](/teja.jpg) ![](/teja.jpg)
+![](/susweta.jpeg) ![](/sarah.jpg) ![](/owen.png) s
 
 </center>
 
-##### [Susweta Ray](https://github.com/SuswetaRay), [Sarah McDonald](https://github.com/sm9dv), [Owen Hart](https://github.com/hartowen), and [Sean Pietrowicz](https://github.com/sp3sd) {style=text-align:center}
+##### [Susweta Ray](https://github.com/SuswetaRay) (Agricultural Economics, University of Nebraska-Lincoln), [Sarah McDonald](https://github.com/sm9dv) (Marymount University, School of Sciences, Mathematics, and Education and School of Business and Technology), [Owen Hart](https://github.com/hartowen) (Economics & Data Science, University of California, Berkeley), and [Sean Pietrowicz](https://github.com/sp3sd) (Not Shown, Applied and Computational Mathematics and Statistics, University of Notre Dame) {style=text-align:center}
 ###
 
 ### UVA SDAD Team Members 
@@ -35,7 +35,7 @@ h1, h2, h3 {
 
 </center>
 
-##### SDAD: [Teja Pristavec (Lead)](https://biocomplexity.virginia.edu/teja-pristavec), [Brandon Kramer](https://biocomplexity.virginia.edu/brandon-kramer), [Josh Goldstein](https://biocomplexity.virginia.edu/joshua-goldstein), [Joy Tobin](https://biocomplexity.virginia.edu/joy-tobin), [Stephanie Shipp](https://biocomplexity.virginia.edu/stephanie-shipp), and [Sallie Keller](https://biocomplexity.virginia.edu/sallie-keller) {style=text-align:center}
+##### SDAD: [Teja Pristavec](https://biocomplexity.virginia.edu/teja-pristavec) (Project Lead, Research Assistant Professor), [Brandon Kramer](https://biocomplexity.virginia.edu/brandon-kramer) (Postdocotoral Research Associate), [Josh Goldstein](https://biocomplexity.virginia.edu/joshua-goldstein) (Research Assistant Professor), [Joy Tobin](https://biocomplexity.virginia.edu/joy-tobin) (Principal Scientist), [Stephanie Shipp](https://biocomplexity.virginia.edu/stephanie-shipp) (Deputy Director and Research Professor), and [Sallie Keller](https://biocomplexity.virginia.edu/sallie-keller) (Division Direction and Distinguished Professor) {style=text-align:center}
 
 ### Project Sponsors/Stakeholders 
 
@@ -45,8 +45,7 @@ h1, h2, h3 {
 
 </center>
 
+#### [County of Fairfax, Virginia](https://www.fairfaxcounty.gov/) {style=text-align:center}
 
-
-### Acknowledgements  
-
+##### We want to send a special thanks to Michelle Gregory and Sophia Dutton for their prolonged support and engagement on this project as well as Stephen Tarditi, David Kelley and John Blair from Fairfax's Economic Development Authory for their engagement with our team this summer. {style=text-align:center}
  

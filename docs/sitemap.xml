@@ -19,11 +19,11 @@
   </url>
   
   <url>
-    <loc>/findings/06-inflows/</loc>
+    <loc>/findings/05-networks/</loc>
   </url>
   
   <url>
-    <loc>/findings/05-tysons-case/</loc>
+    <loc>/findings/06-inflows/</loc>
   </url>
   
   <url>
@@ -43,14 +43,6 @@
   </url>
   
   <url>
-    <loc>/antiquated/</loc>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-  </url>
-  
-  <url>
     <loc>/methods/</loc>
   </url>
   
@@ -63,6 +55,18 @@
   </url>
   
   <url>
+    <loc>/antiquated/</loc>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/eda/</loc>
+  </url>
+  
+  <url>
     <loc>/findings/</loc>
   </url>
   
@@ -71,7 +75,23 @@
   </url>
   
   <url>
-    <loc>/tags/r/</loc>
+    <loc>/tags/interactive-map/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/job-flows/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/network-analysis/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/sectors/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/socio-demographics/</loc>
   </url>
   
   <url>

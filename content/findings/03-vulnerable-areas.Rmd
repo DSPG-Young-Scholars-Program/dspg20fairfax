@@ -1,11 +1,18 @@
 ---
 title: "Areas Vulnerable to Covid-Related Income and Job Loss"
-description: "Project description here"
-tags: ["R", "geospatial"]
+description: "This page examines relative vulnerability to COVID-related income and job loss."
+tags: ["geospatial", "interactive map"]
 weight: 3
 draft: false
 output: html_document
 ---
+
+```{css, echo=FALSE}
+/* this chunnk of code centers all of the headings */
+h1, h2, h3, h4 {
+  text-align: center;
+}
+```
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,7 +23,7 @@ library(tidyverse)
 library(leaflet)
 ```
 
-```{r}
+```{r, include = FALSE, echo = FALSE, warning=FALSE, message=FALSE}
 # Read in data
 vulnerable <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
 uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
@@ -26,25 +33,26 @@ uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/
 #unemp <- read_rds(uiaggregate, "/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
 ```
 
-# Areas Vulnerable to Covid-Related Income and Job Loss
-This section examines relative vulnerability to covid-related income and job loss in Fairfax County, VA a census tract-level. Identifying vulnerable areas is important to our Fairfax County sponsors as it can help anticipate and prepare for post-pandemic changes. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings, as well as highlight areas in the county that might benefit most from employment assistance.
+### Approach
 
-## Data and Methods
-# Unemployment Claims
+This section examines relative vulnerability to COVID-related income and job loss in Fairfax County, VA a census tract-level. Identifying vulnerable areas is important to our Fairfax County sponsors as it can help anticipate and prepare for post-pandemic changes. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings, as well as highlight areas in the county that might benefit most from employment assistance.
+
+#### Unemployment Claims 
+
 We used Virginia Employment Commission's Initial Unemployment Claims data to explore unemployment filings in Fairfax County. We calculated the number of all initial unemployment claims filed in Fairfax County ZIP codes from January through May 2020. We map the ZIP code-level totals in an interactive plot.
 
-# Relative Vulnerability 
+#### Relative Vulnerability 
+
 We used the US Census Bureau's American Community Survey (ACS) to obtain information about Fairfax County labor force characteristics relevant for our relative vulnerability index. ACS provides detailed sociodemographic and socioeconomic information about American households. Five-year estimates, available at census block group geographic level and higher, are available beginning in 2005/09 to present; we use the latest available dataset from 2014/18 for our analyses. We retrieve all information at census tract level. 
 
 We select our relative vulnerability index indicators based on a [Brookings report](https://www.brookings.edu/research/who-are-the-workers-already-impacted-by-the-covid-19-recession/) that identified major factors contributing to covid-related economic hardship: percent population in labor force that is unemployed, percent workers employed part-time, percent workers with high-school education or less, median worker income, and percent workers in employed in industries and occupations that are particularly vulnerable to covid-19.
 
 We calculated quintile cut-offs for each indicator, with tracts that placed in higher quintiles exhibiting higher relative risk for worker covid-related job and income loss. We summed the number of times that a given tract placed in the 4th or 5th quintile to calculate our relative vulnerability score. We mapped the score on an interactive plot allowing users to explore relative tract vulnerability, as well as tract information for each individual indicator.
 
-## Findings
 ### Initial Unemployment Filings
 This plot displays the number of unemployment claims filed in Fairfax county by ZIP code. Darker areas indicate a greater number of initial unemployment claims filed in 2020 from January to May. Unemployment claims can serve as a useful indicator of area economic vulnerability, since they illustrate the extent of temporary or potentially long-term job loss.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Total Claims
 pal <- colorBin("Oranges", domain = uiaggregate$totalclaims, bins = 6)
 
@@ -78,9 +86,10 @@ leaflet(data = uiaggregate,
 ```
 
 ### Relative Vulnerability
+
 Covid-related job and income loss vulnerability is not uniform across tracts in the county; certain census tracts have more resident workers that may be more adversely affected by the pandemic. The following plot highlights tracts depending on their relative vulnerability level, showing that many tracts in the south-east part of the county have higher relative vulnerability—higher percentages of part-time workers or workers with low education, higher percentages of residents employed in vulnerable industries and occupations—and may be more likely to experience high rates of job loss and economic hardship due to the pandemic.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 #Summary score leaflet
 pal <- colorFactor("Oranges", domain = vulnerable$SummaryScore)
 
@@ -131,9 +140,10 @@ leaflet(data = vulnerable,
 The following census tract-level maps visualize individual indicators that we used to calculate our relative vulnerability measure.
 
 #### Which Areas Already Experience High Unemployment Rates?
+
 Existing high unemployment rates indicate economic hardship that preceded covid-19, but that the pandemic could amplify. The following plot displays the percent of individuals in the labor force that are unemployed.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 #Percent In Labor Force Unemployed
 pal <- colorQuantile("Blues", domain = vulnerable$pct_unempl, probs = seq(0, 1, length = 6), right = FALSE)
 
@@ -165,10 +175,13 @@ leaflet(data = vulnerable,
                   })
 ```
 
+<br>
+
 #### Where are Part-Time Workers?
+
 The following plot highlights tracts with higher percentages of workers employed part-time, or 34 hours per week or less. Part-time workers are at greater risk of experiencing layoffs during the pandemic.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Percent In Labor Force Employed Less Than Year Round Full Time
 pal <- colorQuantile("Oranges", domain = vulnerable$pct_part, probs = seq(0, 1, length = 6), right = FALSE)
 
@@ -200,10 +213,13 @@ leaflet(data = vulnerable,
                   })
 ```
 
+<br>
+
 #### Where are Workers with High School Education or Less?
+
 Workers with high school education or less may face greater difficulty in transitioning into less vulnerable industries relative to workers with more extensive educational backgrounds. The ability to adapt one's skills to pandemic-caused changes in industry is an important factor in measuring an area's ability to cope with the potential economic changes. The following plot highlights areas in Fairfax County with high percentages of workers with low levels of education.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Percent in Labor Force with High School Education or Less
 pal <- colorQuantile("Blues", domain = vulnerable$pct_hsless, probs = seq(0, 1, length = 6), right = FALSE)
 
@@ -235,10 +251,13 @@ leaflet(data = vulnerable,
                   })
 ```
 
+<br>
+
 #### Where are Low-Income Workers?
+
 Areas where workers are already receiving lower incomes may be less shielded from pandemic-inflicted hardship. This mapping displays tracts by worker median income. Darker areas represent areas with low median incomes.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Median Worker Income
 pal <- colorQuantile("Oranges", domain = vulnerable$medinc, probs = seq(0, 1, length = 6), right = FALSE)
 
@@ -269,10 +288,13 @@ leaflet(data = vulnerable,
                   })
 ```
 
+<br>
+
 #### Where are Workers in Occupations Vulnerable to Covid-Related Job and Income Loss?
+
 Following the Brookings report, our anaylsis defines occupations vulnerable to covid-related job loss as arts, design, entertainment, sports, and media occupations; food preparation and serving related occupations; building and grounds cleaning and maintenance occupations; personal care and service occupations; sales and related occupations; and transportation occupations. A higher percentage of workers employed in these occupations suggests a larger population of people at greater risk of job loss and furloughs. 
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Percent Employed in Occupations Vulnerable to Covid-Related Job and Income Loss
 pal <- colorQuantile("Blues", domain = vulnerable$pct_occup, probs = seq(0, 1, length = 6), right = FALSE)
 
@@ -304,10 +326,13 @@ leaflet(data = vulnerable,
                   })
 ```
 
+<br>
+
 #### Where are Workers in Industries Vulnerable to Covid-Related Job and Income Loss?
+
 Based on the Brookings report, we define industries at greater risk of covid-related disruption as arts, entertainment, recreation, accommodation, and food services; retail trade; and other services except public administration. High percentages of residents employed in these industries suggest potentially greater economic hardship due to the pandemic.
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Percent Employed in Industries Vulnerable to Covid-Related Job and Income Loss
 pal <- colorQuantile("Oranges", domain = vulnerable$pct_ind, probs = seq(0, 1, length = 6), right = FALSE)
 

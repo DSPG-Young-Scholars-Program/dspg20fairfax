@@ -19,8 +19,8 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
             
           if(!(type == "federal" & year > 2015)){
             
-            
-            data <- read.csv(paste("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobs_", type, "_", year, ".csv", sep = ""))
+            data <- read.csv(paste("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobs_", type, "_", year, ".csv", sep = ""))
+            #data <- read.csv(paste("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobs_", type, "_", year, ".csv", sep = ""))
             data <- data %>% 
               filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))
             
@@ -248,9 +248,8 @@ data_fairfax <-   get_acs(geography = "tract",
                           variables = "B00001_001",
                           state = "VA",
                           county = 059, 
+                          key = Sys.getenv("CENSUS_API_KEY"),
                           geometry = TRUE)
-
-
 
 leaflet_creator <- function(types){
   
@@ -260,7 +259,9 @@ leaflet_creator <- function(types){
   for(type in types){
     nodelist <- get(paste("nodelist_2015_S000_", type, sep = ""))
     
-    fairfax_data <- merge(data_fairfax[, c("GEOID", "geometry")], nodelist[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], by.x= "GEOID", by.y = "tract", all = TRUE)
+    fairfax_data <- merge(data_fairfax[, c("GEOID", "geometry")], 
+                          nodelist[, c("tract", "wtd_deg_cent_out", "wtd_deg_cent_in", "btw_cent", "eigen_cent")], 
+                          by.x= "GEOID", by.y = "tract", all = TRUE)
     fairfax_data <- st_transform(fairfax_data, 4326)
     
     
