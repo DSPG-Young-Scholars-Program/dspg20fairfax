@@ -18,13 +18,13 @@ The American Community Survey (ACS) provides detailed sociodemographic and socio
 
 #### [LEHD Origin-Destination Employment Statistics (LODES)](https://lehd.ces.census.gov/data/)
 
-Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) provides data that characterizes workforce dynamics and is comprised of administrative data through the US Census. For each census tract, LODES compiles the number of jobs located in the given region. LODES compiles three different datasets, ranging from 2002 to 2017:  
+Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) provides data that characterizes workforce dynamics and is comprised of administrative data through the US Census Bureau. For each geography, LODES compiles the number of jobs located in the given area. LODES compiles three different datasets, ranging in time span from 2002 to 2017:  
 
-* Origin-Destination (OD) data -- jobs totals associated with home and work Census Blocks 
+* Origin-Destination (OD) data -- jobs totals associated with home and work Census blocks 
 
-* Residence Area Characteristic (RAC) data -- jobs are totaled by home Census Block 
+* Residence Area Characteristic (RAC) data -- jobs are totaled by home census block 
 
-* Workplace Area Characteristic (WAC) data -- jobs are totaled by work Census Block 
+* Workplace Area Characteristic (WAC) data -- jobs are totaled by work census block 
 
 LODES data includes additional characteristics of these jobs, such as job sector and worker demographics. Because LODES totals jobs by workplace and by residence areas, one can use these datasets to track differences in workplace dynamics, such as on aggregate whether individuals’ workplaces are close to their homes. We used this dataset to map origin tracts for people traveling from outside of Fairfax County to Fairfax County, to determine areas especially vulnerable to pandemic-related job losses using LODES occupation sector information, and to map job locations relative to Fortune 500 company headquarters locations.
 
@@ -58,13 +58,13 @@ This table lists the variables we used from ACS:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 table1 <- data.frame(
-  Description = c("Unemployed", "Part-time Workers", "HS or less for Employed Population 16+", 
-              "Median Income for Civilian Employed Population 16+",
-              "Employed in Occupations Impacted by COVID (Services)", 
-              "Employed in Industries Impacted by COVID (Arts, Entertainment, and Recreation, and Accommodation and Food Services; Retail Trade; Other Services Except Public Administration)"),
+  Description = c("Percent in labor force unemployed", "Percent part-time workers", "Percent workers with high school education or less", 
+              "Median worker income",
+              "Percent employed in occupations impacted by COVID (services)", 
+              "Percent employed in industries impacted by COVID (arts, entertainment, and recreation, and accommodation and food services; retail trade; other services except public administration)"),
   ACS = c("B23025", "B23022", "B23006", "B24011", "C24060", "C24050")
 )
-DT::datatable(table1, colnames = c('Description', 'ACS Table Code'))
+DT::datatable(table1, colnames = c('Description', 'ACS Table Code'), options = list(dom = 't'))
 ````
 
 Additionaly, the Virginia Employment Commission provides Initial Unemployment Claims data at the ZIP code level. We map initial unemployment claims in Fairfax County for 2020 at ZIP code level using leaflet. 
@@ -99,7 +99,7 @@ table2 <- data.frame(
                           "Measures if the tract lies on paths between other tracts.",
                           "Measures importance of a tract based on if neighboring tracts have many connections.")
 )
-DT::datatable(table2, colnames = c('Measure', 'Definition', "Fairfax Application"))
+DT::datatable(table2, colnames = c('Measure', 'Definition', "Fairfax Application"), options = list(dom = 't'))
 ````
 
 
