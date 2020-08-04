@@ -10,7 +10,7 @@ h1, h2, h3, h4 {
 }
 ```
 
-## Data & Methods
+## Data & Methods 
 
 #### [American Community Survey](https://www.census.gov/programs-surveys/acs/) 
 
