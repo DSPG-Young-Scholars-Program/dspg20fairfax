@@ -18,7 +18,7 @@ h1, h2, h3 {
 
 <center>
 
-![](/susweta.jpeg) ![](/sarah.jpg) ![](/owen.png) s
+![](/susweta.jpeg) ![](/sarah.jpg) ![](/owen.png)
 
 </center>
 
