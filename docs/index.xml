@@ -66,44 +66,6 @@
     
     <item>
       <title></title>
-      <link>/antiquated/data/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/antiquated/data/</guid>
-      <description>Data Data Science for the Public Good Program See our data discovery spreadsheet and the midterm presentation data discovery slide for initial information.
-Key questions to address about data: what is the dataset who produces/owns the dataset what year(s) are available and what year(s) we used who/what does the dataset capture (what is the unit of analysis) what level of geography does the data have why did we use the dataset what information from the dataset did we use</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>/antiquated/dspg/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/antiquated/dspg/</guid>
-      <description>University of Virginia Biocomplexity Institute Data Science for the Public Good Program  The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at the Biocomplexity Institute’s Social and Decision Analytics division (SDAD). Entering its seventh year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today.</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>/antiquated/fairfax/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/antiquated/fairfax/</guid>
-      <description>Data Science for the Public Good Program Fairfax County Project (2020)  SDAD: Teja Pristavec (Lead), Brandon Kramer, Josh Goldstein, Joy Tobin, Stephanie Shipp, and Sallie Keller DSPG: Susweta Ray, Sarah McDonald, Owen Hart, and Sean Pietrowicz  Project summary. This project will explore labor markets in Fairfax County, VA to better understand the landscape and barriers to economic opportunity for the county’s residents, businesses, and places. With particular attention to post-COVID socioeconomic circumstances, the team will use local, state, and federal data sources to (1) provide Census tract-level characterization of the Fairfax County workforce, occupation sectors, and industry composition; (2) explore how this landscape may change post-pandemic and identify areas that are or have the potential to create emerging businesses/new industries; (3) map workforce flows within and in/out of Fairfax County by select employment factors and explore scenarios of post-pandemic change in workforce flows.</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>/antiquated/methods/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/antiquated/methods/</guid>
-      <description>Data Data Science for the Public Good Program See our data discovery spreadsheet and the midterm presentation data discovery slide for initial information.
-Key questions to address about data: what is the dataset who produces/owns the dataset what year(s) are available and what year(s) we used who/what does the dataset capture (what is the unit of analysis) what level of geography does the data have why did we use the dataset what information from the dataset did we use</description>
-    </item>
-    
-    <item>
-      <title></title>
       <link>/methods/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -117,7 +79,7 @@ Key questions to address about data: what is the dataset who produces/owns the 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/overview/</guid>
-      <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Project Overview This project explores labor markets in Fairfax County, VA to better understand the landscape and barriers to economic opportunity for the county’s residents, businesses, and places. With particular attention to post-COVID socioeconomic circumstances, the team used local, state, and federal data sources to (1) provide a census tract-level characterization of the Fairfax County workforce, occupation sectors, and industry composition; (2) explore how this landscape may change post-pandemic and identify areas that vulnerable, as well as areas that are or have the potential to create emerging businesses/new industries; (3) map workforce flows within and in/out of Fairfax County by select employment factors and explore scenarios of post-pandemic change in workforce flows.</description>
+      <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Fairfax County Labor Markets: Characterizing Local Workforce and Employment Networks This project explores labor markets in Fairfax County, VA to better understand the landscape and barriers to economic opportunity for the county’s residents, businesses, and places. With particular attention to post-COVID socioeconomic circumstances, the team used local, state, and federal data sources to (1) provide a census tract-level characterization of the Fairfax County workforce, occupation sectors, and industry composition; (2) explore how this landscape may change post-pandemic and identify areas that vulnerable, as well as areas that are or have the potential to create emerging businesses/new industries; (3) map workforce flows within and in/out of Fairfax County by select employment factors and explore scenarios of post-pandemic change in workforce flows.</description>
     </item>
     
     <item>

@@ -19,6 +19,7 @@ This project explores labor markets in Fairfax County, VA to better understand t
 ![](/fairfax.png)   
 
 </center>
+<p>
 
 #### [County of Fairfax, Virginia](https://www.fairfaxcounty.gov/) 
 
