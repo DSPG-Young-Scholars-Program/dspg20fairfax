@@ -1,0 +1,478 @@
+---
+title: "Fairfax County Labor Markets"
+description: "Symposium Presentation of the 2020 DSPG Project"
+weight: 1
+output: html_document
+---
+
+```{css, echo=FALSE}
+/* this chunk of code centers all of the headings */
+h1, h2, h3, h4, h5 {
+  text-align: center;
+}
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+![](/findings/00-dspg-symposium_files/dspg-small.jpg)
+</center>
+
+## Fairfax County Labor Markets: <br> Characterizing Local Workforce <br> and Employment Networks
+
+#### Sarah McDonald, Susweta Ray, Owen Hart, Sean Pietrowicz <br> Teja Pristavec, Brandon Kramer, Kathryn Linehan, <br> Joy Tobin, Stephanie Shipp, and Sallie Keller <br> Sponsors: Michelle Gregory and Sophia Dutton (Fairfax County) 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+![](/findings/00-dspg-symposium_files/fairfax.png)
+</center>
+
+## Our three main goals for the <br> 2020 DSPG Summer Project were to: 
+
+### (1)  Characterize the Fairfax County workforce, <br> occupation sectors, and industry composition
+
+### (2) Identify vulnerable and emerging areas
+
+### (3) Explore workforce flows
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Characterizing the Fairfax County Workforce
+
+```{r, echo=FALSE, fig.fullwidth=TRUE}
+# Maps
+knitr::include_app('https://teja.shinyapps.io/app_wrk', height = "650px")
+```
+
+#### Main point about commute type 
+
+#### Main point about age 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Identifying Vulnerable Areas
+
+```{r, warning = F, message = F, echo = F}
+library(tidyverse)
+library(leaflet)
+```
+
+```{r, include = FALSE, echo = FALSE, warning=FALSE, message=FALSE}
+# Read in data
+vulnerable <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
+uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
+```
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+#Summary score leaflet
+pal <- colorFactor("Oranges", domain = vulnerable$SummaryScore)
+      labels <- lapply(
+        paste("<strong>Area: </strong>",
+              vulnerable$NAME,
+              "<br />",
+              "<strong>Workers Unemployed:</strong>",
+              round(vulnerable$pct_unempl, 2),
+              "<br />",
+              "<strong>% Part-Time:</strong>",
+              round(vulnerable$pct_part, 2), 
+              "<br />",
+              "<strong>% High School or Less:</strong>",
+              round(vulnerable$pct_hsless, 2), 
+              "<br />",
+              "<strong>$ Median Worker Income:</strong>",
+              formatC(vulnerable$medinc, format = "f", big.mark = ",", digits = 0),
+              "<br />",
+              "<strong>% In Vulnerable Occupations:</strong>",
+              round(vulnerable$pct_occup, 2),
+              "<br />",
+              "<strong>% In Vulnerable Industries:</strong>",
+              round(vulnerable$pct_ind, 2)),
+        htmltools::HTML
+      )
+      
+leaflet(data = vulnerable, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(SummaryScore),
+              fillOpacity = .8, 
+              stroke = FALSE,
+              label = labels,
+              labelOptions = labelOptions(direction = "bottom",
+                                          style = list(
+                                            "font-size" = "12px",
+                                            "border-color" = "rgba(0,0,0,0.5)",
+                                            direction = "auto"))) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~vulnerable$SummaryScore,
+            title = "Relative<br>Vulnerability", 
+            opacity = 1,
+            na.label = "Not Available")
+```
+
+#### Main point about slide 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Identifying Emerging Areas
+
+```{r, include=FALSE}
+library(leaflet)
+library(dplyr)
+library(readxl)
+library(readr)
+library(sf)
+```
+```{r, include=FALSE}
+# Get data
+lodespatial <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
+fortune_geo <- read_sf("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
+# Get data
+#lodespatial <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
+#fortune_geo <- read_sf("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
+employers <- read_excel('/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+#employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+  select_all(~gsub("\\s+|\\.", "_", .)) %>% 
+  select_all(tolower) %>% 
+  arrange(desc(estimate_of_employees)) %>% 
+  slice_head(n = 100) 
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+pal <- colorQuantile(c("#60999A", "#D9E12B", "#E6CE3A", "#E6A01D", "#E57200"), employers$estimate_of_employees, probs = seq(0, 1, length = 6), right = FALSE)
+labels <- lapply(
+  paste("<strong>Company name: </strong>",
+         employers$business_name,
+        "<br />",
+        "<strong>6 digit title: </strong>",
+        employers$`6_digit_title`,
+        "<br />",
+        "<strong>Number of employees: </strong>",
+        employers$estimate_of_employees),
+        htmltools::HTML
+  )
+leaflet(data = employers, 
+        options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(data = employers, lng = employers$longitude, lat = employers$latitude, 
+                   radius = 3.5, color = ~pal(estimate_of_employees), 
+                   stroke = FALSE, fillOpacity = 1,
+                   label = ~labels, labelOptions = labelOptions(noHide = F, direction = "bottom")) %>%
+  addLegend("bottomleft", pal = pal, values = employers$estimate_of_employees, 
+            title = "Estimated Number of Employees<br>by Quantile Group", opacity = 1, 
+            labFormat = function(type = "quantile", cuts = 5, p = data1$estimate_of_employees) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+                  })
+```
+
+#### Fairfax's largest employers are...  
+
+#### The main business hubs are located in... 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Fortune 1000 Companies in Fairfax
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# Fortune 1000 HQ plot
+pal <- colorQuantile("Oranges", domain = lodespatial$perTotalJobs, probs = seq(0, 1, length = 6), right = FALSE)
+leaflet(data = lodespatial, 
+        options = leafletOptions(minZoom = 10))%>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(perTotalJobs), fillOpacity = .7, stroke = FALSE) %>%
+  addCircleMarkers(data = fortune_geo, popup = fortune_geo$Name, 
+                   radius = 3.5,
+                   color = "#232D4B",
+                   stroke = FALSE, fillOpacity = 1) %>%
+  addLegend("bottomleft", 
+            pal = pal, 
+            values =  ~perTotalJobs,
+            title = "Percent of All<br>Fairfax County Jobs,<br>by Quintile Group", 
+            opacity = 1,
+            labFormat = function(type = "quantile", cuts = 5, p = perTotalJobs) {
+                    n = length(cuts)
+                    paste0("[", round(cuts[-n], 3), " &ndash; ", round(cuts[-1], 3), ")")
+            })
+```
+
+#### Main point about slide... 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Using Network Analysis to Examine <br/> Job Flows From Outside of Fairfax County
+
+```{r warning = F, message = F, results = 'hide', echo = F}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(forcats)
+library(sf)
+library(tmap)
+library(leaflet)
+library(stplanr)
+library(tigris)
+```
+
+```{r warning = F, message = F, results = 'hide', echo = F}
+# Read in data
+#jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+jobs_all <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobsall.csv", 
+                     col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
+#va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/va_xwalk.csv")
+```
+
+```{r warning = F, message = F, echo = F} 
+# Parsing GEOID
+jobs_all$h_state <- substr(jobs_all$h_geocode_tract, 1, 2)
+jobs_all$h_county <- substr(jobs_all$h_geocode_tract, 3, 5)
+jobs_all$h_tract <- substr(jobs_all$h_geocode_tract, 6, 11)
+jobs_all$h_stcty <- substr(jobs_all$h_geocode_tract, 1, 5)
+# Now parsing workplace GEOIDs
+jobs_all$w_state <- substr(jobs_all$w_geocode_tract, 1, 2)
+jobs_all$w_county <- substr(jobs_all$w_geocode_tract, 3, 5)
+jobs_all$w_tract <- substr(jobs_all$w_geocode_tract, 6, 11)
+jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
+```
+
+```{r warning = F, message = F, results = 'hide', echo = F}
+nc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
+dc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
+pa_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
+wv_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
+md_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
+oh_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
+ny_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
+fl_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
+nj_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
+sc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+```
+
+```{r warning = F, message = F, results = 'hide', echo = F}
+# Loading top 10 states to map flows
+va_points <- tracts("VA", class = "sf")
+md_points <- tracts("MD", class = "sf")
+dc_points <- tracts("DC", class = "sf")
+wv_points <- tracts("WV", class = "sf")
+pa_points <- tracts("PA", class = "sf")
+nc_points <- tracts("NC", class = "sf")
+nj_points <- tracts("NJ", class = "sf")
+ny_points <- tracts("NY", class = "sf")
+oh_points <- tracts("OH", class = "sf")
+sc_points <- tracts("SC", class = "sf")
+fl_points <- tracts("FL", class = "sf")
+```
+
+```{r warning = F, message = F, results = 'hide', echo = F}
+#this means all jobs where residence is outside of Fairfax but workplace is in Fairfax
+flows_in <- jobs_all %>% filter(h_stcty != "51059" & w_stcty == "51059")
+bool_cond <- jobs_all$h_stcty != "51059" & jobs_all$w_stcty == "51059"
+percents <- data.frame("type" = c("From outside Fairfax County", "From within Fairfax County"), "shares" = c((mean(bool_cond) * 100), ((1 - mean(bool_cond)) * 100)))
+#NC done
+essential <- nc_xw %>%
+  select(cty, ctyname)
+nc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#dc done
+essential <- dc_xw %>%
+  select(cty, ctyname)
+dc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#pa done
+essential <- pa_xw %>%
+  select(cty, ctyname)
+pa_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#wv done
+essential <- wv_xw %>%
+  select(cty, ctyname)
+wv_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#md done
+essential <- md_xw %>%
+  select(cty, ctyname)
+md_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#oh done
+essential <- oh_xw %>%
+  select(cty, ctyname)
+oh_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#ny done
+essential <- ny_xw %>%
+  select(cty, ctyname)
+ny_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#fl done
+essential <- fl_xw %>%
+  select(cty, ctyname)
+fl_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#nj done
+essential <- nj_xw %>%
+  select(cty, ctyname)
+nj_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+#sc done
+essential <- sc_xw %>%
+  select(cty, ctyname)
+sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
+agg_cnty_other_with_names <- top_ten_with_names %>%
+  group_by(ctyname) %>%
+  summarise(S000 = sum(S000)) %>%
+  ungroup()
+agg_cnty_other_trimmed <- agg_cnty_other_with_names[order(-agg_cnty_other_with_names$S000), ][1:10, ]
+agg_cnty_other_trimmed %>%
+  mutate(ctyname = fct_reorder(ctyname, S000)) %>%
+  ggplot(aes(S000, ctyname)) +
+  geom_bar(stat="identity", fill= "#0E879C") +
+  ggtitle("Number of Jobs Flowing into Fairfax from\nOther Counties in Other States") +
+  theme_minimal() +
+  xlab("Number of Jobs") + 
+  ylab("County Name") +
+  scale_x_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) 
+```
+
+#### Main point about the slide... 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Where do Fairfax Workers <br/> Come from Outside of Virginia?
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include =FALSE}
+flows_in_state <- flows_in[flows_in$h_state != "51", ] %>%
+  group_by(h_state, w_state) %>%
+  summarise(S000 = sum(S000)) %>%
+  ungroup() %>%
+  arrange(-S000)
+#get states names
+flows_in_state <- flows_in_state[1:10, ]
+flows_in_state$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
+states_flow_lines <-st_as_sf(od2line(flows_in_state, states()[3:10]))
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tmap_mode("view")
+pal <- viridis::viridis(n = 3, option = "C")
+top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S000, geometry)) +
+  tm_lines(lwd = 3.5, 
+           col = "S000", 
+           title.col = "Number of Jobs", 
+           style = "quantile",
+           palette = c("#E6A01D", "#E57200"),
+           popup.vars = c("Number of Jobs" = "S000")) +
+  tm_basemap("OpenStreetMap.HOT") +
+  tm_view(set.zoom.limits = c(5, 18), basemaps.alpha = 0.5)
+top10states_flowsmap
+```
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Using Network Analysis to <br/> Study Fairfax County Job Flows
+
+```{r, include=FALSE}
+library(tidycensus)
+library(leaflet)
+library(sf)
+library(shiny)  
+library(fabricatr)
+library(RColorBrewer)
+#source("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/src/09_network_descriptives/network_functions.R")
+source("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/src/09_network_descriptives/network_functions.R")
+network_stats(vars = "S000", years = 2015, types = types)
+```
+
+```{r, echo = F}
+leaflet_creator("all")
+fluidRow(column(6, l_out_2015_S000_all), 
+         column(6, l_in_2015_S000_all))
+fluidRow(column(6, l_btw_2015_S000_all), 
+         column(6, l_eigen_2015_S000_all))
+```
+
+#### Fairfax workers usually travel Eastward from Chantilly, Herndon and Fairfax City <br/> to workhubs in Reston, Vienna, Falls Church, Annandale and Springfield 
+
+#### Betweenness centrality points to emerging areas that workers travel through, <br/> which future employers may consider when deciding where to locate their businesses 
+
+
+
+
+
+
+
