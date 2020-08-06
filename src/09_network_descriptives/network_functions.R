@@ -290,7 +290,7 @@ leaflet_creator <- function(types){
       addLegend("bottomleft", 
                 pal = pal_in, 
                 values = ~wtd_deg_cent_in,
-                title = "Weighted Degree Centrality: In<br> By Quantile Group", 
+                title =  "Weighted Degree Centrality: In<br> By Quantile Group", 
                 opacity = 1,
                 labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_in) {
                   n = length(cuts)
