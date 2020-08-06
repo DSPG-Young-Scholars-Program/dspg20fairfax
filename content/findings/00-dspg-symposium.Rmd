@@ -68,9 +68,9 @@ h1, h2, h3, h4, h5 {
 knitr::include_app('https://teja.shinyapps.io/app_wrk', height = "650px")
 ```
 
-#### Main point about commute type 
+####  Residents who live in near Dulles, Reston, and Herndon, as well as in the south-east part of the county, are most reliant on public transit, and thus will be most affected by restricted public transportation access  due to the pandemic.  
 
-#### Main point about age 
+#### Tracts with a high percentage of older adult workers may experience an influx of new workers or a reduction in the number of jobs given they have larger shares of workers there who may be retiring in the near-term.
 
 <br>
 <br>
@@ -143,7 +143,7 @@ leaflet(data = vulnerable,
             na.label = "Not Available")
 ```
 
-#### Main point about slide 
+#### The map shows many tracts in the south-east part of the County with darker shading, indicating these tracts have higher relative vulnerability, and may be more likely to experience high rates of job loss and economic hardship due to the pandemic. 
 
 <br>
 <br>
@@ -208,9 +208,8 @@ leaflet(data = employers,
                   })
 ```
 
-#### Fairfax's largest employers are...  
-
-#### The main business hubs are located in... 
+#### This map shows  the locations of these employers, with each company employing between 400 and 8500 workers. The top five employers in Fairfax County are Sodexo, Inova Fairfax Hospital, George Mason University, AT&T Store and GMU Community Relations, each employing 4000 or more workers. 
+#### Among these largest five employers, three are located in Springfield, Falls Church, and Oakton, and two in Fairfax City. The remaining largest employers cluster around Tysons Corner, Fair Oaks, Merrifield, Chantilly, and Reston. 
 
 <br>
 <br>
@@ -247,7 +246,7 @@ leaflet(data = lodespatial,
             })
 ```
 
-#### Main point about slide... 
+#### Given that Forbes 1000 headquarters appear in tracts that contain the highest percentages of jobs, this map suggests that these employers attract workers and create significant job opportunities in the county.
 
 <br>
 <br>
@@ -392,7 +391,7 @@ agg_cnty_other_trimmed %>%
         plot.subtitle = element_text(hjust = 0.5)) 
 ```
 
-#### Main point about the slide... 
+#### We see that many Fairfax County workers who do not live in Fairfax County commute from Maryland, DC, and West Virginia.
 
 <br>
 <br>
@@ -433,6 +432,10 @@ top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S0
 top10states_flowsmap
 ```
 
+#### This map revealed that some workers who come to work in Fairfax County live in states well outside of driving distance. 
+#### This created a challenge, as it is difficult to determine whether workers work for businesses with headquarters in Fairfax but work physically located elsewhere, or whether they do work in Fairfax but perhaps only part of the time.  
+
+
 <br>
 <br>
 <br>
@@ -466,9 +469,11 @@ fluidRow(column(6, l_btw_2015_S000_all),
          column(6, l_eigen_2015_S000_all))
 ```
 
-#### Fairfax workers usually travel Eastward from Chantilly, Herndon and Fairfax City <br/> to workhubs in Reston, Vienna, Falls Church, Annandale and Springfield 
+#### Fairfax workers usually travel Eastward from Chantilly, Herndon and Fairfax City <br/> to workhubs in Reston, Vienna, Falls Church, Annandale and Springfield. 
 
-#### Betweenness centrality points to emerging areas that workers travel through, <br/> which future employers may consider when deciding where to locate their businesses 
+#### Betweenness centrality points to emerging areas that workers travel through, <br/> which future employers may consider when deciding where to locate their businesses.
+
+#### Eigenvector Centrality shows tracts that would see relatively higher travel, which could add stress to travel infrastructure.
 
 
 
