@@ -33,7 +33,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                     p(),
                                     selectInput('whichvar_transit', 'Select Variable:', vars_transit, width = '100%'),
                                     p(),
-                                    leafletOutput('plot_transit'),
+                                    leafletOutput('plot_transit', height = "450px"),
                                     p('Source: American Community Survey, 2014/18')
                            )
                   ), 
@@ -43,7 +43,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                     p(),
                                     selectInput('whichvar_age', 'Select Variable:', vars_age, width = '100%'),
                                     p(),
-                                    leafletOutput('plot_age'),
+                                    leafletOutput('plot_age', height = "450px"),
                                     p('Source: American Community Survey, 2014/18')
                            )
                   )
@@ -78,8 +78,8 @@ server <- function(input, output, session) {
             options = leafletOptions(minZoom = 10)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(fillColor = ~pal(plotvar_transit),
-                  fillOpacity = .8, 
-                  stroke = FALSE, 
+                  fillOpacity = 0.7, 
+                  stroke = TRUE, weight = 0.5, color = "#202020",
                   label = labels) %>%
       addLegend("bottomleft", 
                 pal = pal, 
@@ -119,8 +119,8 @@ server <- function(input, output, session) {
             options = leafletOptions(minZoom = 10)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(fillColor = ~pal(plotvar_age),
-                  fillOpacity = .8, 
-                  stroke = FALSE, 
+                  fillOpacity = 0.7, 
+                  stroke = TRUE, weight = 0.5, color = "#202020",
                   label = labels) %>%
       addLegend("bottomleft", 
                 pal = pal, 

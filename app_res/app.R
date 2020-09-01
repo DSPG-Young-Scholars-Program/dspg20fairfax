@@ -44,7 +44,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                     p(),
                                     selectInput('whichvar_travel', 'Select Variable:', vars_travel, width = '100%'),
                                     p(),
-                                    leafletOutput('plot_travel'),
+                                    leafletOutput('plot_travel', height = "450px"),
                                     p('Source: American Community Survey, 2014/18')
                            )
                   ), 
@@ -54,7 +54,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                     p(),
                                     selectInput('whichvar_class', 'Select Variable:', vars_class, width = '100%'),
                                     p(),
-                                    leafletOutput('plot_class'),
+                                    leafletOutput('plot_class', height = "450px"),
                                     p('Source: American Community Survey, 2014/18')
                            )
                   ), 
@@ -64,7 +64,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                     p(),
                                     selectInput('whichvar_ind', 'Select Variable:', vars_ind, width = '100%'),
                                     p(),
-                                    leafletOutput('plot_ind'),
+                                    leafletOutput('plot_ind', height = "450px"),
                                     p('Source: American Community Survey, 2014/18')
                            )
                   )
@@ -100,8 +100,8 @@ server <- function(input, output, session) {
             options = leafletOptions(minZoom = 10)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(fillColor = ~pal(plotvar_travel),
-                  fillOpacity = .8, 
-                  stroke = FALSE, 
+                  fillOpacity = 0.7, 
+                  stroke = TRUE, weight = 0.5, color = "#202020",
                   label = labels) %>%
       addLegend("bottomleft", 
                 pal = pal, 
@@ -139,8 +139,8 @@ server <- function(input, output, session) {
             options = leafletOptions(minZoom = 10)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(fillColor = ~pal(plotvar_class),
-                  fillOpacity = .8, 
-                  stroke = FALSE, 
+                  fillOpacity = 0.7, 
+                  stroke = TRUE, weight = 0.5, color = "#202020",
                   label = labels) %>%
       addLegend("bottomleft", 
                 pal = pal, 
@@ -184,8 +184,8 @@ server <- function(input, output, session) {
             options = leafletOptions(minZoom = 10)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(fillColor = ~pal(plotvar_ind),
-                  fillOpacity = .8, 
-                  stroke = FALSE, 
+                  fillOpacity = 0.7, 
+                  stroke = TRUE, weight = 0.5, color = "#202020",
                   label = labels) %>%
       addLegend("bottomleft", 
                 pal = pal, 

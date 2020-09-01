@@ -5,6 +5,6 @@ account: teja
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2601495
-bundleId: 3421686
+bundleId: 3580251
 url: https://teja.shinyapps.io/app_wrk/
-when: 1595430031.35288
+when: 1598972070.13437
