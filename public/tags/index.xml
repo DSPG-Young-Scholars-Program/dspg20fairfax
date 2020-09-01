@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on UVA Biocomplexity Institute</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on UVA Biocomplexity Institute</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>eda</title>
+      <link>/tags/eda/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/eda/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>geospatial</title>
+      <link>/tags/geospatial/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/geospatial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>interactive map</title>
+      <link>/tags/interactive-map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/interactive-map/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>job flows</title>
+      <link>/tags/job-flows/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/job-flows/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>network analysis</title>
+      <link>/tags/network-analysis/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/network-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sectors</title>
+      <link>/tags/sectors/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/sectors/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>socio-demographics</title>
+      <link>/tags/socio-demographics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/socio-demographics/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
