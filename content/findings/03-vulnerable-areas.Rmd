@@ -35,17 +35,17 @@ uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/
 
 ### Approach
 
-This section examines relative vulnerability to COVID-related income and job loss in Fairfax County, VA a census tract-level. Identifying vulnerable areas is important to our Fairfax County sponsors as it can help anticipate and prepare for post-pandemic changes. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings, as well as highlight areas in the county that might benefit most from employment assistance.
+This section examines relative vulnerability to COVID-related income and job loss in Fairfax County, VA at the census tract-level. Identifying vulnerable areas is important to our Fairfax County sponsors as it can help anticipate and prepare for post-pandemic changes. We first examined the total number of initial unemployment filings for the county to understand which areas were most impacted. We then constructed a composite indicator of relative vulnerability that may help contextualize and explain high numbers of unemployment filings, as well as highlight areas in the county that might benefit most from employment assistance.
 
 #### Unemployment Claims 
 
-We used Virginia Employment Commission's Initial Unemployment Claims data to explore unemployment filings in Fairfax County. We calculated the number of all initial unemployment claims filed in Fairfax County ZIP codes from January through May 2020. We map the ZIP code-level totals in an interactive plot.
+We used Virginia Employment Commission's Initial Unemployment Claims data to explore unemployment filings in Fairfax County. We calculated the number of all initial unemployment claims filed in Fairfax County ZIP codes from January through May 2020. We mapped the ZIP code-level totals in an interactive plot.
 
 #### Relative Vulnerability 
 
-We used the US Census Bureau's American Community Survey (ACS) to obtain information about Fairfax County labor force characteristics relevant for our relative vulnerability index. ACS provides detailed sociodemographic and socioeconomic information about American households. Five-year estimates, available at census block group geographic level and higher, are available beginning in 2005/09 to present; we use the latest available dataset from 2014/18 for our analyses. We retrieve all information at census tract level. 
+We used the US Census Bureau's American Community Survey (ACS) to obtain information about Fairfax County labor force characteristics relevant for our relative vulnerability index. ACS provides detailed sociodemographic and socioeconomic information about American households. Five-year estimates, available at census block group geographic level and higher, are available beginning in 2005/09 to present; we use the latest available dataset from 2014/18 for our analyses. We retrieved all information at census tract level. 
 
-We select our relative vulnerability index indicators based on a [Brookings report](https://www.brookings.edu/research/who-are-the-workers-already-impacted-by-the-covid-19-recession/) that identified major factors contributing to covid-related economic hardship: percent population in labor force that is unemployed, percent workers employed part-time, percent workers with high-school education or less, median worker income, and percent workers in employed in industries and occupations that are particularly vulnerable to covid-19.
+We selected our relative vulnerability index indicators based on a [Brookings report](https://www.brookings.edu/research/who-are-the-workers-already-impacted-by-the-covid-19-recession/) that identified major factors contributing to covid-related economic hardship: percent population in labor force that is unemployed, percent workers employed part-time, percent workers with high-school education or less, median worker income, and percent workers employed in industries and occupations that are particularly vulnerable to covid-19.
 
 We calculated quintile cut-offs for each indicator, with tracts that placed in higher quintiles exhibiting higher relative risk for worker covid-related job and income loss. We summed the number of times that a given tract placed in the 4th or 5th quintile to calculate our relative vulnerability score. We mapped the score on an interactive plot allowing users to explore relative tract vulnerability, as well as tract information for each individual indicator.
 
@@ -179,7 +179,7 @@ leaflet(data = vulnerable,
 
 #### Where are Part-Time Workers?
 
-The following plot highlights tracts with higher percentages of workers employed part-time, or 34 hours per week or less. Part-time workers are at greater risk of experiencing layoffs during the pandemic.
+The following plot highlights tracts with higher percentages of workers employed part-time defined as 34 hours per week or less. Part-time workers are at greater risk of experiencing layoffs during the pandemic.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Percent In Labor Force Employed Less Than Year Round Full Time
@@ -255,7 +255,7 @@ leaflet(data = vulnerable,
 
 #### Where are Low-Income Workers?
 
-Areas where workers are already receiving lower incomes may be less shielded from pandemic-inflicted hardship. This mapping displays tracts by worker median income. Darker areas represent areas with low median incomes.
+Areas where workers are already receiving lower incomes may be less shielded from pandemic-inflicted hardship. This map displays tracts by worker median income. Darker areas represent areas with low median incomes.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Median Worker Income

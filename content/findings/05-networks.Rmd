@@ -57,13 +57,13 @@ table2 <- data.frame(
 DT::datatable(table2, colnames = c('Measure', 'Definition', "Fairfax Application"))
 ``` 
 
-This table describes our main centrality measures. The associated interpretation contextualizes centrality measures within the Fairfax County job flows exploration. While we plan to conduct further analyses on a broader collection of network centrality measures, our short-term goal was to examine which census tracts are most important when analyzing them as a network. 
+This table describes our centrality measures used to quantify the  movement of workers from their home census tract to the census tract of their work place. While we plan to conduct further analyses on a broader collection of network centrality measures, our short-term goal was to examine which census tracts are most important when analyzing them as a network.
 
 ### All Job Flows in Fairfax County
 
-The maps below show the centrality measures for all jobs in Fairfax County. The top-left figure shows the weighted out-degree centrality, which highlights where workers are departing. The darker tracts on the western side of the county are those from which more individuals are leaving to commute to work. In contrast, the top right-hand corner highlights the in-degree centrality or where Fairfax County workers travel to work. Many tracts on the eastern side of Fairfax County are highlighted, indicating that more individuals work in those tracts. Taken together, the maps begin to suggest patterns of travel flow during peak commute hours and have potential implications for transportation policy.  
+The maps below show the centrality measures for all jobs in Fairfax County. The top-left figure shows the weighted out-degree centrality, which highlights where workers are departing. The darker tracts on the western side of the county are those from which more individuals are leaving to commute to work. In contrast, the top right figure highlights the in-degree centrality or where Fairfax County workers travel to work. Many tracts on the eastern side of Fairfax County are highlighted, indicating that more individuals work in those tracts. Taken together, the maps begin to suggest patterns of travel flow during peak commute hours and have potential implications for transportation policy.  
 
-_Interpreting Quintiles: The maps visualize centrality measure values at census tract level. Tracts with darker map colors have higher values on centrality measures. Conversely, tracts with lighter colors have lower measure of centrality. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values._
+The maps visualize centrality measure values at census tract level. Tracts with darker map colors have higher values on centrality measures. Conversely, tracts with lighter colors have lower measure of centrality. To facilitate comparisons and display quintile cut-off points, map colors represent quintile-grouped values.
 
 ```{r, echo = F}
 leaflet_creator("all")
@@ -113,7 +113,7 @@ l_out_2015_S000_federal <- leaflet(data = fairfax_data,options = leafletOptions(
   addLegend("bottomleft", 
             pal = pal_out, 
             values =  ~wtd_deg_cent_out,
-            title = "Weighted Degree Centrality: Out<br> By Quantile Group", 
+            title = "Weighted Degree Centrality: Out<br> By Quintile Group", 
             opacity = 1, 
             labFormat = function(type = "quantile", cuts = 10, p = wtd_deg_cent_out) {
               n = length(cuts)

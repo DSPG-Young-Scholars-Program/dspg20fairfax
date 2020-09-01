@@ -56,7 +56,7 @@ Overall, we find that Fairfax County employs primarily educated white-collar pro
 
 ### What is the Sociodemographic <br/> Composition of Workers in Fairfax County?
 
-Over 60% of workers in Fairfax County are white while Black and Asian workers each comprise less than 20% of all workers in the County. Fairfax also has a small share of workers of Hispanic ethnicity - with approximately 12% of workers identifying as Hispanic. The county workforce is fairly balanced in terms of gender with approximately 48% female and 53% male workers.
+Over 60% of workers in Fairfax County are white, while Black and Asian workers each comprise less than 20% of all workers in the county. Fairfax also has a small share of workers of Hispanic ethnicity, with approximately 12% of workers identifying as Hispanic. The county workforce is balanced in terms of gender with approximately 48% female and 53% male workers.
 
 ```{r, echo = F}
 race <- data.frame(race = names(colSums(wac[, 29:34])), value = colSums(wac[,29:34]), row.names = NULL)
@@ -78,7 +78,7 @@ ggplot(race, aes(x = prop, y = reorder(race, prop), fill = race)) +
         plot.subtitle = element_text(hjust = 0.26)) 
 ```
 
-The following plot shows that the vast majority of workers in Fairfax County are not Hispanic or Latino, with only 12.13% identifying as such. However, when considering employment changes due to the pandemic, it is important to consider how this population will likely be disproportionately impacted. Underrepresented minorities have less access to jobs and jobs security, which can leave them in a precarious position during pandemic uncertainty. Using this plot and the plot above, we can begin to understand how many workers are at particular risk for economic hardship.
+The following plot shows that the vast majority of workers in Fairfax County are not Hispanic or Latino, with only 12.13% identifying as such. However, when considering employment changes due to the pandemic, it is important to consider how this population will likely be disproportionately impacted. Underrepresented minorities have less access to jobs and poorer job security, which can leave them in a precarious position during pandemic uncertainty. Using this plot and the plot above, we can begin to understand how many workers are at particular risk for economic hardship.
 
 ```{r, echo = F}
 ethnicity <- data.frame(ethnicity = names(colSums(wac[,35:36])), value = colSums(wac[, 35:36]), row.names = NULL)

@@ -1,6 +1,6 @@
 ---
-title: "Examining Job Flows From Outside of Fairfax County"
-description: "This page explores where workers frequently travel from outside of Fairfax."
+title: "Examining Employee Flows Into Fairfax County"
+description: "This page explores the origins of workers who travel into Fairfax County for work but live outside of the county."
 tags: ["eda", "geospatial", "job flows", "interactive map"]
 weight: 6
 draft: false
@@ -101,9 +101,9 @@ We employed state geography crosswalk data to convert geographic identifiers to 
 
 ### Major Findings
 
-Among counties in Virginia, Loudoun County and Prince William County are the counties that send the greatest number of workers to Fairfax County. From other states, Maryland has the greatest number of residents that work in Fairfax County. From counties in other states, Montgomery County, MD, Prince George's County, MD, and the District of Columbia are the three areas with greatest number of workers living there that work in Fairfax County. We visualize these origins on the following plots.
+Among counties in Virginia, Loudoun County and Prince William County are the counties that send the greatest number of workers to Fairfax County. From other states, Maryland has the greatest number of residents that work in Fairfax County. From counties in other states, Montgomery and Prince George County, MD, and the District of Columbia have the greatest number of residents working in Fairfax County. We visualize these origins on the following plots.
 
-### What Percent of Jobs Flow into Fairfax <br/> From Outside of the County?
+### What Percent of Employees Flow into <br/> Fairfax From Outside of the County?
 
 To determine what proportion of employees in Fairfax County do not also live in the county, we filtered all jobs in Fairfax County for those with a residence geography outside of the county but workplace geography inside of the county. Over half, or 59% of all jobs in Fairfax County are held by employees who do not live in the county.
 
@@ -121,7 +121,7 @@ pie <- ggplot(percents, aes("", y = shares, fill = type)) +
 pie <- pie  +
   coord_polar("y", start=0) +
   scale_fill_manual(values=c("#0E879C", "#E6A01D")) +
-  labs(x = NULL, y = NULL, fill = NULL, title = "Geographic Origin of Jobs Flows Into Fairfax County") +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Percentage of Employees Living Inside and Outside of Fairfax County") +
   theme_void() +
   theme(plot.title = element_text(hjust = 0.5),
          axis.line = element_blank(),
@@ -183,9 +183,9 @@ essential <- sc_xw %>%
 sc_names <- inner_join(x = flows_in, y = unique(essential), by = c("h_stcty" = "cty"))
 ```
 
-### What Percentage of Jobs Come from Other Counties in Virginia?
+### What Percentage of Employees Come from Other Counties in Virginia?
 
-Of the jobs flowing into Fairfax County from outside the county but still within Virginia, approximately 56% are from other counties in the state.  Most employees come to Fairfax County from Loudoun County and Prince William County.
+Approximately 56% of the employees flowing into Fairfax County from outside are from Virginia. Of the 56%, the majority are from Loudoun County and Prince William County.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 perc_flows_other_counties_VA <- mean(flows_in$h_state == "51") *100
@@ -204,7 +204,7 @@ agg_cnty_VA_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
   geom_bar(stat="identity", fill = "#0E879C") +
-  ggtitle("Number of Jobs Flowing into Fairfax\n from Other Virginia Counties") +
+  ggtitle("Number of Employees Flowing into Fairfax\n from Other Virginia Counties") +
   theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("Origin County Name") +
@@ -246,9 +246,9 @@ top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_stcty
 top10VA_cnty_flowsmap
 ```
 
-### What Percentage of Jobs Come from Other States?
+### What Percentage of Employees Come from Other States?
 
-Of the jobs flowing into Fairfax County from outside the county, about 43% from states other than Virginia. Unsurprisingly, many workers come to Fairfax County from Maryland and Washington, DC.
+Of the employees flowing into Fairfax County from other states, the majority are from Maryland and the District of Columbia.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 percent_flows_other_states <- mean(flows_in$h_state != "51") * 100
@@ -263,7 +263,7 @@ agg_states_trimmed %>%
   mutate(ctyname = fct_reorder(State, S000)) %>%
   ggplot(aes(S000, ctyname)) +
   geom_bar(stat="identity", fill= "#E6A01D") +
-  ggtitle("Number of Jobs flowing into Fairfax from other states") +
+  ggtitle("Number of Employees Flowing into Fairfax County from other States") +
   theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("State") +
@@ -292,7 +292,7 @@ pal <- viridis::viridis(n = 3, option = "C")
 top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S000, geometry)) +
   tm_lines(lwd = 3.5, 
            col = "S000", 
-           title.col = "Number of Jobs", 
+           title.col = "Number of Employees", 
            style = "quantile",
            palette = c("#E6A01D", "#E57200"),
            popup.vars = c("Number of Jobs" = "S000")) +
@@ -303,7 +303,7 @@ top10states_flowsmap
 
 ### Where are the Major Counties <br/> Outside of Fairfax that Workers Reside In? 
 
-Of the jobs flowing into Fairfax County from other states, most come from counties in Maryland, Washington DC, and West Virginia. 
+Of the employees flowing into Fairfax County from other states, most come from counties in Maryland, Washington DC, and West Virginia. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 top_ten_with_names <- rbind(nc_names, dc_names, pa_names, wv_names, md_names, oh_names, ny_names, fl_names, nj_names, sc_names)
@@ -316,7 +316,7 @@ agg_cnty_other_trimmed %>%
   mutate(ctyname = fct_reorder(ctyname, S000)) %>%
   ggplot(aes(S000, ctyname)) +
   geom_bar(stat="identity", fill= "#0E879C") +
-  ggtitle("Number of Jobs Flowing into Fairfax from\nOther Counties in Other States") +
+  ggtitle("Number of Employees Flowing into Fairfax from\nOther Counties in Other States") +
   theme_minimal() +
   xlab("Number of Jobs") + 
   ylab("County Name") +
