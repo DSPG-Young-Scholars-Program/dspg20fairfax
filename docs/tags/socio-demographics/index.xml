@@ -5,11 +5,7 @@
     <link>/tags/socio-demographics/</link>
     <description>Recent content in socio-demographics on UVA Biocomplexity Institute</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="/tags/socio-demographics/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="/tags/socio-demographics/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>The Fairfax County Workforce</title>
       <link>/findings/01-workforce-in-ffx/</link>
