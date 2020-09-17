@@ -10,21 +10,8 @@
         <link href="{{ with .OutputFormats.Get "RSS" }}{{ .RelPermalink }}{{ end }}" rel="feed" type="application/rss+xml" title="{{ .Site.Title }}" />
         {{ if .Site.GoogleAnalytics }}
         
-        
- <script>
-          var referer = document.referrer;
-           var n = referer.includes('economic');
-           var x = document.getElementsByClassName('logo');
-           if (n != true) {
-             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions\">' +
-                              '<img src=\"DSPG_white-01.png\", alt=\"DSPG 2020 Symposium Proceedings\", style=\"height:42px;\">' +
-                             '</a>';
-           } else {
-             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/economic-mobility/community-insights\">' +
-                              '<img src=\"AEMLogoGatesColors-11.png\", alt=\"Gates Economic Mobility Case Studies\", style=\"height:42px;\">' +
-                              '</a>';
-           }
-  </script>
+
+
 
     
         <!-- Global Site Tag (gtag.js) - Google Analytics -->

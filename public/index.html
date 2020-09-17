@@ -176,7 +176,23 @@ $(document).ready(function(){
         </nav>
 
     
-            <div class="logo"></div>
+
+            <div class="logo"> <div style = "margin-top: 50px"></div>
+            
+                     <script>
+          var referer = document.referrer;
+           var n = referer.includes('economic');
+           var x = document.getElementsByClassName('logo');
+           if (n != true) {
+             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions\">' +
+                              '<img src=\"DSPG_black-01.png\", alt=\"DSPG 2020 Symposium Proceedings\", style=\"height:50px;\">' +
+                             '</a>';
+           } else {
+             x[0].innerHTML = '<a href=\"https://datascienceforthepublicgood.org/economic-mobility/community-insights\">' +
+                              '<img src=\"AEMLogoGatesColorsBlack-11.png\", alt=\"Gates Economic Mobility Case Studies\", style=\"height:50px;\">' +
+                              '</a>';
+           }
+  </script>
             
 <main class = "content-box">
         
