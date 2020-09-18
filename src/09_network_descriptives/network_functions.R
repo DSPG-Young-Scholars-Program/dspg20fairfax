@@ -19,7 +19,7 @@ network_stats <- function(vars, types, years, centiserve = FALSE, bottleneck = F
             
           if(!(type == "federal" & year > 2015)){
             
-            data <- read.csv(paste("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobs_", type, "_", year, ".csv", sep = ""))
+            data <- read.csv(paste0(here::here(), "/data/od/jobs_", type, "_", year, ".csv", sep = ""))
             #data <- read.csv(paste("/sfs/qumulo/qhome/sm9dv/dspg20fairfax/data/od/jobs_", type, "_", year, ".csv", sep = ""))
             data <- data %>% 
               filter(grepl("^51059.+", w_geocode_tract) & grepl("^51059.+", h_geocode_tract))

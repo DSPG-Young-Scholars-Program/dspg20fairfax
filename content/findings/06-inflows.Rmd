@@ -25,16 +25,17 @@ library(tmap)
 library(leaflet)
 library(stplanr)
 library(tigris)
+library(magrittr)
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
 # Read in data
 #jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-jobs_all <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobsall.csv", 
+jobs_all <- read_csv(paste0(here::here(), "/data/od/jobsall.csv"), 
                      col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 
 #va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
-va_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv(paste0(here::here(), "/data/original/va_xwalk.csv"))
 ```
 
 ```{r warning = F, message = F, echo = F} 
@@ -64,16 +65,16 @@ jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
 #nj_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
 #sc_xw <- read_csv("~/Git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
 # Reading in for mapping later
-nc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
-dc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
-pa_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
-wv_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
-md_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
-oh_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
-ny_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
-fl_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
-nj_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
-sc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+nc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/nc_xwalk.csv"), col_types = cols(cty = col_character()))
+dc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/dc_xwalk.csv"), col_types = cols(cty = col_character()))
+pa_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/pa_xwalk.csv"), col_types = cols(cty = col_character()))
+wv_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/wv_xwalk.csv"), col_types = cols(cty = col_character()))
+md_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/md_xwalk.csv"), col_types = cols(cty = col_character()))
+oh_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/oh_xwalk.csv"), col_types = cols(cty = col_character()))
+ny_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/ny_xwalk.csv"), col_types = cols(cty = col_character()))
+fl_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/fl_xwalk.csv"), col_types = cols(cty = col_character()))
+nj_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/nj_xwalk.csv"), col_types = cols(cty = col_character()))
+sc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/sc_xwalk.csv"), col_types = cols(cty = col_character()))
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
@@ -242,7 +243,8 @@ top10VA_cnty_flowsmap <- tm_shape(va_cnty_flow_lines %>% select(ctyname, w_stcty
            palette = c("#0E879C", "#232D4B"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
-  tm_view(set.zoom.limits = c(8, 18), basemaps.alpha = 0.5)
+  tm_view(set.zoom.limits = c(8, 18))
+#, basemaps.alpha = 0.5
 top10VA_cnty_flowsmap
 ```
 
@@ -286,6 +288,7 @@ flows_in_state$State <- c("Maryland", "District of Columbia", "West Virginia", "
 
 states_flow_lines <-st_as_sf(od2line(flows_in_state, states()[3:10]))
 ```
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
@@ -297,7 +300,8 @@ top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S0
            palette = c("#E6A01D", "#E57200"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
-  tm_view(set.zoom.limits = c(5, 18), basemaps.alpha = 0.5)
+  tm_view(set.zoom.limits = c(5, 18))
+#, basemaps.alpha = 0.5
 top10states_flowsmap
 ```
 
@@ -350,6 +354,7 @@ top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w
            palette = c("#0E879C", "#232D4B"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
-  tm_view(set.zoom.limits = c(8, 18), basemaps.alpha = 0.5)
+  tm_view(set.zoom.limits = c(8, 18))
+#, basemaps.alpha = 0.5
 top10other_cnty_flowsmap
 ```

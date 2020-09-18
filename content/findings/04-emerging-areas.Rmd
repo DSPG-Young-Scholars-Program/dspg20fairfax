@@ -28,14 +28,14 @@ library(sf)
 
 ```{r, include=FALSE}
 # Get data
-lodespatial <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
-fortune_geo <- read_sf("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
+lodespatial <- read_rds(paste0(here::here(), "/data/lodes/lodes_spatial.Rds")) # Sarah's LODES 2017 workplace + ACS spatial
+fortune_geo <- read_sf(paste0(here::here(), "/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp")) # Fortune 1000
 
 # Get data
 #lodespatial <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
 #fortune_geo <- read_sf("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
 
-employers <- read_excel('/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+employers <- read_excel(paste0(here::here(), '/data/original/vworks/allemployers.xlsx')) %>%
 #employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
   select_all(~gsub("\\s+|\\.", "_", .)) %>% 
   select_all(tolower) %>% 

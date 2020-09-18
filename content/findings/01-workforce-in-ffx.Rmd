@@ -30,8 +30,8 @@ library(stringr)
 
 ```{r warning = F, message = F, echo = F}
 # Get data
-work <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
-wac <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
+work <- read_rds(paste0(here::here(), "/data/acs/wrk_ACS_data.Rds")) # Owen's ACS 2014/18 workplace tract data
+wac <- read_rds(paste0(here::here(), "/data/lodes/fairfax_wac.Rds")) # Sarah's LODES 2017 workplace tract data
 #work <- read_rds("./data/acs/wrk_ACS_data.Rds") # Owen's ACS 2014/18 workplace tract data
 #wac <- read_rds("./data/lodes/fairfax_wac.Rds") # Sarah's LODES 2017 workplace tract data
 ```

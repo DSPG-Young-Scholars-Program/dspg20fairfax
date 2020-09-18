@@ -32,7 +32,7 @@ library(stringr)
 
 ```{r warning = F, message = F, echo = F}
 # Get data
-rac <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/fairfax_rac.Rds") # Sean's LODES 2017 residence tract data
+rac <- read_rds(paste0(here::here(), "/data/lodes/fairfax_rac.Rds")) # Sean's LODES 2017 residence tract data
 ```
 
 ```{r, warning = F, message = F, echo = F}

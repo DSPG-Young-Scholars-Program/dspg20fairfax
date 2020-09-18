@@ -25,8 +25,8 @@ library(leaflet)
 
 ```{r, include = FALSE, echo = FALSE, warning=FALSE, message=FALSE}
 # Read in data
-vulnerable <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
-uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
+vulnerable <- read_rds(paste0(here::here(), "/data/acs/acs_vuln.Rds")) # Sean's ACS 2014/18 vulnerable area indicators data
+uiaggregate <- read_rds(paste0(here::here(), "/data/vworks/uiagg_spatial.Rds")) # Sean's VWorks 2020 initial unemployment claims spatial data
 
 # Read in data
 #vulnerable <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data

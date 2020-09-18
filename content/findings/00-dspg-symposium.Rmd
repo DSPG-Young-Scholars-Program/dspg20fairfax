@@ -19,7 +19,7 @@ h1, h2, h3, h4, h5 {
 <br>
 
 <center>
-![](/findings/00-dspg-symposium_files/dspg-small.jpg)
+![](/dspg20fairfax/findings/00-dspg-symposium_files/dspg-small.jpg)
 </center>
 
 ## Fairfax County Labor Markets: <br> Characterizing Local Workforce <br> and Employment Networks
@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5 {
 <br>
 
 <center>
-![](/findings/00-dspg-symposium_files/fairfax.png)
+![](/dspg20fairfax/findings/00-dspg-symposium_files/fairfax.png)
 </center>
 
 ## Our three main goals for the <br> 2020 DSPG Summer Project were to: 
@@ -65,7 +65,7 @@ h1, h2, h3, h4, h5 {
 
 ```{r, echo=FALSE, fig.fullwidth=TRUE}
 # Maps
-knitr::include_app('https://teja.shinyapps.io/app_wrk', height = "650px")
+knitr::include_app("https://teja.shinyapps.io/app_wrk", height = "650px")
 ```
 
 ####  Residents who live in near Dulles, Reston, and Herndon, as well as in the south-east part of the county, are most reliant on public transit, and thus will be most affected by restricted public transportation access  due to the pandemic.  
@@ -92,8 +92,8 @@ library(leaflet)
 
 ```{r, include = FALSE, echo = FALSE, warning=FALSE, message=FALSE}
 # Read in data
-vulnerable <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/acs/acs_vuln.Rds") # Sean's ACS 2014/18 vulnerable area indicators data
-uiaggregate <- read_rds( "/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/vworks/uiagg_spatial.Rds") # Sean's VWorks 2020 initial unemployment claims spatial data
+vulnerable <- read_rds(paste0(here::here(), "/data/acs/acs_vuln.Rds")) # Sean's ACS 2014/18 vulnerable area indicators data
+uiaggregate <- read_rds( paste0(here::here(), "/data/vworks/uiagg_spatial.Rds")) # Sean's VWorks 2020 initial unemployment claims spatial data
 ```
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
@@ -167,12 +167,12 @@ library(sf)
 ```
 ```{r, include=FALSE}
 # Get data
-lodespatial <- read_rds("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
-fortune_geo <- read_sf("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
+lodespatial <- read_rds(paste0(here::here(), "/data/lodes/lodes_spatial.Rds")) # Sarah's LODES 2017 workplace + ACS spatial
+fortune_geo <- read_sf(paste0(here::here(), "/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp")) # Fortune 1000
 # Get data
 #lodespatial <- read_rds("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/lodes/lodes_spatial.Rds") # Sarah's LODES 2017 workplace + ACS spatial
 #fortune_geo <- read_sf("/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/fortune/fortune_1000/fairfax_fortune_1000_geo.shp") # Fortune 1000
-employers <- read_excel('/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
+employers <- read_excel(paste0(here::here(), '/data/original/vworks/allemployers.xlsx')) %>%
 #employers <- read_excel('/sfs/qumulo/qhome/tp2sk/Git/dspg20fairfax/data/original/vworks/allemployers.xlsx') %>%
   select_all(~gsub("\\s+|\\.", "_", .)) %>% 
   select_all(tolower) %>% 
@@ -277,10 +277,10 @@ library(tigris)
 ```{r warning = F, message = F, results = 'hide', echo = F}
 # Read in data
 #jobs_all <- read_csv("~/git/dspg20fairfax/data/od/jobsall.csv", col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
-jobs_all <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/od/jobsall.csv", 
+jobs_all <- read_csv(paste0(here::here(), "/data/od/jobsall.csv"), 
                      col_types = cols(h_geocode_tract = col_character(), w_geocode_tract = col_character()))
 #va_xw <- read_csv("~/git/dspg20fairfax/data/original/va_xwalk.csv")
-va_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/va_xwalk.csv")
+va_xw <- read_csv(paste0(here::here(), "/data/original/va_xwalk.csv"))
 ```
 
 ```{r warning = F, message = F, echo = F} 
@@ -297,16 +297,16 @@ jobs_all$w_stcty <- substr(jobs_all$w_geocode_tract, 1, 5)
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
-nc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nc_xwalk.csv", col_types = cols(cty = col_character()))
-dc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/dc_xwalk.csv", col_types = cols(cty = col_character()))
-pa_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/pa_xwalk.csv", col_types = cols(cty = col_character()))
-wv_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/wv_xwalk.csv", col_types = cols(cty = col_character()))
-md_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/md_xwalk.csv", col_types = cols(cty = col_character()))
-oh_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/oh_xwalk.csv", col_types = cols(cty = col_character()))
-ny_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/ny_xwalk.csv", col_types = cols(cty = col_character()))
-fl_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/fl_xwalk.csv", col_types = cols(cty = col_character()))
-nj_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/nj_xwalk.csv", col_types = cols(cty = col_character()))
-sc_xw <- read_csv("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/data/original/xwalk/sc_xwalk.csv", col_types = cols(cty = col_character()))
+nc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/nc_xwalk.csv"), col_types = cols(cty = col_character()))
+dc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/dc_xwalk.csv"), col_types = cols(cty = col_character()))
+pa_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/pa_xwalk.csv"), col_types = cols(cty = col_character()))
+wv_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/wv_xwalk.csv"), col_types = cols(cty = col_character()))
+md_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/md_xwalk.csv"), col_types = cols(cty = col_character()))
+oh_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/oh_xwalk.csv"), col_types = cols(cty = col_character()))
+ny_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/ny_xwalk.csv"), col_types = cols(cty = col_character()))
+fl_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/fl_xwalk.csv"), col_types = cols(cty = col_character()))
+nj_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/nj_xwalk.csv"), col_types = cols(cty = col_character()))
+sc_xw <- read_csv(paste0(here::here(), "/data/original/xwalk/sc_xwalk.csv"), col_types = cols(cty = col_character()))
 ```
 
 ```{r warning = F, message = F, results = 'hide', echo = F}
@@ -417,6 +417,7 @@ flows_in_state <- flows_in_state[1:10, ]
 flows_in_state$State <- c("Maryland", "District of Columbia", "West Virginia", "Pennsylvania", "North Carolina", "New Jersey", "New York", "Ohio", "South Carolina", "Florida")
 states_flow_lines <-st_as_sf(od2line(flows_in_state, states()[3:10]))
 ```
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 tmap_mode("view")
 pal <- viridis::viridis(n = 3, option = "C")
@@ -428,7 +429,8 @@ top10states_flowsmap <- tm_shape(states_flow_lines %>% select(State, w_state, S0
            palette = c("#E6A01D", "#E57200"),
            popup.vars = c("Number of Jobs" = "S000")) +
   tm_basemap("OpenStreetMap.HOT") +
-  tm_view(set.zoom.limits = c(5, 18), basemaps.alpha = 0.5)
+  tm_view(set.zoom.limits = c(5, 18))
+# , basemaps.alpha = 0.5
 top10states_flowsmap
 ```
 
@@ -456,8 +458,8 @@ library(sf)
 library(shiny)  
 library(fabricatr)
 library(RColorBrewer)
-#source("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/src/09_network_descriptives/network_functions.R")
-source("/sfs/qumulo/qhome/kb7hp/git/dspg20fairfax/src/09_network_descriptives/network_functions.R")
+
+source(paste0(here::here(), "/src/09_network_descriptives/network_functions.R"))
 network_stats(vars = "S000", years = 2015, types = types)
 ```
 

@@ -18,7 +18,7 @@ h1, h2, h3 {
 
 <center>
 
-![](/susweta.jpeg) ![](/sarah.jpg) ![](/owen.png)
+![](/dspg20fairfax/susweta.jpeg) ![](/dspg20fairfax/sarah.jpg) ![](/dspg20fairfax/owen.png)
 
 </center>
 
@@ -29,9 +29,9 @@ h1, h2, h3 {
 
 <center>
 
-![](/teja.jpg) ![](/brandon.jpg) ![](/kathryn.jpg)
+![](/dspg20fairfax/teja.jpg) ![](/dspg20fairfax/brandon.jpg) ![](/dspg20fairfax/kathryn.jpg)
 
-![](/joy.jpg) ![](/stephanie.jpg) ![](/sallie.jpg) 
+![](/dspg20fairfax/joy.jpg) ![](/dspg20fairfax/stephanie.jpg) ![](/dspg20fairfax/sallie.jpg) 
 
 </center>
 
@@ -41,7 +41,7 @@ h1, h2, h3 {
 
 <center>
 
-![](/fairfax.png)   
+![](/dspg20fairfax/fairfax.png)   
 
 </center>
 
