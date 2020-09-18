@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://dspg-young-scholars-program.github.io/dspg20fairfax/"
 languageCode = "en-us"
 title = "UVA Biocomplexity Institute"
 description = "A website for University of Virginia's 2020 Data Science for the Public Good Fairfax County Project."
@@ -6,7 +6,7 @@ theme = "min_night"
 disqusShortname = ""
 googleAnalytics = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "public/"]
-#publishDir = "docs"
+publishDir = "docs"
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
@@ -25,7 +25,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "public/"]
 
 # adjust these as you see fit
 [[menu.main]]
-    url = "/overview/"
+    url = "/"
     name = "Overview"
     weight = 1
 

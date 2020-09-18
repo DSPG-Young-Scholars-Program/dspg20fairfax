@@ -2,29 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>job flows on UVA Biocomplexity Institute</title>
-    <link>/tags/job-flows/</link>
+    <link>/dspg20fairfax/tags/job-flows/</link>
     <description>Recent content in job flows on UVA Biocomplexity Institute</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="/tags/job-flows/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/dspg20fairfax/tags/job-flows/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Using Network Analysis to Study Fairfax County Job Flows</title>
-      <link>/findings/05-networks/</link>
+      <link>/dspg20fairfax/findings/05-networks/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/findings/05-networks/</guid>
+      <guid>/dspg20fairfax/findings/05-networks/</guid>
       <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach We employed network analysis to understand the relationships between where Fairfax County residents work and reside. This is important to our sponsors because changes in commuting dynamics due to the pandemic have implications on transportation, housing, and infrastructure policy. To do this, we used Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) data to conduct our analyses.</description>
     </item>
     
     <item>
       <title>Examining Employee Flows Into Fairfax County</title>
-      <link>/findings/06-inflows/</link>
+      <link>/dspg20fairfax/findings/06-inflows/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/findings/06-inflows/</guid>
+      <guid>/dspg20fairfax/findings/06-inflows/</guid>
       <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach To prepare for an analysis of Fairfax County job flows, we wanted to better understand the geographic origins of workers who reside in other localities but work in Fairfax County. We examined flows to Fairfax County from within Virginia, from other states, and from counties in other states to identify localities that send the highest number of workers to Fairfax County.</description>
     </item>
     
