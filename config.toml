@@ -6,7 +6,8 @@ theme = "min_night"
 disqusShortname = ""
 googleAnalytics = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "public/"]
-#publishDir = "docs"
+publishDir = "docs"
+relativeurls = true
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
