@@ -1,7 +1,7 @@
 baseURL = "https://dspg-young-scholars-program.github.io/dspg20fairfax/"
 languageCode = "en-us"
 title = "UVA Biocomplexity Institute"
-description = "A website for University of Virginia's 2020 Data Science for the Public Good Fairfax County Project."
+description = "Characterizing Local Workforce and Employment Networks in Fairfax County"
 theme = "min_night"
 disqusShortname = ""
 googleAnalytics = ""
@@ -14,7 +14,7 @@ relativeurls = false
 
 [params]
     author = "UVA Biocomplexity Institute"
-    description = "Fairfax County Labor Markets: Characterizing Local Workforce and Employment Networks"
+    description = "Characterizing Local Workforce and Employment Networks in Fairfax County"
     logo = "favicon/uva-dspg-logo.jpg"
     githubUsername = "uva-bi-sdad"
     accent = "#232D4B" # dark colors do best
