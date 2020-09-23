@@ -163,4 +163,5 @@ fluidRow(column(6, l_out_2015_S000_private),
          column(6, l_in_2015_S000_private))
 fluidRow(column(6, l_btw_2015_S000_private), 
          column(6, l_eigen_2015_S000_private))
+
 ```

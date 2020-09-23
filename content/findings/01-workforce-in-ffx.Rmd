@@ -212,4 +212,5 @@ The second tab shows workplace census tracts by percent of workers in certain ag
 ```{r, echo=FALSE, fig.fullwidth=TRUE}
 # Maps
 knitr::include_app('https://teja.shinyapps.io/app_wrk', height = "650px")
+
 ```

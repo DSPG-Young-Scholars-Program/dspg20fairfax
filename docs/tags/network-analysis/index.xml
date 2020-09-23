@@ -16,7 +16,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/findings/05-networks/</guid>
-      <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach We employed network analysis to understand the relationships between where Fairfax County residents work and reside. This is important to our sponsors because changes in commuting dynamics due to the pandemic have implications on transportation, housing, and infrastructure policy. To do this, we used Longitudinal Employer-Household Dynamics (LEHD) Origin-Destination Employment Statistics (LODES) data to conduct our analyses.</description>
+      <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach We employed network analysis to understand the relationships between where Fairfax County residents work and reside. This is important to our sponsors because changes in commuting dynamics due to the pandemic have implications on transportation, housing, and infrastructure policy.</description>
     </item>
     
   </channel>

@@ -19,7 +19,7 @@ h1, h2, h3, h4, h5 {
 <br>
 
 <center>
-![](/dspg20fairfax/findings/00-dspg-symposium_files/dspg-small.jpg)
+![](/findings/00-dspg-symposium_files/dspg-small.jpg)
 </center>
 
 ## Fairfax County Labor Markets: <br> Characterizing Local Workforce <br> and Employment Networks
@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5 {
 <br>
 
 <center>
-![](/dspg20fairfax/findings/00-dspg-symposium_files/fairfax.png)
+![](/findings/00-dspg-symposium_files/fairfax.png)
 </center>
 
 ## Our three main goals for the <br> 2020 DSPG Summer Project were to: 

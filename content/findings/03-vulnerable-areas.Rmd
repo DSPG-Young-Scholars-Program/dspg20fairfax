@@ -362,4 +362,5 @@ leaflet(data = vulnerable,
                     n = length(cuts)
                     paste0("[", round(cuts[-n], 2), " &ndash; ", round(cuts[-1], 2), ")")
                   })
+
 ```

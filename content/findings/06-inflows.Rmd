@@ -357,4 +357,5 @@ top10other_cnty_flowsmap <- tm_shape(other_cnty_flow_lines %>% select(ctyname, w
   tm_view(set.zoom.limits = c(8, 18))
 #, basemaps.alpha = 0.5
 top10other_cnty_flowsmap
+
 ```
