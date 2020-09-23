@@ -153,7 +153,7 @@ ggplot(education, aes(x="", y=prop, fill=education)) +
 
 ### How Much do Workers in Fairfax County Earn?
 
-The majority of workers earn in the top category of over \$3,333 per month. Compared to the national average of worker salaries of $3,828 per month, this suggests that most workers in Fairfax County receive salaries close to or above the national average. This information is congruent with our finding that most Fairfax County workers are highly educated. 
+The majority of workers earn in the top category of over \$3,333 per month. Compared to the (https://www.bls.gov/oes/current/oes_va.htm)[Virginia average worker salary] of $4,728 per month, this suggests that most workers in Fairfax County receive salaries close to or above the national average. This information is congruent with our finding that most Fairfax County workers are highly educated. 
 
 ```{r, echo = F}
 earnings <- data.frame(earnings = names(colSums(wac[, 6:8])), value = colSums(wac[, 6:8]), row.names = NULL)

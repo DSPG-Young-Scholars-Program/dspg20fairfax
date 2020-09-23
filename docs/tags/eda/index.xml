@@ -2,38 +2,38 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>eda on UVA Biocomplexity Institute</title>
-    <link>/dspg20fairfax/tags/eda/</link>
+    <link>/tags/eda/</link>
     <description>Recent content in eda on UVA Biocomplexity Institute</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="/dspg20fairfax/tags/eda/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/eda/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>The Fairfax County Workforce</title>
-      <link>/dspg20fairfax/findings/01-workforce-in-ffx/</link>
+      <link>/findings/01-workforce-in-ffx/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/dspg20fairfax/findings/01-workforce-in-ffx/</guid>
+      <guid>/findings/01-workforce-in-ffx/</guid>
       <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach This page characterizes the Fairfax County workforce. To do this, we used two datasets to better understand the population of individuals with job locations in Fairfax County. LEHD Origin-Destination Employment Statistics (LODES) data provide worker race, ethnicity, education, gender, and industry data at census block group level. We retrieved these characteristics from the 2017 LODES data, which we summarized at the workplace county level to provide an overview of Fairfax County&#39;s workforce.</description>
     </item>
     
     <item>
       <title>Fairfax County Residents&#39; Employment Characteristics</title>
-      <link>/dspg20fairfax/findings/02-ffx-residents/</link>
+      <link>/findings/02-ffx-residents/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/dspg20fairfax/findings/02-ffx-residents/</guid>
+      <guid>/findings/02-ffx-residents/</guid>
       <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach This documents provides baseline census tract-level visualizations for characteristics of Fairfax County residents who are in the labor force. Along with sociodemographic characteristics like workers&#39; age, ethnicity, level of education, and median income, we also consider how long workers residing in different parts of the county have to travel to get to their work site, what industries they work in, and what their occupations are.</description>
     </item>
     
     <item>
       <title>Examining Employee Flows Into Fairfax County</title>
-      <link>/dspg20fairfax/findings/06-inflows/</link>
+      <link>/findings/06-inflows/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/dspg20fairfax/findings/06-inflows/</guid>
+      <guid>/findings/06-inflows/</guid>
       <description>/* this chunnk of code centers all of the headings */ h1, h2, h3, h4 { text-align: center; }  Approach To prepare for an analysis of Fairfax County job flows, we wanted to better understand the geographic origins of workers who reside in other localities but work in Fairfax County. We examined flows to Fairfax County from within Virginia, from other states, and from counties in other states to identify localities that send the highest number of workers to Fairfax County.</description>
     </item>
     

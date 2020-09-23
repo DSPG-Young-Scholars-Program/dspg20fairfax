@@ -115,8 +115,8 @@ $(document).ready(function(){
     
     <meta property="og:title" content="UVA Biocomplexity Institute">
     <meta property="og:type" content="website">
-    <meta property="description" content="Fairfax County Labor Markets: Characterizing Local Workforce and Employment Networks">
-    <meta property="og:description" content="Fairfax County Labor Markets: Characterizing Local Workforce and Employment Networks">
+    <meta property="description" content="Characterizing Local Workforce and Employment Networks in Fairfax County">
+    <meta property="og:description" content="Characterizing Local Workforce and Employment Networks in Fairfax County">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:image" content="/favicon/uva-dspg-logo.jpg" >
     
@@ -198,8 +198,8 @@ $(document).ready(function(){
         
     <div class="intro"></div>
     
-        <div style = "margin-top: 50px">
-            <h2>Fairfax County Labor Markets: Characterizing Local Workforce and Employment Networks</h2>
+        <div style = "margin-top: 30px; margin-bottom: 30px">
+            <h2>Characterizing Local Workforce and Employment Networks in Fairfax County</h2>
         </div>
         
         <br>
@@ -236,19 +236,50 @@ $(document).ready(function(){
         </script>
         
         <script>
-           var referer = document.referrer;
-           var n = referer.includes('economic');
+           function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+
+           function getUrlParam(parameter, defaultvalue){
+                var urlparameter = defaultvalue;
+                if(window.location.href.indexOf(parameter) > -1){
+                    urlparameter = getUrlVars()[parameter];
+                    }
+                return urlparameter;
+            }
+
+            var mytype = getUrlParam('type','Empty');
+
+            function changeLinks(parameter) {
+                links = document.getElementsByTagName("a");
+
+                for(var i = 0; i < links.length; i++) {
+                   var link = links[i];
+                   var newurl = link.href + '?type=' + parameter;
+                   link.setAttribute('href', newurl);
+                 }
+            }
+
            var x = document.getElementsByClassName('header_img');
-           if (n != true) {
+
+           if (mytype != 'economic') {
              x[0].innerHTML = '<div><a href="https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions">' +
-                              '<img src="\/img/DSPG_white-01.png", alt="DSPG 2020 Symposium Proceedings", style="height:42px; margin-top:5px;">' +
+                              '<img src="./dspg20fairfax/img/DSPG_white-01.png", alt="DSPG 2020 Symposium Proceedings", style="height:42px; margin-top:5px;">' +
                               '</a></div>';
+
+             changeLinks('dspg');
            } else {
-             x[0].innerHTML = '<div><a href="https://datascienceforthepublicgood.org/economic-mobility/community-insights">' +
-                              '<img src="./img/AEMLogoGatesColors-11.png", alt="Gates Economic Mobility Case Studies", style="height:42px; margin-top:5px;">' +
+             x[0].innerHTML = '<div><a href="https://datascienceforthepublicgood.org/economic-mobility/community-insights/case-studies">' +
+                              '<img src="./dspg20fairfax/img/AEMLogoGatesColors-11.png", alt="Gates Economic Mobility Case Studies", style="height:42px; margin-top:5px;">' +
                               '</a></div>';
+
+             changeLinks('economic');
            }
-    </script>
+        </script>
        
     </body>
 
