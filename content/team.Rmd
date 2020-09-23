@@ -29,9 +29,9 @@ h1, h2, h3 {
 
 <center>
 
-![](/dspg20fairfax/teja.jpg) ![](/dspg20fairfax/brandon.jpg) ![](/dspg20fairfax/kathryn.jpg)
+![](/teja.jpg) ![](/brandon.jpg) ![](/kathryn.jpg)
 
-![](/dspg20fairfax/joy.jpg) ![](/dspg20fairfax/stephanie.jpg) ![](/dspg20fairfax/sallie.jpg) 
+![](/joy.jpg) ![](/stephanie.jpg) ![](/sallie.jpg) 
 
 </center>
 
@@ -41,7 +41,7 @@ h1, h2, h3 {
 
 <center>
 
-![](/dspg20fairfax/fairfax.png)   
+![](/fairfax.png)   
 
 </center>
 
